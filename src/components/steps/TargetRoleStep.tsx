@@ -1,0 +1,90 @@
+"use client";
+
+import { useResumeStore } from "@/store/resumeStore";
+import { useState, useEffect } from "react";
+
+export default function TargetRoleStep() {
+  const { resumeData, setTargetRole, setJobDescription, nextStep, prevStep } =
+    useResumeStore();
+  const [role, setRole] = useState(resumeData.targetRole);
+  const [jd, setJd] = useState(resumeData.jobDescription || "");
+
+  // Sync local state whenever the store changes (e.g. after upload)
+  useEffect(() => {
+    setRole(resumeData.targetRole);
+    setJd(resumeData.jobDescription || "");
+  }, [resumeData.targetRole, resumeData.jobDescription]);
+  const [error, setError] = useState("");
+
+  function handleNext() {
+    if (!role.trim()) {
+      setError("Please enter your target role.");
+      return;
+    }
+    setTargetRole(role);
+    setJobDescription(jd);
+    nextStep();
+  }
+
+  return (
+    <div>
+      <h2 className="text-xl font-bold text-gray-800 mb-1">Target Role & Job Description</h2>
+      <p className="text-sm text-gray-500 mb-6">
+        Tell us the role you&apos;re applying for. Pasting a job description enables ATS
+        optimization.
+      </p>
+
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Target Role <span className="text-red-500">*</span>
+          </label>
+          <input
+            value={role}
+            onChange={(e) => {
+              setRole(e.target.value);
+              setError("");
+            }}
+            placeholder="e.g. Senior Product Manager"
+            className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              error ? "border-red-400" : "border-gray-300"
+            }`}
+          />
+          {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Job Description{" "}
+            <span className="text-gray-400 font-normal">(optional — enables ATS tailoring)</span>
+          </label>
+          <textarea
+            value={jd}
+            onChange={(e) => setJd(e.target.value)}
+            rows={8}
+            placeholder="Paste the full job description here..."
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          />
+          <p className="text-xs text-gray-400 mt-1">
+            {jd.length} characters — AI uses the first ~2,000 for optimization
+          </p>
+        </div>
+      </div>
+
+      <div className="flex justify-between mt-8">
+        <button
+          onClick={prevStep}
+          className="border border-gray-300 text-gray-600 px-5 py-2.5 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+        >
+          ← Back
+        </button>
+        <button
+          onClick={handleNext}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
+        >
+          Next: Experience →
+        </button>
+      </div>
+    </div>
+  );
+}
