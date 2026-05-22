@@ -111,7 +111,7 @@ export default function SkillsStep() {
           <label className="block text-sm font-medium text-gray-700">Skills</label>
           <button
             onClick={suggestSkills}
-            className="flex items-center gap-1.5 bg-purple-600 hover:bg-purple-700 text-white text-xs px-4 py-1.5 rounded-lg font-medium transition-colors"
+            className="flex items-center gap-1.5 bg-violet-600 hover:bg-violet-700 text-white text-xs px-4 py-1.5 rounded-lg font-medium transition-colors"
           >
             ✨ Suggest skills for role
           </button>
@@ -122,18 +122,18 @@ export default function SkillsStep() {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && addSkill()}
             placeholder="Type a skill and press Enter"
-            className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
           />
           <button
             onClick={() => addSkill()}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 rounded-lg text-sm font-medium transition-colors"
+            className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white px-4 rounded-lg text-sm font-medium transition-colors"
           >
             Add
           </button>
         </div>
 
         {skillSuggestions.length > 0 && (
-          <div className="mb-3 p-3 bg-purple-50 border border-purple-200 rounded-xl">
+          <div className="mb-3 p-3 bg-violet-50 border border-purple-200 rounded-xl">
             <p className="text-[11px] font-semibold text-purple-600 uppercase tracking-wide mb-2">
               Suggested — click to add
             </p>
@@ -142,7 +142,7 @@ export default function SkillsStep() {
                 <button
                   key={s}
                   onClick={() => addSuggestedSkill(s)}
-                  className="inline-flex items-center gap-1 bg-white border border-purple-300 text-purple-700 hover:bg-purple-100 rounded-full px-3 py-1 text-xs font-medium transition-colors"
+                  className="inline-flex items-center gap-1 bg-white border border-violet-300 text-violet-700 hover:bg-violet-100 rounded-full px-3 py-1 text-xs font-medium transition-colors"
                 >
                   + {s}
                 </button>
@@ -155,7 +155,7 @@ export default function SkillsStep() {
           {resumeData.skills.map((skill) => (
             <span
               key={skill}
-              className="inline-flex items-center gap-1 bg-blue-50 text-blue-700 border border-blue-200 rounded-full px-3 py-1 text-sm"
+              className="inline-flex items-center gap-1 bg-violet-50 text-violet-700 border border-violet-200 rounded-full px-3 py-1 text-sm"
             >
               {skill}
               <button
@@ -179,7 +179,7 @@ export default function SkillsStep() {
           <button
             onClick={generateSummary}
             disabled={generatingSummary}
-            className="flex items-center gap-1.5 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white text-xs px-4 py-1.5 rounded-lg font-medium transition-colors"
+            className="flex items-center gap-1.5 bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white text-xs px-4 py-1.5 rounded-lg font-medium transition-colors"
           >
             {generatingSummary ? (
               <><span className="animate-spin">⟳</span> Generating...</>
@@ -193,7 +193,7 @@ export default function SkillsStep() {
           onChange={(e) => setSummary(e.target.value)}
           rows={5}
           placeholder="Write your professional summary or click 'Generate with AI'..."
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 resize-none"
         />
         {summaryError && (
           <p className="text-red-500 text-xs mt-1.5">{summaryError}</p>
@@ -210,7 +210,7 @@ export default function SkillsStep() {
         </button>
         <button
           onClick={nextStep}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
+          className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
         >
           Next: Preview & Export →
         </button>

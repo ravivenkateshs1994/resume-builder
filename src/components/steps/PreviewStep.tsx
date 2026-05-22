@@ -281,7 +281,7 @@ export default function PreviewStep() {
                 value={targetRoleInput}
                 onChange={(e) => setTargetRoleInput(e.target.value)}
                 placeholder="e.g. Senior Product Manager"
-                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
               />
             </div>
             <div>
@@ -291,14 +291,14 @@ export default function PreviewStep() {
                 onChange={(e) => setJobDescriptionInput(e.target.value)}
                 rows={6}
                 placeholder="Paste the job description to tailor keywords, summary, and bullets."
-                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-sky-500"
+                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-violet-500"
               />
               <p className="text-[11px] text-slate-500 mt-1">{jobDescriptionInput.length} characters</p>
             </div>
             <button
               onClick={tailorWithAI}
               disabled={tailoring || !(jobDescriptionInput.trim() || resumeData.jobDescription)}
-              className="flex items-center gap-1.5 bg-purple-600 hover:bg-purple-700 disabled:opacity-40 text-white text-sm px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap"
+              className="flex items-center gap-1.5 bg-violet-600 hover:bg-violet-700 disabled:opacity-40 text-white text-sm px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap"
             >
               {tailoring ? <><span className="animate-spin">⟳</span> Tailoring...</> : <>✨ Tailor Resume</>}
             </button>
@@ -308,7 +308,7 @@ export default function PreviewStep() {
 
       {/* Confirmation panel */}
       {pendingTailor && (
-        <div className="app-panel rounded-xl px-4 py-4 mb-5 border-2 border-purple-300 bg-purple-50">
+        <div className="app-panel rounded-xl px-4 py-4 mb-5 border-2 border-violet-300 bg-violet-50">
           <div className="flex items-center justify-between mb-3">
             <p className="text-sm font-bold text-purple-800">Review AI Changes Before Applying</p>
             {pendingTailor.atsScore && (
@@ -361,7 +361,7 @@ export default function PreviewStep() {
           <div className="flex gap-2 mt-4">
             <button
               onClick={applyTailor}
-              className="flex-1 bg-purple-600 hover:bg-purple-700 text-white text-sm px-4 py-2 rounded-lg font-medium transition-colors"
+              className="flex-1 bg-violet-600 hover:bg-violet-700 text-white text-sm px-4 py-2 rounded-lg font-medium transition-colors"
             >
               ✓ Apply Changes
             </button>
@@ -387,7 +387,7 @@ export default function PreviewStep() {
         <button
           onClick={exportDocx}
           disabled={exportingDocx}
-          className="flex items-center gap-2 bg-blue-700 hover:bg-blue-800 disabled:opacity-50 text-white px-5 py-2.5 rounded-lg font-medium transition-colors"
+          className="flex items-center gap-2 bg-violet-700 hover:bg-violet-800 disabled:opacity-50 text-white px-5 py-2.5 rounded-lg font-medium transition-colors"
         >
           📝 {exportingDocx ? "Exporting..." : "Download DOCX"}
         </button>
@@ -403,7 +403,7 @@ export default function PreviewStep() {
         </div>
         <a
           href="/gap-analysis"
-          className="flex-shrink-0 bg-purple-600 hover:bg-purple-700 text-white text-sm px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap"
+          className="flex-shrink-0 bg-violet-600 hover:bg-violet-700 text-white text-sm px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap"
         >
           Open Gap Analyzer →
         </a>

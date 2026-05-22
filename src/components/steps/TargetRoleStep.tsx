@@ -46,7 +46,7 @@ export default function TargetRoleStep() {
               setError("");
             }}
             placeholder="e.g. Senior Product Manager"
-            className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+            className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 ${
               error ? "border-red-400" : "border-gray-300"
             }`}
           />
@@ -63,7 +63,7 @@ export default function TargetRoleStep() {
             onChange={(e) => setJd(e.target.value)}
             rows={8}
             placeholder="Paste the full job description here..."
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 resize-none"
           />
           <p className="text-xs text-gray-400 mt-1">
             {jd.length} characters — AI uses the first ~2,000 for optimization
@@ -80,7 +80,7 @@ export default function TargetRoleStep() {
         </button>
         <button
           onClick={handleNext}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
+          className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
         >
           Next: Experience →
         </button>

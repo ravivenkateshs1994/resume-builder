@@ -138,12 +138,12 @@ export default function GapAnalysisPage() {
   const learningCount = Object.values(gapStatus).filter((s) => s === "learning").length;
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-sky-50/30 to-teal-50/20">
+    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/30 to-indigo-50/20">
       {/* Navbar */}
       <nav className="sticky top-0 z-20 px-6 py-4 flex items-center justify-between max-w-6xl mx-auto app-panel rounded-b-2xl border-t-0">
         <Link href="/" className="flex items-center gap-2">
-          <span className="text-2xl">📝</span>
-          <span className="font-bold text-slate-900 text-lg tracking-tight">ResumeAI</span>
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-white font-bold text-sm">R</div>
+          <span className="font-bold text-slate-800 text-lg tracking-tight">ResumeAI</span>
         </Link>
         <div className="flex items-center gap-3">
           <Link
@@ -152,7 +152,7 @@ export default function GapAnalysisPage() {
           >
             Resume Builder
           </Link>
-          <span className="text-xs font-semibold bg-purple-100 text-purple-700 px-3 py-1 rounded-full">
+          <span className="text-xs font-semibold bg-violet-100 text-violet-700 px-3 py-1 rounded-full">
             Gap Analyzer
           </span>
         </div>
@@ -190,7 +190,7 @@ export default function GapAnalysisPage() {
               onChange={(e) => setJobDescription(e.target.value)}
               rows={8}
               placeholder="Paste the full job description here — the more detail, the better the analysis."
-              className="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-sky-500 bg-white"
+              className="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-violet-500 bg-white"
             />
             <p className="text-xs text-slate-400 mt-1">{jobDescription.length} characters</p>
           </div>
@@ -198,7 +198,7 @@ export default function GapAnalysisPage() {
           <button
             onClick={analyze}
             disabled={analyzing || !jobDescription.trim()}
-            className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-40 text-white px-6 py-2.5 rounded-xl font-semibold text-sm transition-colors"
+            className="flex items-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 disabled:opacity-40 text-white px-6 py-2.5 rounded-xl font-semibold text-sm transition-all shadow-sm"
           >
             {analyzing ? (
               <>

@@ -31,19 +31,19 @@ export default function StepIndicator({ variant = "horizontal" }: { variant?: "h
                 aria-label={`Go to step ${i + 1}: ${step.label}`}
                 className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-left transition-all group ${
                   active
-                    ? "bg-blue-50 text-blue-700"
+                    ? "bg-violet-50 text-violet-700"
                     : done
-                    ? "text-gray-600 hover:bg-gray-50"
-                    : "text-gray-400 hover:bg-gray-50 hover:text-gray-600"
+                    ? "text-slate-600 hover:bg-slate-50"
+                    : "text-slate-400 hover:bg-slate-50 hover:text-slate-600"
                 }`}
               >
                 <div
                   className={`w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold border-2 transition-all ${
                     done
-                      ? "bg-blue-600 border-blue-600 text-white"
+                      ? "bg-violet-600 border-violet-600 text-white"
                       : active
-                      ? "border-blue-600 text-blue-600 bg-white"
-                      : "border-gray-300 text-gray-400"
+                      ? "border-violet-600 text-violet-600 bg-white"
+                      : "border-slate-300 text-slate-400"
                   }`}
                 >
                   {done ? "✓" : i + 1}
@@ -52,7 +52,7 @@ export default function StepIndicator({ variant = "horizontal" }: { variant?: "h
               </button>
               {i < STEPS.length - 1 && (
                 <div className={`ml-[22px] w-0.5 h-4 ${
-                  i < currentIndex ? "bg-blue-300" : "bg-gray-200"
+                  i < currentIndex ? "bg-violet-300" : "bg-slate-200"
                 }`} />
               )}
             </div>
@@ -68,7 +68,7 @@ export default function StepIndicator({ variant = "horizontal" }: { variant?: "h
         {/* Progress line */}
         <div className="absolute top-4 left-0 right-0 h-0.5 bg-gray-200 z-0" />
         <div
-          className="absolute top-4 left-0 h-0.5 bg-blue-600 z-0 transition-all duration-500"
+          className="absolute top-4 left-0 h-0.5 bg-violet-600 z-0 transition-all duration-500"
           style={{ width: `${(currentIndex / (STEPS.length - 1)) * 100}%` }}
         />
 
@@ -88,10 +88,10 @@ export default function StepIndicator({ variant = "horizontal" }: { variant?: "h
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold border-2 transition-all duration-300 ${
                   done
-                    ? "bg-blue-600 border-blue-600 text-white"
+                    ? "bg-violet-600 border-violet-600 text-white"
                     : active
-                    ? "bg-white border-blue-600 text-blue-600"
-                    : "bg-white border-gray-300 text-gray-400 group-hover:border-blue-400 group-hover:text-blue-500"
+                    ? "bg-white border-violet-600 text-violet-600"
+                    : "bg-white border-slate-300 text-slate-400 group-hover:border-violet-400 group-hover:text-violet-500"
                 }`}
               >
                 {done ? "✓" : i + 1}
@@ -99,10 +99,10 @@ export default function StepIndicator({ variant = "horizontal" }: { variant?: "h
               <span
                 className={`mt-1 text-xs font-medium hidden sm:block ${
                   active
-                    ? "text-blue-600"
+                    ? "text-violet-600"
                     : done
-                    ? "text-gray-600"
-                    : "text-gray-400 group-hover:text-blue-500"
+                    ? "text-slate-600"
+                    : "text-slate-400 group-hover:text-violet-500"
                 }`}
               >
                 {step.label}

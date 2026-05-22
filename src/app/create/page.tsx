@@ -503,7 +503,7 @@ export default function CreatePage() {
                   }
                   className={`whitespace-nowrap px-3 py-2 text-lg font-semibold border-b-2 transition-colors ${
                     activeFilter === f.key
-                      ? "text-sky-600 border-sky-500"
+                      ? "text-violet-600 border-violet-600"
                       : "text-slate-500 border-transparent hover:text-slate-700"
                   }`}
                 >
@@ -517,7 +517,7 @@ export default function CreatePage() {
             <button
               type="button"
               onClick={() => askStartPath(selectedTemplate)}
-              className="bg-teal-600 hover:bg-teal-700 text-white text-sm px-4 py-2 rounded-lg font-semibold"
+              className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white text-sm px-4 py-2 rounded-lg font-semibold transition-all shadow-sm"
             >
               Use selected template
             </button>
@@ -525,7 +525,7 @@ export default function CreatePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
             {visibleTemplates.map((t) => (
-              <article key={t.id} className={`border border-slate-200 rounded-2xl p-3 bg-[#f3f6fb] shadow-sm ${selectedTemplate === t.id ? "ring-2 ring-sky-500 border-sky-300" : ""}`}>
+              <article key={t.id} className={`border border-slate-200 rounded-2xl p-3 bg-[#f3f6fb] shadow-sm ${selectedTemplate === t.id ? "ring-2 ring-violet-500 border-violet-300" : ""}`}>
                 <button
                   type="button"
                   onClick={() => setSelectedTemplate(t.id)}
@@ -564,7 +564,7 @@ export default function CreatePage() {
                   onClick={() => {
                     askStartPath(t.id);
                   }}
-                  className="w-full bg-[#0f1b3d] hover:bg-[#0b1633] text-white text-sm px-4 py-2 rounded-lg font-semibold"
+                  className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white text-sm px-4 py-2 rounded-lg font-semibold transition-all"
                 >
                   Use this template
                 </button>
@@ -612,7 +612,7 @@ export default function CreatePage() {
                       setShowStartChoice(false);
                       setMode("form");
                     }}
-                    className="w-full bg-teal-600 hover:bg-teal-700 text-white text-sm px-4 py-2.5 rounded-lg font-semibold"
+                    className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white text-sm px-4 py-2.5 rounded-lg font-semibold transition-all"
                   >
                     Start Afresh
                   </button>
@@ -642,16 +642,16 @@ export default function CreatePage() {
     <div className="min-h-screen">
       {/* Top nav */}
       <div className="border-b border-slate-200/70 bg-white/80 backdrop-blur px-6 py-3 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 text-gray-700 hover:text-gray-900">
-          <span className="text-xl">📝</span>
-          <span className="font-bold">ResumeAI</span>
+        <Link href="/" className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-white font-bold text-sm">R</div>
+          <span className="font-bold text-slate-800">ResumeAI</span>
         </Link>
         <button
           onClick={() => {
             startFreshFlow();
             setMode("gate");
           }}
-          className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
+          className="text-xs text-slate-400 hover:text-slate-600 transition-colors"
         >
           ← Start over
         </button>

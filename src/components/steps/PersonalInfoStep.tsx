@@ -48,7 +48,7 @@ export default function PersonalInfoStep() {
 
       {/* Avatar preview */}
       <div className="flex items-center gap-4 mb-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
-        <div className="w-14 h-14 rounded-full bg-blue-100 border-2 border-blue-200 flex items-center justify-center text-blue-600 font-bold text-lg flex-shrink-0">
+        <div className="w-14 h-14 rounded-full bg-violet-100 border-2 border-violet-200 flex items-center justify-center text-violet-600 font-bold text-lg flex-shrink-0">
           {initials || "?"}
         </div>
         <div>
@@ -66,7 +66,7 @@ export default function PersonalInfoStep() {
             value={form.fullName}
             onChange={(e) => setForm({ ...form, fullName: e.target.value })}
             placeholder="e.g. Jane Smith"
-            className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.fullName ? "border-red-400" : "border-gray-300"}`}
+            className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 ${errors.fullName ? "border-red-400" : "border-gray-300"}`}
           />
           {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
         </div>
@@ -79,7 +79,7 @@ export default function PersonalInfoStep() {
             value={form.jobTitle || ""}
             onChange={(e) => setForm({ ...form, jobTitle: e.target.value })}
             placeholder="e.g. Senior Software Engineer"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
           />
         </div>
 
@@ -92,7 +92,7 @@ export default function PersonalInfoStep() {
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
             placeholder="jane@example.com"
-            className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.email ? "border-red-400" : "border-gray-300"}`}
+            className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 ${errors.email ? "border-red-400" : "border-gray-300"}`}
           />
           {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
         </div>
@@ -106,7 +106,7 @@ export default function PersonalInfoStep() {
             value={form.phone}
             onChange={(e) => setForm({ ...form, phone: e.target.value })}
             placeholder="+1 (555) 000-0000"
-            className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.phone ? "border-red-400" : "border-gray-300"}`}
+            className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 ${errors.phone ? "border-red-400" : "border-gray-300"}`}
           />
           {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
         </div>
@@ -119,7 +119,7 @@ export default function PersonalInfoStep() {
             value={form.location}
             onChange={(e) => setForm({ ...form, location: e.target.value })}
             placeholder="e.g. New York, NY"
-            className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.location ? "border-red-400" : "border-gray-300"}`}
+            className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 ${errors.location ? "border-red-400" : "border-gray-300"}`}
           />
           {errors.location && <p className="text-red-500 text-xs mt-1">{errors.location}</p>}
         </div>
@@ -132,7 +132,7 @@ export default function PersonalInfoStep() {
             value={form.linkedin || ""}
             onChange={(e) => setForm({ ...form, linkedin: e.target.value })}
             placeholder="linkedin.com/in/janesmith"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
           />
         </div>
 
@@ -144,7 +144,7 @@ export default function PersonalInfoStep() {
             value={form.website || ""}
             onChange={(e) => setForm({ ...form, website: e.target.value })}
             placeholder="e.g. janesmith.dev"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
           />
         </div>
       </div>
@@ -152,7 +152,7 @@ export default function PersonalInfoStep() {
       <div className="flex justify-end mt-8">
         <button
           onClick={handleNext}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
+          className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
         >
           Next: Experience →
         </button>
