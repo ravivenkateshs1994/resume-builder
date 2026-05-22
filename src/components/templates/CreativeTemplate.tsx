@@ -1,5 +1,6 @@
 import type { ResumeData } from "@/types/resume";
 import { createTemplateTheme, getDefaultTemplateAccent } from "@/lib/templateTheme";
+import HeadshotAvatar from "@/components/HeadshotAvatar";
 
 interface Props { data: ResumeData; accentColor?: string }
 
@@ -13,9 +14,14 @@ export default function CreativeTemplate({ data, accentColor }: Props) {
       {/* Sidebar */}
       <div className="w-64 px-5 py-8 flex-shrink-0" style={{ backgroundColor: theme.accentDeep, color: theme.contrastDeep }}>
         <div className="mb-6">
-          <div className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mb-3" style={{ backgroundColor: theme.accent, color: theme.contrast }}>
-            {personalInfo.fullName?.charAt(0) || "?"}
-          </div>
+          <HeadshotAvatar
+            headshotUrl={personalInfo.headshotUrl}
+            initials={personalInfo.fullName?.charAt(0) || "?"}
+            alt={`${personalInfo.fullName || "Candidate"} headshot`}
+            className="w-20 h-20 rounded-2xl overflow-hidden mb-3 border border-white/10 bg-white/10"
+            fallbackClassName="h-full w-full flex items-center justify-center text-2xl font-bold"
+            style={{ backgroundColor: theme.accent, color: theme.contrast }}
+          />
           <h1 className="text-lg font-bold leading-tight">
             {personalInfo.fullName || "Your Name"}
           </h1>
@@ -62,13 +68,16 @@ export default function CreativeTemplate({ data, accentColor }: Props) {
             <h2 className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: theme.accentSofter }}>
               Certifications
             </h2>
-            <div className="space-y-1.5 text-xs" style={{ color: theme.accentSofter }}>
+            <div className="space-y-2 text-xs" style={{ color: theme.accentSofter }}>
               {certifications.map((c) => (
-                <div key={c.id}>
+                <div key={c.id} className="space-y-0.5">
                   <p className="font-medium">{c.name}</p>
-                  <p style={{ color: theme.accentSofter }}>
-                    {c.issuer} · {c.date}
-                  </p>
+                  <p style={{ color: theme.accentSofter }}>{c.issuer}</p>
+                  {!c.neverExpires && c.validTo && (
+                    <p className="text-[10px]" style={{ color: theme.accentSofter }}>
+                      {c.validTo}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>

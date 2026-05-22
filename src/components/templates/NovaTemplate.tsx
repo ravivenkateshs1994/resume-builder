@@ -1,5 +1,6 @@
 import type { ResumeData } from "@/types/resume";
 import { createTemplateTheme, getDefaultTemplateAccent } from "@/lib/templateTheme";
+import HeadshotAvatar from "@/components/HeadshotAvatar";
 
 interface Props {
   data: ResumeData;
@@ -51,12 +52,14 @@ export default function NovaTemplate({ data, accentColor }: Props) {
         style={{ backgroundColor: theme.accent, color: theme.contrast }}
       >
         {/* Avatar circle */}
-        <div
-          className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 text-xl font-bold select-none"
+        <HeadshotAvatar
+          headshotUrl={personalInfo.headshotUrl}
+          initials={initials}
+          alt={`${personalInfo.fullName || "Candidate"} headshot`}
+          className="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 ring-2 ring-white/20"
+          fallbackClassName="h-full w-full flex items-center justify-center text-xl font-bold select-none"
           style={{ backgroundColor: theme.accentDeep, color: theme.contrastDeep }}
-        >
-          {initials}
-        </div>
+        />
 
         {/* Name + title + contacts */}
         <div className="flex-1 min-w-0">
@@ -172,14 +175,17 @@ export default function NovaTemplate({ data, accentColor }: Props) {
         {/* Certifications */}
         {certifications.length > 0 && (
           <Section title="Certifications" theme={theme}>
-            {certifications.map((c) => (
-              <div key={c.id} className="flex justify-between text-sm mb-1.5">
-                <span className="font-medium text-gray-800">{c.name}</span>
-                <span className="text-gray-400 text-xs">
-                  {c.issuer} · {c.date}
-                </span>
-              </div>
-            ))}
+            <div className="grid gap-3 sm:grid-cols-2">
+              {certifications.map((c) => (
+                <div key={c.id} className="rounded-2xl border border-slate-100 bg-slate-50/80 p-4 shadow-sm">
+                  <div className="text-sm font-semibold leading-tight text-gray-800">{c.name}</div>
+                  <div className="mt-1 text-xs text-gray-500">{c.issuer}</div>
+                  {!c.neverExpires && c.validTo && (
+                    <div className="mt-2 text-[11px] font-medium text-gray-500">{c.validTo}</div>
+                  )}
+                </div>
+              ))}
+            </div>
           </Section>
         )}
       </div>

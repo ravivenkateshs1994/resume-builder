@@ -116,11 +116,12 @@ export default function ExecutiveTemplate({ data, accentColor }: Props) {
                   Certifications
                 </h2>
                 {certifications.map((c) => (
-                  <div key={c.id} className="mb-1.5">
+                  <div key={c.id} className="mb-2 space-y-0.5">
                     <p className="font-medium text-xs">{c.name}</p>
-                    <p className="text-gray-500 text-xs">
-                      {c.issuer} · {c.date}
-                    </p>
+                    <p className="text-gray-500 text-xs">{c.issuer}</p>
+                    {!c.neverExpires && c.validTo && (
+                      <p className="text-gray-400 text-[11px]">{c.validTo}</p>
+                    )}
                   </div>
                 ))}
               </div>

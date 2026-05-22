@@ -134,12 +134,12 @@ export default function TechTemplate({ data, accentColor }: Props) {
               <TechSection title="// certifications" theme={theme} />
               <div className="space-y-2">
                 {certifications.map((c) => (
-                  <div key={c.id}>
+                  <div key={c.id} className="space-y-0.5">
                     <div className="font-bold text-gray-900 text-xs leading-snug">{c.name}</div>
-                    <div className="text-gray-400 text-[11px]">
-                      {c.issuer}
-                      {c.date ? ` · ${c.date}` : ""}
-                    </div>
+                    <div className="text-gray-400 text-[11px]">{c.issuer}</div>
+                    {!c.neverExpires && c.validTo && (
+                      <div className="text-gray-400 text-[11px]">{c.validTo}</div>
+                    )}
                   </div>
                 ))}
               </div>

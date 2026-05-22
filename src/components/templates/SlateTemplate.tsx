@@ -1,5 +1,6 @@
 import type { ResumeData } from "@/types/resume";
 import { createTemplateTheme, getDefaultTemplateAccent } from "@/lib/templateTheme";
+import HeadshotAvatar from "@/components/HeadshotAvatar";
 
 interface Props { data: ResumeData; accentColor?: string }
 
@@ -21,9 +22,14 @@ export default function SlateTemplate({ data, accentColor }: Props) {
       <div className="w-56 flex-shrink-0 bg-slate-800 text-white flex flex-col">
         {/* Avatar + name */}
         <div className="px-5 pt-8 pb-6 border-b border-slate-700">
-          <div className="w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold text-white mb-4" style={{ backgroundColor: theme.accent, color: theme.contrast }}>
-            {initials || "?"}
-          </div>
+          <HeadshotAvatar
+            headshotUrl={personalInfo.headshotUrl}
+            initials={initials || "?"}
+            alt={`${personalInfo.fullName || "Candidate"} headshot`}
+            className="w-20 h-20 rounded-2xl overflow-hidden mb-4"
+            fallbackClassName="h-full w-full flex items-center justify-center text-xl font-bold text-white"
+            style={{ backgroundColor: theme.accent, color: theme.contrast }}
+          />
           <h1 className="text-base font-bold leading-tight text-white">
             {personalInfo.fullName || "Your Name"}
           </h1>
@@ -121,9 +127,12 @@ export default function SlateTemplate({ data, accentColor }: Props) {
             </h2>
             <div className="space-y-2">
               {certifications.map((c) => (
-                <div key={c.id}>
+                <div key={c.id} className="space-y-0.5">
                   <p className="text-xs font-medium leading-tight" style={{ color: theme.contrast }}>{c.name}</p>
-                  <p className="text-[10px]" style={{ color: theme.accentMuted }}>{c.issuer} · {c.date}</p>
+                  <p className="text-[10px]" style={{ color: theme.accentMuted }}>{c.issuer}</p>
+                  {!c.neverExpires && c.validTo && (
+                    <p className="text-[10px]" style={{ color: theme.accentMuted }}>{c.validTo}</p>
+                  )}
                 </div>
               ))}
             </div>

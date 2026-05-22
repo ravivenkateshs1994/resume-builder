@@ -119,11 +119,12 @@ export default function ClassicTemplate({ data, accentColor }: Props) {
             Certifications
           </h2>
           {certifications.map((c) => (
-            <div key={c.id} className="flex justify-between text-sm">
-              <span className="font-medium">{c.name}</span>
-              <span className="text-gray-500">
-                {c.issuer} · {c.date}
-              </span>
+            <div key={c.id} className="space-y-0.5 text-sm mb-2">
+              <div className="font-medium">{c.name}</div>
+              <div className="text-gray-500 text-xs">{c.issuer}</div>
+              {!c.neverExpires && c.validTo && (
+                <div className="text-gray-400 text-xs">{c.validTo}</div>
+              )}
             </div>
           ))}
         </>

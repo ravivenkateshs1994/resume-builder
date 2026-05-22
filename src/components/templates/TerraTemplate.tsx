@@ -125,12 +125,12 @@ export default function TerraTemplate({ data, accentColor }: Props) {
               <TerraSection title="Certifications" theme={theme} />
               <div className="space-y-2.5">
                 {certifications.map((c) => (
-                  <div key={c.id}>
+                  <div key={c.id} className="space-y-0.5">
                     <div className="font-bold text-gray-900 text-xs leading-snug">{c.name}</div>
-                    <div className="text-gray-500 text-[11px] font-sans">
-                      {c.issuer}
-                      {c.date ? ` · ${c.date}` : ""}
-                    </div>
+                    <div className="text-gray-500 text-[11px] font-sans">{c.issuer}</div>
+                    {!c.neverExpires && c.validTo && (
+                      <div className="text-gray-400 text-[11px] font-sans">{c.validTo}</div>
+                    )}
                   </div>
                 ))}
               </div>

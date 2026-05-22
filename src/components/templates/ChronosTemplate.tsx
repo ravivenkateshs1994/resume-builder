@@ -1,5 +1,6 @@
 import type { ResumeData } from "@/types/resume";
 import { createTemplateTheme, getDefaultTemplateAccent } from "@/lib/templateTheme";
+import HeadshotAvatar from "@/components/HeadshotAvatar";
 
 interface Props { data: ResumeData; accentColor?: string }
 
@@ -13,15 +14,24 @@ export default function ChronosTemplate({ data, accentColor }: Props) {
       {/* ── Header ── */}
       <div className="px-10 pt-8 pb-6 border-b-2" style={{ borderColor: theme.accent }}>
         <div className="flex justify-between items-end gap-6">
-          <div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">
-              {personalInfo.fullName || "Your Name"}
-            </h1>
-            {personalInfo.jobTitle && (
-              <p className="font-semibold text-sm mt-0.5 tracking-wide" style={{ color: theme.accent }}>
-                {personalInfo.jobTitle}
-              </p>
-            )}
+          <div className="flex items-end gap-4 min-w-0">
+            <HeadshotAvatar
+              headshotUrl={personalInfo.headshotUrl}
+              initials={personalInfo.fullName ? personalInfo.fullName.charAt(0).toUpperCase() : "?"}
+              alt={`${personalInfo.fullName || "Candidate"} headshot`}
+              className="w-20 h-20 rounded-2xl overflow-hidden shrink-0 border border-slate-200 bg-slate-100"
+              fallbackClassName="h-full w-full flex items-center justify-center text-lg font-bold text-gray-700"
+            />
+            <div className="min-w-0">
+              <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">
+                {personalInfo.fullName || "Your Name"}
+              </h1>
+              {personalInfo.jobTitle && (
+                <p className="font-semibold text-sm mt-0.5 tracking-wide" style={{ color: theme.accent }}>
+                  {personalInfo.jobTitle}
+                </p>
+              )}
+            </div>
           </div>
           <div className="text-right text-xs text-gray-500 space-y-0.5 flex-shrink-0">
             {personalInfo.email && <div>{personalInfo.email}</div>}
@@ -152,12 +162,12 @@ export default function ChronosTemplate({ data, accentColor }: Props) {
               <SectionHeading theme={theme}>Certifications</SectionHeading>
               <div className="space-y-2">
                 {certifications.map((c) => (
-                  <div key={c.id} className="text-xs">
+                  <div key={c.id} className="text-xs space-y-0.5">
                     <div className="font-semibold text-gray-800">{c.name}</div>
-                    <div className="text-gray-500">
-                      {c.issuer}
-                      {c.date ? ` · ${c.date}` : ""}
-                    </div>
+                    <div className="text-gray-500">{c.issuer}</div>
+                    {!c.neverExpires && c.validTo && (
+                      <div className="text-gray-400 text-[11px]">{c.validTo}</div>
+                    )}
                   </div>
                 ))}
               </div>

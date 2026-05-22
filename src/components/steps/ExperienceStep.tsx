@@ -50,7 +50,7 @@ function MonthYearSelect({
   }
 
   const selectClass =
-    "flex-1 border border-gray-300 rounded-lg px-2 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 bg-white disabled:bg-gray-50 disabled:text-gray-400";
+    "flex-1 border border-slate-200 rounded-lg px-2 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 bg-white disabled:bg-gray-50 disabled:text-gray-400";
 
   return (
     <div className="flex gap-2">
@@ -204,9 +204,9 @@ function DescriptionEditor({
   }
 
   return (
-    <div className="border border-gray-200 rounded-xl overflow-hidden shadow-sm focus-within:shadow-md focus-within:border-blue-400 transition-all duration-200 bg-white">
+    <div className="border border-slate-200 rounded-xl overflow-hidden shadow-sm focus-within:shadow-md focus-within:border-violet-400 transition-all duration-200 bg-white">
       {/* Toolbar */}
-      <div className="flex items-center gap-0.5 px-2.5 py-2 bg-gray-50 border-b border-gray-200 flex-wrap">
+      <div className="flex items-center gap-0.5 px-2.5 py-2 bg-slate-50 border-b border-slate-200 flex-wrap">
         {/* Text formatting */}
         <ToolbarBtn title="Bold (Ctrl+B)" active={!!editor?.isActive("bold")} onClick={() => editor?.chain().focus().toggleBold().run()}>
           <Bold size={14} />
@@ -248,7 +248,7 @@ function DescriptionEditor({
           <Redo2 size={14} />
         </ToolbarBtn>
 
-        {/* Character count � right aligned */}
+        {/* Character count � right aligned */}
         <div className="ml-auto text-[10px] text-gray-400 font-mono tabular-nums pr-1">
           {charCount} chars
         </div>
@@ -268,9 +268,9 @@ function DescriptionEditor({
           className="flex items-center gap-1.5 text-xs font-medium text-white bg-violet-600 hover:bg-violet-700 disabled:opacity-40 disabled:cursor-not-allowed px-4 py-1.5 rounded-lg transition-colors"
         >
           {isOptimizing ? (
-            <><span className="animate-spin">?</span> Optimizing...</>
+            <><span className="animate-spin inline-block">⟳</span> Optimizing...</>
           ) : (
-            <>? {hasSelection ? "Optimize Selection" : "Optimize Content"}</>
+            <>✨ {hasSelection ? "Optimize Selection" : "Optimize Content"}</>
           )}
         </button>
         <span className="text-[11px] text-gray-500">
@@ -339,54 +339,54 @@ export default function ExperienceStep() {
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-gray-800 mb-1">Work Experience</h2>
-      <p className="text-sm text-gray-500 mb-6">Add your roles. You can optimize the full description or just a selected line.</p>
+      <h2 className="text-xl font-bold text-slate-800 mb-1">Work Experience</h2>
+      <p className="text-sm text-slate-500 mb-6">Add your roles. You can optimize the full description or just a selected line.</p>
 
       <div className="space-y-6">
         {resumeData.workExperience.map((w, idx) => {
           const isCurrent = w.endDate === "Present";
           return (
-            <div key={w.id} className="border border-gray-200 rounded-xl overflow-hidden">
-              <div className="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-200">
-                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Position {idx + 1}</span>
+            <div key={w.id} className="border border-slate-200 rounded-xl overflow-hidden">
+              <div className="flex items-center justify-between px-4 py-3 bg-slate-50 border-b border-slate-200">
+                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Position {idx + 1}</span>
                 <button onClick={() => removeWorkExperience(w.id)} className="text-red-400 hover:text-red-600 text-xs font-medium">Remove</button>
               </div>
 
               <div className="p-4 space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">Job Title <span className="text-red-500">*</span></label>
-                    <input value={w.title} onChange={(e) => updateWorkExperience(w.id, { title: e.target.value })} placeholder="e.g. Senior Software Engineer" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" />
+                    <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Job Title <span className="text-red-500">*</span></label>
+                    <input value={w.title} onChange={(e) => updateWorkExperience(w.id, { title: e.target.value })} placeholder="e.g. Senior Software Engineer" className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">Company <span className="text-red-500">*</span></label>
-                    <input value={w.company} onChange={(e) => updateWorkExperience(w.id, { company: e.target.value })} placeholder="e.g. Acme Corp" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" />
+                    <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Company <span className="text-red-500">*</span></label>
+                    <input value={w.company} onChange={(e) => updateWorkExperience(w.id, { company: e.target.value })} placeholder="e.g. Acme Corp" className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">Location</label>
-                  <input value={w.location || ""} onChange={(e) => updateWorkExperience(w.id, { location: e.target.value })} placeholder="e.g. New York, NY (or Remote)" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" />
+                  <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Location</label>
+                  <input value={w.location || ""} onChange={(e) => updateWorkExperience(w.id, { location: e.target.value })} placeholder="e.g. New York, NY (or Remote)" className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">Start Date</label>
+                    <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Start Date</label>
                     <MonthYearSelect value={w.startDate} onChange={(v) => updateWorkExperience(w.id, { startDate: v })} />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">End Date</label>
+                    <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">End Date</label>
                     <MonthYearSelect value={isCurrent ? "" : w.endDate} onChange={(v) => updateWorkExperience(w.id, { endDate: v })} disabled={isCurrent} />
                     <label className="inline-flex items-center gap-2 mt-2 cursor-pointer select-none">
-                      <input type="checkbox" checked={isCurrent} onChange={(e) => updateWorkExperience(w.id, { endDate: e.target.checked ? "Present" : "" })} className="rounded border-gray-300 text-blue-600 focus:ring-violet-500" />
-                      <span className="text-xs text-gray-600">Currently working here</span>
+                      <input type="checkbox" checked={isCurrent} onChange={(e) => updateWorkExperience(w.id, { endDate: e.target.checked ? "Present" : "" })} className="rounded border-gray-300 text-violet-600 focus:ring-violet-500" />
+                      <span className="text-xs text-slate-600">Currently working here</span>
                     </label>
                   </div>
                 </div>
 
-                {/* Description � rich text editor */}
+                {/* Description � rich text editor */}
                 <div>
-                  <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">Description</label>
+                  <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Description</label>
                   <DescriptionEditor
                     value={w.description}
                     onChange={(html) => updateWorkExperience(w.id, { description: html })}
@@ -402,7 +402,7 @@ export default function ExperienceStep() {
 
       <button
         onClick={addWorkExperience}
-        className="mt-4 w-full border-2 border-dashed border-gray-300 hover:border-violet-400 text-gray-500 hover:text-violet-600 rounded-xl py-3 text-sm font-medium transition-colors"
+        className="mt-4 w-full border-2 border-dashed border-slate-200 hover:border-violet-400 text-gray-500 hover:text-violet-600 rounded-xl py-3 text-sm font-medium transition-colors"
       >
         + Add Position
       </button>
@@ -410,15 +410,15 @@ export default function ExperienceStep() {
       <div className="flex justify-between mt-8">
         <button
           onClick={prevStep}
-          className="border border-gray-300 text-gray-600 px-5 py-2.5 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+          className="border border-slate-200 text-slate-600 px-5 py-2.5 rounded-lg font-medium hover:bg-slate-50 transition-colors"
         >
-          ? Back
+          ← Back
         </button>
         <button
           onClick={nextStep}
           className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
         >
-          Next: Education ?
+          Next: Education →
         </button>
       </div>
     </div>

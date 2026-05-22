@@ -146,11 +146,12 @@ export default function ApexTemplate({ data, accentColor }: Props) {
         <div>
           <SectionRule title="Certifications" theme={theme} />
           {certifications.map((c) => (
-            <div key={c.id} className="flex justify-between mb-1.5">
-              <span className="font-semibold text-gray-800">{c.name}</span>
-              <span className="text-gray-400 text-xs">
-                {c.issuer} · {c.date}
-              </span>
+            <div key={c.id} className="mb-2 space-y-0.5">
+              <div className="font-semibold text-gray-800">{c.name}</div>
+              <div className="text-gray-400 text-xs">{c.issuer}</div>
+              {!c.neverExpires && c.validTo && (
+                <div className="text-gray-400 text-xs">{c.validTo}</div>
+              )}
             </div>
           ))}
         </div>

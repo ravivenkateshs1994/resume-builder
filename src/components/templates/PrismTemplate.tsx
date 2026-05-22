@@ -1,5 +1,6 @@
 import type { ResumeData } from "@/types/resume";
 import { createTemplateTheme, getDefaultTemplateAccent } from "@/lib/templateTheme";
+import HeadshotAvatar from "@/components/HeadshotAvatar";
 
 interface Props {
   data: ResumeData;
@@ -30,12 +31,14 @@ export default function PrismTemplate({ data, accentColor }: Props) {
         style={{ backgroundColor: theme.accentSofter }}
       >
         {/* Avatar */}
-        <div
-          className="w-14 h-14 rounded-full flex items-center justify-center text-lg font-bold mb-4 mx-auto select-none"
+        <HeadshotAvatar
+          headshotUrl={personalInfo.headshotUrl}
+          initials={initials}
+          alt={`${personalInfo.fullName || "Candidate"} headshot`}
+          className="w-20 h-20 rounded-2xl overflow-hidden mb-4 mx-auto"
+          fallbackClassName="h-full w-full flex items-center justify-center text-lg font-bold select-none"
           style={{ backgroundColor: theme.accent, color: theme.contrast }}
-        >
-          {initials}
-        </div>
+        />
 
         {/* Name (in sidebar for narrow layouts) */}
         <div className="text-center mb-5">
@@ -185,11 +188,12 @@ export default function PrismTemplate({ data, accentColor }: Props) {
               Certifications
             </h2>
             {certifications.map((c) => (
-              <div key={c.id} className="flex justify-between text-sm mb-1.5">
-                <span className="font-medium text-gray-800">{c.name}</span>
-                <span className="text-gray-400 text-xs">
-                  {c.issuer} · {c.date}
-                </span>
+              <div key={c.id} className="space-y-0.5 text-sm mb-1.5">
+                <div className="font-medium text-gray-800">{c.name}</div>
+                <div className="text-gray-400 text-xs">{c.issuer}</div>
+                {!c.neverExpires && c.validTo && (
+                  <div className="text-gray-400 text-[10px]">{c.validTo}</div>
+                )}
               </div>
             ))}
           </div>

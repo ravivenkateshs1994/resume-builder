@@ -8,6 +8,7 @@ export interface PersonalInfo {
   linkedin?: string;
   website?: string;
   jobTitle?: string;
+  headshotUrl?: string;
 }
 
 export interface WorkExperience {

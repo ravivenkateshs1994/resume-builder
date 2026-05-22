@@ -100,15 +100,15 @@ export default function SkillsStep() {
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-gray-800 mb-1">Skills & Summary</h2>
-      <p className="text-sm text-gray-500 mb-6">
+      <h2 className="text-xl font-bold text-slate-800 mb-1">Skills & Summary</h2>
+      <p className="text-sm text-slate-500 mb-6">
         Add your skills and let AI write your professional summary.
       </p>
 
       {/* Skills */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-2">
-          <label className="block text-sm font-medium text-gray-700">Skills</label>
+          <label className="block text-sm font-medium text-slate-700">Skills</label>
           <button
             onClick={suggestSkills}
             className="flex items-center gap-1.5 bg-violet-600 hover:bg-violet-700 text-white text-xs px-4 py-1.5 rounded-lg font-medium transition-colors"
@@ -122,7 +122,7 @@ export default function SkillsStep() {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && addSkill()}
             placeholder="Type a skill and press Enter"
-            className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+            className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
           />
           <button
             onClick={() => addSkill()}
@@ -133,8 +133,8 @@ export default function SkillsStep() {
         </div>
 
         {skillSuggestions.length > 0 && (
-          <div className="mb-3 p-3 bg-violet-50 border border-purple-200 rounded-xl">
-            <p className="text-[11px] font-semibold text-purple-600 uppercase tracking-wide mb-2">
+          <div className="mb-3 p-3 bg-violet-50 border border-violet-200 rounded-xl">
+            <p className="text-[11px] font-semibold text-violet-600 uppercase tracking-wide mb-2">
               Suggested — click to add
             </p>
             <div className="flex flex-wrap gap-2">
@@ -160,7 +160,7 @@ export default function SkillsStep() {
               {skill}
               <button
                 onClick={() => removeSkill(skill)}
-                className="text-blue-400 hover:text-blue-700 leading-none"
+                className="text-violet-400 hover:text-violet-600 leading-none"
               >
                 ✕
               </button>
@@ -168,14 +168,14 @@ export default function SkillsStep() {
           ))}
         </div>
         {resumeData.skills.length === 0 && !skillSuggestions.length && (
-          <p className="text-gray-400 text-sm mt-2">No skills added yet.</p>
+          <p className="text-slate-400 text-sm mt-2">No skills added yet.</p>
         )}
       </div>
 
       {/* Professional Summary */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <label className="block text-sm font-medium text-gray-700">Professional Summary</label>
+          <label className="block text-sm font-medium text-slate-700">Professional Summary</label>
           <button
             onClick={generateSummary}
             disabled={generatingSummary}
@@ -193,18 +193,18 @@ export default function SkillsStep() {
           onChange={(e) => setSummary(e.target.value)}
           rows={5}
           placeholder="Write your professional summary or click 'Generate with AI'..."
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 resize-none"
+          className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 resize-none"
         />
         {summaryError && (
           <p className="text-red-500 text-xs mt-1.5">{summaryError}</p>
         )}
-        <p className="text-xs text-gray-400 mt-1">{resumeData.summary.length} characters</p>
+        <p className="text-xs text-slate-400 mt-1">{resumeData.summary.length} characters</p>
       </div>
 
       <div className="flex justify-between mt-8">
         <button
           onClick={prevStep}
-          className="border border-gray-300 text-gray-600 px-5 py-2.5 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+          className="border border-slate-200 text-slate-600 px-5 py-2.5 rounded-lg font-medium hover:bg-slate-50 transition-colors"
         >
           ← Back
         </button>

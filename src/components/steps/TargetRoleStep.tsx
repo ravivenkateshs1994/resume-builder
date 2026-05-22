@@ -28,15 +28,15 @@ export default function TargetRoleStep() {
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-gray-800 mb-1">Target Role & Job Description</h2>
-      <p className="text-sm text-gray-500 mb-6">
+      <h2 className="text-xl font-bold text-slate-800 mb-1">Target Role & Job Description</h2>
+      <p className="text-sm text-slate-500 mb-6">
         Tell us the role you&apos;re applying for. Pasting a job description enables ATS
         optimization.
       </p>
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-slate-700 mb-1">
             Target Role <span className="text-red-500">*</span>
           </label>
           <input
@@ -54,7 +54,7 @@ export default function TargetRoleStep() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-slate-700 mb-1">
             Job Description{" "}
             <span className="text-gray-400 font-normal">(optional — enables ATS tailoring)</span>
           </label>
@@ -63,9 +63,9 @@ export default function TargetRoleStep() {
             onChange={(e) => setJd(e.target.value)}
             rows={8}
             placeholder="Paste the full job description here..."
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 resize-none"
+            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 resize-none"
           />
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-xs text-slate-400 mt-1">
             {jd.length} characters — AI uses the first ~2,000 for optimization
           </p>
         </div>
@@ -74,7 +74,7 @@ export default function TargetRoleStep() {
       <div className="flex justify-between mt-8">
         <button
           onClick={prevStep}
-          className="border border-gray-300 text-gray-600 px-5 py-2.5 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+          className="border border-slate-200 text-slate-600 px-5 py-2.5 rounded-lg font-medium hover:bg-slate-50 transition-colors"
         >
           ← Back
         </button>

@@ -1,10 +1,9 @@
 "use client";
 
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useResumeStore } from "@/store/resumeStore";
-import { useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
 import StepIndicator from "@/components/StepIndicator";
 import AccentColorPicker from "@/components/AccentColorPicker";
 import ResumeRenderer from "@/components/templates/ResumeRenderer";
@@ -37,6 +36,71 @@ const TEMPLATE_OPTIONS: {
   { id: "prism", name: "Prism", accent: "bg-teal-500", style: "Light sidebar with accent-tinted left panel.", category: "modern", tags: ["Two-Column", "Elegant"] },
   { id: "apex", name: "Apex", accent: "bg-slate-600", style: "Bold headers, grid skills — maximally ATS-safe.", category: "ats", tags: ["ATS", "Clean"] },
 ];
+
+function AppHeader() {
+  return (
+    <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-slate-100">
+      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
+        <Link href="/" className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-white font-bold text-sm">
+            R
+          </div>
+          <span className="font-bold text-slate-900 text-lg tracking-tight">ResumeAI</span>
+        </Link>
+        <nav className="hidden sm:flex items-center gap-6 text-sm text-slate-600 font-medium">
+          <Link href="/" className="hover:text-slate-900 transition-colors">
+            Home
+          </Link>
+          <Link href="/gap-analysis" className="hover:text-slate-900 transition-colors">
+            Gap Analyzer
+          </Link>
+          <Link href="/create" className="hover:text-slate-900 transition-colors">
+            Builder
+          </Link>
+        </nav>
+      </div>
+    </header>
+  );
+}
+
+const flowStages = [
+  { number: "01", title: "Choose template" },
+  { number: "02", title: "Enter details" },
+  { number: "03", title: "Download resume" },
+] as const;
+
+function FlowStrip({ activeStep }: { activeStep: number }) {
+  return (
+    <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 py-4">
+      <div className="rounded-full border border-slate-200 bg-white/85 px-3 py-2 shadow-sm backdrop-blur">
+        <div className="flex items-center justify-center gap-2 overflow-x-auto whitespace-nowrap">
+          <span className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.22em] text-violet-600">
+            Template flow
+          </span>
+          {flowStages.map((step, index) => (
+            <div
+              key={step.number}
+              className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                index === activeStep ? "bg-violet-50 text-slate-900" : "text-slate-500"
+              }`}
+            >
+              <span
+                className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
+                  index === activeStep
+                    ? "bg-gradient-to-br from-violet-600 to-indigo-600 text-white shadow-sm shadow-violet-200"
+                    : "border border-slate-200 bg-white text-slate-500"
+                }`}
+              >
+                {step.number}
+              </span>
+              <span>{step.title}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const templatePreviewData: ResumeData = {
   personalInfo: {
@@ -122,7 +186,7 @@ const templatePreviewData: ResumeData = {
   ],
 };
 
-export default function CreatePage() {
+function CreatePageContent() {
   const {
     currentStep,
     selectedTemplate,
@@ -173,7 +237,7 @@ export default function CreatePage() {
     if (activeFilter === "all") return true;
     if (activeFilter === "ats") return t.tags.includes("ATS") || t.category === "ats";
     if (activeFilter === "one-column") return ["classic", "minimal", "executive", "terra"].includes(t.id);
-    if (activeFilter === "with-photo") return ["creative", "chronos", "slate"].includes(t.id);
+    if (activeFilter === "with-photo") return ["creative", "chronos", "slate", "nova", "prism"].includes(t.id);
     return t.category === activeFilter;
   });
 
@@ -446,35 +510,24 @@ export default function CreatePage() {
   // ── Gate screen ──────────────────────────────────────────────────────────────
   if (mode === "gate") {
     return (
-      <div className="min-h-screen bg-white flex flex-col">
-        {/* Top nav */}
-        <div className="border-b border-slate-200 px-6 py-3 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 text-gray-700 hover:text-gray-900">
-            <span className="text-xl">📝</span>
-            <span className="font-bold">ResumeAI</span>
-          </Link>
-          <button
-            type="button"
-            onClick={() => setMode("form")}
-            className="text-xs font-semibold text-slate-500 hover:text-slate-700"
-          >
-            Choose Later
-          </button>
+      <div className="min-h-screen bg-[#f8f9fc] flex flex-col">
+        <AppHeader />
+
+        <FlowStrip activeStep={0} />
+
+        <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 pt-6">
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={() => setMode("form")}
+              className="border-2 border-slate-200 bg-white hover:border-slate-300 text-slate-700 px-5 py-2 rounded-xl text-sm font-semibold transition-colors"
+            >
+              Choose Later
+            </button>
+          </div>
         </div>
 
-        <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 py-8">
-          <div className="flex items-center justify-between gap-4 mb-4 flex-wrap">
-            <div>
-              <h1 className="text-3xl font-bold text-slate-900">Resume templates</h1>
-              <p className="text-slate-500 mt-1">Simple to use and ready in minutes. Pick one to continue.</p>
-            </div>
-            <div className="flex items-center gap-4 text-sm">
-              <span className="text-slate-900 font-semibold">1 Choose template</span>
-              <span className="text-slate-400">2 Enter details</span>
-              <span className="text-slate-400">3 Download resume</span>
-            </div>
-          </div>
-
+        <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 py-4">
           <div className="border-b border-slate-200 mb-6">
             <div className="flex items-center gap-4 overflow-x-auto pb-0.5">
               {[
@@ -513,29 +566,21 @@ export default function CreatePage() {
             </div>
           </div>
 
-          <div className="flex items-center justify-end gap-2 mb-4">
-            <button
-              type="button"
-              onClick={() => askStartPath(selectedTemplate)}
-              className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white text-sm px-4 py-2 rounded-lg font-semibold transition-all shadow-sm"
-            >
-              Use selected template
-            </button>
-          </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
             {visibleTemplates.map((t) => (
-              <article key={t.id} className={`border border-slate-200 rounded-2xl p-3 bg-[#f3f6fb] shadow-sm ${selectedTemplate === t.id ? "ring-2 ring-violet-500 border-violet-300" : ""}`}>
-                <button
-                  type="button"
-                  onClick={() => setSelectedTemplate(t.id)}
-                  className="w-full text-left"
-                >
-                <div className="border border-slate-200 rounded-xl overflow-hidden bg-white mb-3">
-                  <div className="h-1.5" style={{ backgroundColor: selectedTemplate === t.id ? templateAccentColor : getDefaultTemplateAccent(t.id) }} />
-                  <div className="h-[500px] overflow-hidden bg-white pointer-events-none select-none">
+              <article key={t.id}
+                className={`group border rounded-2xl p-3 bg-[#f3f6fb] shadow-sm cursor-pointer transition-all hover:shadow-lg hover:-translate-y-0.5 ${
+                  selectedTemplate === t.id
+                    ? "ring-2 ring-violet-500 border-violet-300"
+                    : "border-slate-200 hover:border-violet-200"
+                }`}
+                onClick={() => askStartPath(t.id)}
+              >
+                <div className="border border-slate-200 rounded-xl overflow-hidden bg-white mb-3 pointer-events-none select-none">
+                  <div className="h-1.5" style={{ backgroundColor: getDefaultTemplateAccent(t.id) }} />
+                  <div className="h-[415px] overflow-hidden bg-white">
                     <div style={{ zoom: 0.39 }}>
-                    <ResumeRenderer data={templatePreviewData} templateId={t.id} accentColor={selectedTemplate === t.id ? templateAccentColor : getDefaultTemplateAccent(t.id)} />
+                      <ResumeRenderer data={templatePreviewData} templateId={t.id} accentColor={getDefaultTemplateAccent(t.id)} />
                     </div>
                   </div>
                 </div>
@@ -543,7 +588,7 @@ export default function CreatePage() {
                 <div className="flex items-start justify-between gap-3 mb-2">
                   <div>
                     <h3 className="text-base font-semibold text-slate-900">{t.name}</h3>
-                    <p className="text-xs text-slate-600">{t.style}</p>
+                    <p className="text-xs text-slate-500">{t.style}</p>
                   </div>
                   <div className="flex flex-wrap gap-1.5 justify-end">
                     {t.tags.map((tag) => (
@@ -553,21 +598,11 @@ export default function CreatePage() {
                     ))}
                   </div>
                 </div>
-                </button>
 
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center justify-between" onClick={(e) => e.stopPropagation()}>
                   <AccentColorPicker templateId={t.id} />
+                  <span className="text-xs font-semibold text-violet-600 group-hover:underline">Select →</span>
                 </div>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    askStartPath(t.id);
-                  }}
-                  className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white text-sm px-4 py-2 rounded-lg font-semibold transition-all"
-                >
-                  Use this template
-                </button>
               </article>
             ))}
           </div>
@@ -639,22 +674,27 @@ export default function CreatePage() {
 
   // ── Form screen ──────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen">
-      {/* Top nav */}
-      <div className="border-b border-slate-200/70 bg-white/80 backdrop-blur px-6 py-3 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-white font-bold text-sm">R</div>
-          <span className="font-bold text-slate-800">ResumeAI</span>
-        </Link>
-        <button
-          onClick={() => {
-            startFreshFlow();
-            setMode("gate");
-          }}
-          className="text-xs text-slate-400 hover:text-slate-600 transition-colors"
-        >
-          ← Start over
-        </button>
+    <div className="min-h-screen bg-[#f8f9fc]">
+      <AppHeader />
+
+      <FlowStrip activeStep={currentStep === "preview" ? 2 : 1} />
+
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 pt-6">
+        <div className="flex items-center justify-between gap-4 rounded-2xl border border-slate-100 bg-white/80 backdrop-blur px-4 py-3 shadow-sm">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Builder workspace</p>
+            <p className="text-sm text-slate-600 mt-0.5">Keep editing, or reset and return to template selection.</p>
+          </div>
+          <button
+            onClick={() => {
+              startFreshFlow();
+              setMode("gate");
+            }}
+            className="border-2 border-slate-200 bg-white hover:border-slate-300 text-slate-700 px-5 py-2 rounded-xl text-sm font-semibold transition-colors whitespace-nowrap"
+          >
+            Start over
+          </button>
+        </div>
       </div>
 
       {/* Main form — always wide, left sidebar nav + right content */}
@@ -662,7 +702,7 @@ export default function CreatePage() {
 
         {/* ── Left sidebar: vertical step navigator ── */}
         <div className="w-44 flex-shrink-0 pt-1">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3 px-3">Steps</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3 px-3">Steps</p>
           <StepIndicator variant="vertical" />
         </div>
 
@@ -704,5 +744,13 @@ export default function CreatePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CreatePage() {
+  return (
+    <Suspense fallback={null}>
+      <CreatePageContent />
+    </Suspense>
   );
 }

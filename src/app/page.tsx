@@ -206,6 +206,8 @@ export default function LandingPage() {
           <div className="flex items-center gap-4 text-xs text-slate-400">
             <Link href="/create" className="hover:text-slate-600 transition-colors">Builder</Link>
             <Link href="/gap-analysis" className="hover:text-slate-600 transition-colors">Gap Analyzer</Link>
+            <Link href="/privacy" className="hover:text-slate-600 transition-colors">Privacy Policy</Link>
+            <Link href="/terms" className="hover:text-slate-600 transition-colors">Terms of Service</Link>
           </div>
         </div>
       </footer>

@@ -24,7 +24,7 @@ const TEMPLATES: TemplateOption[] = [
     name: "Creative",
     description: "Bold violet sidebar with modern layout",
     previewColor: "bg-violet-700",
-    tags: ["Design", "Stands Out"],
+    tags: ["Design", "Photo"],
   },
   {
     id: "minimal",
@@ -45,14 +45,14 @@ const TEMPLATES: TemplateOption[] = [
     name: "Slate",
     description: "Dark sidebar with sky blue accents",
     previewColor: "bg-slate-700",
-    tags: ["Modern", "Two-Column"],
+    tags: ["Modern", "Photo"],
   },
   {
     id: "chronos",
     name: "Chronos",
     description: "Timeline-style with teal accents",
     previewColor: "bg-teal-600",
-    tags: ["Timeline", "Elegant"],
+    tags: ["Timeline", "Photo"],
   },
   {
     id: "terra",
@@ -80,7 +80,7 @@ const TEMPLATES: TemplateOption[] = [
     name: "Prism",
     description: "Light sidebar with accent-tinted left panel",
     previewColor: "bg-teal-500",
-    tags: ["Two-Column", "Elegant"],
+    tags: ["Two-Column", "Photo"],
   },
   {
     id: "apex",

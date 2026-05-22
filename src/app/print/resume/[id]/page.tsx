@@ -5,6 +5,10 @@ import { getExportSession } from "@/lib/exportSessions";
 
 export const dynamic = "force-dynamic";
 
+const PAGE_BACKGROUND_BY_TEMPLATE: Partial<Record<string, string>> = {
+  terra: "#fdf8f3",
+};
+
 const BLEED_TEMPLATES = new Set([
   "modern",
   "creative",
@@ -23,6 +27,7 @@ export default async function PrintResumePage({ params }: { params: Promise<{ id
   }
 
   const bleedMode = BLEED_TEMPLATES.has(session.selectedTemplate);
+  const pageBackground = PAGE_BACKGROUND_BY_TEMPLATE[session.selectedTemplate];
 
   return (
     <>
@@ -69,11 +74,15 @@ export default async function PrintResumePage({ params }: { params: Promise<{ id
           min-height: 297mm;
           margin: 0 auto;
           background: #ffffff;
+          padding: 12mm 12mm;
+          box-sizing: border-box;
+          position: relative;
         }
 
         .resume-print-shell[data-bleed='true'] {
           width: 210mm;
           margin: 0;
+          padding: 0;
         }
 
         .resume-print-shell[data-bleed='true'] > div {
@@ -138,7 +147,21 @@ export default async function PrintResumePage({ params }: { params: Promise<{ id
         }
       `}</style>
       <div className="resume-print-shell" data-bleed={bleedMode ? "true" : "false"}>
-        <ResumeRenderer data={session.resumeData} templateId={session.selectedTemplate} />
+        {pageBackground && (
+          <div
+            aria-hidden="true"
+            style={{
+              position: "fixed",
+              inset: 0,
+              backgroundColor: pageBackground,
+              pointerEvents: "none",
+              zIndex: 0,
+            }}
+          />
+        )}
+        <div style={{ position: "relative", zIndex: 1 }}>
+          <ResumeRenderer data={session.resumeData} templateId={session.selectedTemplate} />
+        </div>
       </div>
     </>
   );

@@ -142,11 +142,12 @@ export default function ModernTemplate({ data, accentColor }: Props) {
         {certifications.length > 0 && (
           <Section title="Certifications" theme={theme}>
             {certifications.map((c) => (
-              <div key={c.id} className="flex justify-between text-sm">
-                <span className="font-medium">{c.name}</span>
-                <span className="text-gray-500">
-                  {c.issuer} · {c.date}
-                </span>
+                <div key={c.id} className="space-y-0.5 text-sm mb-1.5">
+                  <div className="font-medium text-gray-800">{c.name}</div>
+                  <div className="text-gray-400 text-xs">{c.issuer}</div>
+                  {!c.neverExpires && c.validTo && (
+                    <div className="text-gray-400 text-[10px]">{c.validTo}</div>
+                  )}
               </div>
             ))}
           </Section>

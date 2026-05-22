@@ -5,6 +5,15 @@ import TemplatePicker from "@/components/TemplatePicker";
 import ResumeRenderer from "@/components/templates/ResumeRenderer";
 import { useEffect, useRef, useState } from "react";
 
+const BLEED_TEMPLATES = new Set([
+  "modern",
+  "creative",
+  "executive",
+  "slate",
+  "terra",
+  "tech",
+]);
+
 export default function PreviewStep() {
   const {
     resumeData,
@@ -33,6 +42,7 @@ export default function PreviewStep() {
   const [atsScore, setAtsScore] = useState<number | null>(null);
   const [exportingPdf, setExportingPdf] = useState(false);
   const [exportingDocx, setExportingDocx] = useState(false);
+  const bleedMode = BLEED_TEMPLATES.has(selectedTemplate);
   const previewRef = useRef<HTMLDivElement>(null);
   const visualExportRef = useRef<HTMLDivElement>(null);
 
@@ -91,12 +101,12 @@ export default function PreviewStep() {
     setJobDescriptionInput(resumeData.jobDescription || "");
   }, [resumeData.targetRole, resumeData.jobDescription]);
 
-  async function tailorWithAI() {
+  async function optimizeWithAts() {
     const targetRole = targetRoleInput.trim() || resumeData.targetRole || "";
     const jobDescription = jobDescriptionInput.trim() || resumeData.jobDescription || "";
 
     if (!jobDescription.trim()) {
-      alert("Add a job description to enable ATS tailoring.");
+      alert("Add a job description to enable ATS optimization.");
       return;
     }
 
@@ -124,7 +134,7 @@ export default function PreviewStep() {
         .map((w) => {
           const tailored = data.workExperience?.find((t: { id: string }) => t.id === w.id);
           const newDesc = tailored?.description ?? w.description;
-          return { id: w.id, title: w.jobTitle || w.company || "Role", oldDesc: w.description || "", newDesc: newDesc || "" };
+          return { id: w.id, title: w.title || w.company || "Role", oldDesc: w.description || "", newDesc: newDesc || "" };
         })
         .filter((e) => e.oldDesc !== e.newDesc);
 
@@ -137,7 +147,7 @@ export default function PreviewStep() {
         jobDescription,
       });
     } catch {
-      alert("Tailoring failed. Please check your API key.");
+      alert("ATS optimization failed. Please try again.");
     } finally {
       setTailoring(false);
       setIsGenerating(false);
@@ -219,7 +229,7 @@ export default function PreviewStep() {
     <div className="flex gap-6 min-h-0">
       {/* ── Left sidebar: template picker ── */}
       <div className="w-52 flex-shrink-0">
-        <h3 className="text-sm font-semibold text-gray-700 mb-3">Templates</h3>
+        <h3 className="text-sm font-semibold text-slate-700 mb-3">Templates</h3>
         <div className="overflow-y-auto max-h-[calc(100vh-220px)] pr-0.5">
           <TemplatePicker variant="sidebar" />
         </div>
@@ -227,13 +237,13 @@ export default function PreviewStep() {
 
       {/* ── Right: controls + preview ── */}
       <div className="flex-1 min-w-0">
-      <h2 className="text-xl font-bold text-gray-800 mb-1">Preview & Export</h2>
+      <h2 className="text-xl font-bold text-slate-800 mb-1">Preview & Export</h2>
       <p className="text-sm text-gray-500 mb-4">
-        Tailor with AI, then download your resume.
+        Optimize your resume for ATS, then download the updated version.
       </p>
 
       {/* Resume Preview */}
-      <div className="border border-gray-200 rounded-xl overflow-hidden shadow-sm mb-6">
+      <div className="border border-slate-200 rounded-xl overflow-hidden shadow-sm mb-6">
         <div className="bg-gray-100 px-4 py-2 border-b border-gray-200 text-xs text-gray-500 flex items-center justify-between">
           <span>Resume Preview</span>
           <span className="text-gray-400 capitalize">{selectedTemplate} template</span>
@@ -247,18 +257,18 @@ export default function PreviewStep() {
         </div>
       </div>
 
-      {/* Unified ATS tailoring section */}
+      {/* Unified ATS optimization section */}
       <div className="app-panel rounded-xl px-4 py-3 mb-5">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div>
-            <p className="text-sm font-semibold text-slate-800">✨ ATS Tailoring (Optional)</p>
+            <p className="text-sm font-semibold text-slate-800">✨ ATS Optimization (Optional)</p>
             <p className="text-xs text-slate-500">
               {jobDescriptionInput.trim() || resumeData.jobDescription
-                ? "Your resume can now be tailored to this role's keywords and intent."
-                : "Add target role and job description, then run tailoring."}
+                ? "Your resume can now be optimized against this role's keywords and intent."
+                : "Add target role and job description, then run optimization."}
             </p>
             {atsScore !== null && (
-              <p className="text-xs text-green-700 font-medium mt-1">ATS Match Score: {atsScore}%</p>
+              <p className="text-xs text-green-700 font-medium mt-1">Projected ATS Score: {atsScore}%</p>
             )}
           </div>
 
@@ -266,7 +276,7 @@ export default function PreviewStep() {
             <button
               type="button"
               onClick={() => setShowTailorInputs((v) => !v)}
-              className="text-xs font-semibold text-sky-700 hover:text-sky-900"
+              className="text-xs font-semibold text-violet-700 hover:text-violet-900"
             >
               {showTailorInputs ? "Hide Details" : "Add Details"}
             </button>
@@ -296,11 +306,11 @@ export default function PreviewStep() {
               <p className="text-[11px] text-slate-500 mt-1">{jobDescriptionInput.length} characters</p>
             </div>
             <button
-              onClick={tailorWithAI}
+              onClick={optimizeWithAts}
               disabled={tailoring || !(jobDescriptionInput.trim() || resumeData.jobDescription)}
               className="flex items-center gap-1.5 bg-violet-600 hover:bg-violet-700 disabled:opacity-40 text-white text-sm px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap"
             >
-              {tailoring ? <><span className="animate-spin">⟳</span> Tailoring...</> : <>✨ Tailor Resume</>}
+              {tailoring ? <><span className="animate-spin">⟳</span> Optimizing...</> : <>✨ Optimize Resume</>}
             </button>
           </div>
         )}
@@ -310,7 +320,7 @@ export default function PreviewStep() {
       {pendingTailor && (
         <div className="app-panel rounded-xl px-4 py-4 mb-5 border-2 border-violet-300 bg-violet-50">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-sm font-bold text-purple-800">Review AI Changes Before Applying</p>
+            <p className="text-sm font-bold text-violet-800">Review ATS Changes Before Applying</p>
             {pendingTailor.atsScore && (
               <span className="text-xs font-semibold bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
                 ATS Score: {pendingTailor.atsScore}%
@@ -321,7 +331,7 @@ export default function PreviewStep() {
           <div className="space-y-3 text-xs max-h-72 overflow-y-auto pr-1">
             {/* Summary change */}
             {pendingTailor.summary && pendingTailor.summary !== resumeData.summary && (
-              <div className="bg-white rounded-lg border border-purple-200 p-3">
+              <div className="bg-white rounded-lg border border-violet-200 p-3">
                 <p className="font-semibold text-slate-700 mb-1">Summary</p>
                 {resumeData.summary && (
                   <p className="text-red-600 line-through mb-1 leading-relaxed">{resumeData.summary}</p>
@@ -332,7 +342,7 @@ export default function PreviewStep() {
 
             {/* Experience changes */}
             {pendingTailor.workExperience.map((e) => (
-              <div key={e.id} className="bg-white rounded-lg border border-purple-200 p-3">
+              <div key={e.id} className="bg-white rounded-lg border border-violet-200 p-3">
                 <p className="font-semibold text-slate-700 mb-1">{e.title}</p>
                 <p className="text-red-600 line-through mb-1 leading-relaxed whitespace-pre-line">{e.oldDesc}</p>
                 <p className="text-green-700 leading-relaxed whitespace-pre-line">{e.newDesc}</p>
@@ -341,7 +351,7 @@ export default function PreviewStep() {
 
             {/* New skills */}
             {pendingTailor.additionalSkills.filter((s) => !resumeData.skills.includes(s)).length > 0 && (
-              <div className="bg-white rounded-lg border border-purple-200 p-3">
+              <div className="bg-white rounded-lg border border-violet-200 p-3">
                 <p className="font-semibold text-slate-700 mb-1">Skills to Add</p>
                 <div className="flex flex-wrap gap-1.5 mt-1">
                   {pendingTailor.additionalSkills
@@ -394,7 +404,7 @@ export default function PreviewStep() {
       </div>
 
       {/* Gap Analyzer CTA */}
-      <div className="app-panel rounded-xl p-4 mb-6 flex items-center justify-between gap-4 flex-wrap border border-purple-100">
+      <div className="app-panel rounded-xl p-4 mb-6 flex items-center justify-between gap-4 flex-wrap border border-violet-100">
         <div>
           <p className="text-sm font-semibold text-slate-800">🔍 Analyze skill gaps for a specific role</p>
           <p className="text-xs text-slate-500 mt-0.5">
@@ -417,12 +427,16 @@ export default function PreviewStep() {
           left: "-10000px",
           top: 0,
           width: "210mm",
+          minHeight: "297mm",
+          padding: bleedMode ? 0 : "12mm 12mm",
+          boxSizing: "border-box",
+          margin: "0 auto",
           background: "#fff",
           pointerEvents: "none",
           zIndex: -1,
         }}
       >
-        <div ref={visualExportRef} style={{ background: "#fff", width: "210mm", zoom: 1 }}>
+        <div ref={visualExportRef} style={{ background: "#fff", width: "100%", height: "100%", zoom: 1 }}>
           <ResumeRenderer data={resumeData} templateId={selectedTemplate} accentColor={templateAccentColor} />
         </div>
       </div>
@@ -430,7 +444,7 @@ export default function PreviewStep() {
       <div className="flex justify-between mt-8">
         <button
           onClick={prevStep}
-          className="border border-gray-300 text-gray-600 px-5 py-2.5 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+          className="border border-slate-200 text-slate-600 px-5 py-2.5 rounded-lg font-medium hover:bg-slate-50 transition-colors"
         >
           ← Back
         </button>

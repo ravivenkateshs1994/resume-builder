@@ -12,6 +12,11 @@ import {
 } from "docx";
 import type { ResumeData, TemplateId } from "@/types/resume";
 import { getDefaultTemplateAccent, normalizeHexColor } from "@/lib/templateTheme";
+import { buildDocxChildren } from "@/lib/docxLayouts";
+
+const A4_PAGE_WIDTH_TWIPS = 11906;
+const A4_PAGE_HEIGHT_TWIPS = 16838;
+const WORD_DEFAULT_MARGIN_TWIPS = 1440;
 
 function dataUrlToBuffer(dataUrl: string): Buffer {
   const m = dataUrl.match(/^data:image\/(png|jpeg|jpg);base64,(.+)$/i);
@@ -145,7 +150,7 @@ export async function POST(req: NextRequest) {
         sections: visualPages.map((page) => ({
           properties: {
             page: {
-              size: { width: 11906, height: 16838 },
+              size: { width: A4_PAGE_WIDTH_TWIPS, height: A4_PAGE_HEIGHT_TWIPS },
               margin: { top: 0, right: 0, bottom: 0, left: 0 },
             },
           },
@@ -179,185 +184,31 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const { personalInfo, summary, workExperience, education, skills, certifications } =
-      resumeData;
-
-    const accent = headingColorForTemplate(selectedTemplate, templateAccentColor);
-
     const doc = new Document({
       sections: [
         {
+          properties: {
+            page: {
+              size: { width: A4_PAGE_WIDTH_TWIPS, height: A4_PAGE_HEIGHT_TWIPS },
+              margin: { top: 720, right: 900, bottom: 720, left: 900 },
+            },
+          },
           children: [
-            // Header
-            new Paragraph({
-              text: personalInfo.fullName,
-              heading: HeadingLevel.TITLE,
-              alignment: AlignmentType.CENTER,
-            }),
-            new Paragraph({
-              alignment: AlignmentType.CENTER,
-              children: [
-                new TextRun({
-                  text: [
-                    personalInfo.jobTitle,
-                    personalInfo.email,
-                    personalInfo.phone,
-                    personalInfo.location,
-                    personalInfo.linkedin,
-                    personalInfo.website,
-                  ]
-                    .filter(Boolean)
-                    .join("  |  "),
-                  size: 20,
-                }),
-              ],
-              spacing: { after: 220 },
-            }),
-
-            // Summary
-            ...(summary
-              ? [
-                  new Paragraph({
-                    text: "PROFESSIONAL SUMMARY",
-                    heading: HeadingLevel.HEADING_2,
-                    thematicBreak: false,
-                    spacing: { before: 80, after: 140 },
-                    children: [
-                      new TextRun({ text: "PROFESSIONAL SUMMARY", color: accent, bold: true }),
-                    ],
-                    border: {
-                      bottom: { style: BorderStyle.SINGLE, size: 6, color: accent },
-                    },
-                  }),
-                  new Paragraph({ text: summary, spacing: { after: 220 } }),
-                ]
-              : []),
-
-            // Work Experience
-            ...(workExperience.length > 0
-              ? [
-                  new Paragraph({
-                    heading: HeadingLevel.HEADING_2,
-                    spacing: { before: 80, after: 140 },
-                    children: [new TextRun({ text: "WORK EXPERIENCE", color: accent, bold: true })],
-                    border: {
-                      bottom: { style: BorderStyle.SINGLE, size: 6, color: accent },
-                    },
-                  }),
-                  ...workExperience.flatMap((w) => {
-                    return [
-                      new Paragraph({
-                        spacing: { after: 80 },
-                        children: [
-                          new TextRun({ text: w.title, bold: true }),
-                          new TextRun({ text: `  —  ${w.company}`, italics: true }),
-                          new TextRun({
-                            text: `  |  ${w.startDate} – ${w.endDate}`,
-                            color: "666666",
-                          }),
-                        ],
-                      }),
-                      ...(w.location
-                        ? [new Paragraph({ text: w.location, spacing: { after: 80 } })]
-                        : []),
-                      ...paragraphsFromRichHtml(w.description),
-                      new Paragraph({ text: "", spacing: { after: 120 } }),
-                    ];
-                  }),
-                ]
-              : []),
-
-            // Education
-            ...(education.length > 0
-              ? [
-                  new Paragraph({
-                    heading: HeadingLevel.HEADING_2,
-                    spacing: { before: 80, after: 140 },
-                    children: [new TextRun({ text: "EDUCATION", color: accent, bold: true })],
-                    border: {
-                      bottom: { style: BorderStyle.SINGLE, size: 6, color: accent },
-                    },
-                  }),
-                  ...education.flatMap((e) => [
-                    new Paragraph({
-                      spacing: { after: 80 },
-                      children: [
-                        new TextRun({ text: `${e.degree}${e.field ? ` in ${e.field}` : ""}`, bold: true }),
-                        new TextRun({ text: `  —  ${e.institution}`, italics: true }),
-                        new TextRun({
-                          text: `  |  ${e.startDate} – ${e.endDate}`,
-                          color: "666666",
-                        }),
-                      ],
-                    }),
-                    ...(e.gpa
-                      ? [new Paragraph({ children: [new TextRun({ text: `GPA: ${e.gpa}`, color: "666666" })] })]
-                      : []),
-                    ...(e.honors ? [new Paragraph({ text: e.honors })] : []),
-                    new Paragraph({ text: "", spacing: { after: 120 } }),
-                  ]),
-                ]
-              : []),
-
-            // Skills
-            ...(skills.length > 0
-              ? [
-                  new Paragraph({
-                    heading: HeadingLevel.HEADING_2,
-                    spacing: { before: 80, after: 140 },
-                    children: [new TextRun({ text: "SKILLS", color: accent, bold: true })],
-                    border: {
-                      bottom: { style: BorderStyle.SINGLE, size: 6, color: accent },
-                    },
-                  }),
-                  ...skills.map(
-                    (skill) =>
-                      new Paragraph({
-                        text: skill,
-                        bullet: { level: 0 },
-                        spacing: { after: 40 },
-                      })
-                  ),
-                  new Paragraph({ text: "", spacing: { after: 120 } }),
-                ]
-              : []),
-
-            // Certifications
-            ...(certifications.length > 0
-              ? [
-                  new Paragraph({
-                    heading: HeadingLevel.HEADING_2,
-                    spacing: { before: 80, after: 140 },
-                    children: [new TextRun({ text: "CERTIFICATIONS", color: accent, bold: true })],
-                    border: {
-                      bottom: { style: BorderStyle.SINGLE, size: 6, color: accent },
-                    },
-                  }),
-                  ...certifications.map(
-                    (c) =>
-                      new Paragraph({
-                        spacing: { after: 80 },
-                        children: [
-                          new TextRun({ text: c.name, bold: true }),
-                          new TextRun({ text: `  —  ${c.issuer}  |  ${c.date}` }),
-                        ],
-                      })
-                  ),
-                ]
-              : []),
+            ...buildDocxChildren(resumeData, selectedTemplate, templateAccentColor),
           ],
         },
       ],
     });
 
     const buffer = await Packer.toBuffer(doc);
+    const fileName = `${resumeData.personalInfo.fullName.replace(/\s+/g, "_") || "Resume"}_Resume.docx`;
 
     return new NextResponse(new Uint8Array(buffer), {
       status: 200,
       headers: {
         "Content-Type":
           "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "Content-Disposition": `attachment; filename="${personalInfo.fullName.replace(/\s+/g, "_")}_Resume.docx"`,
+        "Content-Disposition": `attachment; filename="${fileName}"`,
       },
     });
   } catch (err) {
