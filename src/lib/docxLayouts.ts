@@ -3,6 +3,7 @@ import {
   BorderStyle,
   ImageRun,
   Paragraph,
+  ShadingType,
   Table,
   TableBorders,
   TableCell,
@@ -234,8 +235,7 @@ function makeSingleCellBand(children: DocxBlock[], fill: string, options: any = 
         children: [
           new TableCell({
             children: children.length ? children : [blank(0)],
-            shading: { fill: docxColor(fill) },
-            margins: options.margins ?? { top: 180, bottom: 180, left: 260, right: 260 },
+            shading: { type: ShadingType.SOLID, color: "auto", fill: docxColor(fill) },
             verticalAlign: VerticalAlignTable.CENTER,
             width: { size: 100, type: WidthType.PERCENTAGE },
           }),
@@ -258,14 +258,14 @@ function makeTwoCellBand(left: DocxBlock[], right: DocxBlock[], leftFill: string
         children: [
           new TableCell({
             children: left.length ? left : [blank(0)],
-            shading: { fill: docxColor(leftFill) },
+            shading: { type: ShadingType.SOLID, color: "auto", fill: docxColor(leftFill) },
             margins: options.leftMargins ?? { top: 200, bottom: 200, left: 180, right: 180 },
             verticalAlign: VerticalAlignTable.CENTER,
             width: { size: leftWidth, type: WidthType.DXA },
           }),
           new TableCell({
             children: right.length ? right : [blank(0)],
-            shading: { fill: docxColor(rightFill) },
+            shading: { type: ShadingType.SOLID, color: "auto", fill: docxColor(rightFill) },
             margins: options.rightMargins ?? { top: 200, bottom: 200, left: 260, right: 260 },
             verticalAlign: VerticalAlignTable.CENTER,
             width: { size: rightWidth, type: WidthType.DXA },
@@ -291,14 +291,14 @@ function makeTwoColumnLayout(left: DocxBlock[], right: DocxBlock[], options: any
             children: left.length ? left : [blank(0)],
             width: { size: leftWidth, type: WidthType.DXA },
             margins: options.leftMargins ?? { top: 120, bottom: 120, left: 0, right: 180 },
-            shading: options.leftFill ? { fill: docxColor(options.leftFill) } : undefined,
+            shading: options.leftFill ? { type: ShadingType.SOLID, color: "auto", fill: docxColor(options.leftFill) } : undefined,
             verticalAlign: VerticalAlignTable.TOP,
           }),
           new TableCell({
             children: right.length ? right : [blank(0)],
             width: { size: rightWidth, type: WidthType.DXA },
             margins: options.rightMargins ?? { top: 120, bottom: 120, left: 180, right: 0 },
-            shading: options.rightFill ? { fill: docxColor(options.rightFill) } : undefined,
+            shading: options.rightFill ? { type: ShadingType.SOLID, color: "auto", fill: docxColor(options.rightFill) } : undefined,
             verticalAlign: VerticalAlignTable.TOP,
           }),
         ],
@@ -337,7 +337,7 @@ function makeSidebarAvatar(initials: string, fill: string, textColor: string, op
     bold: true,
   })], {
     alignment: AlignmentType.CENTER,
-    shading: { fill: docxColor(fill) },
+    shading: { type: ShadingType.SOLID, color: "auto", fill: docxColor(fill) },
     spacing: options.spacing ?? { before: 60, after: 120 },
   });
 }
@@ -351,7 +351,7 @@ function makeSkillStack(skills: string[], theme: Theme, options: any = {}): Para
       color: options.color ?? theme.contrast,
       bold: true,
     })], {
-      shading: { fill: docxColor(options.fill ?? theme.accent) },
+      shading: { type: ShadingType.SOLID, color: "auto", fill: docxColor(options.fill ?? theme.accent) },
       border: options.borderColor
         ? {
             bottom: { style: BorderStyle.SINGLE, size: 4, color: docxColor(options.borderColor) },
@@ -466,7 +466,7 @@ function makeTimelineExperienceItem(w: ResumeData["workExperience"][number], the
           new TableCell({
             width: { size: dateWidth, type: WidthType.DXA },
             verticalAlign: VerticalAlignTable.TOP,
-            shading: { fill: docxColor(options.dateFill ?? theme.accentSoft) },
+            shading: { type: ShadingType.SOLID, color: "auto", fill: docxColor(options.dateFill ?? theme.accentSoft) },
             margins: { top: 120, bottom: 120, left: 120, right: 120 },
             children: [
               lineParagraph(w.startDate, {

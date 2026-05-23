@@ -4,7 +4,12 @@ import { useResumeStore } from "@/store/resumeStore";
 import TemplatePicker from "@/components/TemplatePicker";
 import ResumeRenderer from "@/components/templates/ResumeRenderer";
 import { useEffect, useRef, useState } from "react";
+import html2canvas from "html2canvas-pro";
 
+const DOCX_PAGE_RATIO = 297 / 210;
+
+// Templates whose backgrounds bleed to the page edge — no outer padding.
+// Must match the set in src/app/print/resume/[id]/page.tsx
 const BLEED_TEMPLATES = new Set([
   "modern",
   "creative",
@@ -13,6 +18,64 @@ const BLEED_TEMPLATES = new Set([
   "terra",
   "tech",
 ]);
+// Page padding in px matching the print page's 12mm margin for non-bleed templates
+const PAGE_PADDING_PX = 46;
+
+async function captureExportPages(element: HTMLElement) {
+  if ("fonts" in document) {
+    await (document as Document & { fonts?: { ready: Promise<void> } }).fonts?.ready;
+  }
+
+  // Ensure layout is complete before capture
+  await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+
+  const captureWidth = element.offsetWidth || 794;
+  const captureHeight = element.scrollHeight || 1123;
+
+  const canvas = await html2canvas(element, {
+    backgroundColor: "#ffffff",
+    scale: 2,
+    useCORS: true,
+    logging: false,
+    x: 0,
+    y: 0,
+    scrollX: 0,
+    scrollY: 0,
+    width: captureWidth,
+    height: captureHeight,
+    windowWidth: captureWidth,
+    windowHeight: captureHeight,
+  });
+
+  const pageHeight = Math.max(1, Math.round(canvas.width * DOCX_PAGE_RATIO));
+  const totalPages = Math.max(1, Math.ceil(canvas.height / pageHeight));
+  const pages: Array<{ dataUrl: string; width: number; height: number }> = [];
+
+  for (let index = 0; index < totalPages; index += 1) {
+    const sourceY = index * pageHeight;
+    const pageHeightPx = Math.min(pageHeight, canvas.height - sourceY);
+    const pageCanvas = document.createElement("canvas");
+    pageCanvas.width = canvas.width;
+    pageCanvas.height = pageHeightPx;
+
+    const context = pageCanvas.getContext("2d");
+    if (!context) {
+      throw new Error("Unable to render DOCX preview image.");
+    }
+
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+    context.drawImage(canvas, 0, sourceY, canvas.width, pageHeightPx, 0, 0, canvas.width, pageHeightPx);
+
+    pages.push({
+      dataUrl: pageCanvas.toDataURL("image/png"),
+      width: pageCanvas.width,
+      height: pageCanvas.height,
+    });
+  }
+
+  return pages;
+}
 
 export default function PreviewStep() {
   const {
@@ -39,9 +102,9 @@ export default function PreviewStep() {
   const [targetRoleInput, setTargetRoleInput] = useState(resumeData.targetRole || "");
   const [jobDescriptionInput, setJobDescriptionInput] = useState(resumeData.jobDescription || "");
   const [atsScore, setAtsScore] = useState<number | null>(null);
-  const [exportingPdf, setExportingPdf] = useState(false);
+
   const [exportingDocx, setExportingDocx] = useState(false);
-  const bleedMode = BLEED_TEMPLATES.has(selectedTemplate);
+  const [exportingPdf, setExportingPdf] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
   const visualExportRef = useRef<HTMLDivElement>(null);
 
@@ -130,7 +193,12 @@ export default function PreviewStep() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ resumeData, selectedTemplate, templateAccentColor }),
       });
-      if (!res.ok) throw new Error("Export failed");
+
+      if (!res.ok) {
+        const payload = await res.json().catch(() => null);
+        throw new Error(payload?.error || "DOCX export failed");
+      }
+
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -138,8 +206,9 @@ export default function PreviewStep() {
       a.download = `${resumeData.personalInfo.fullName.replace(/\s+/g, "_")}_Resume.docx`;
       a.click();
       URL.revokeObjectURL(url);
-    } catch {
-      alert("DOCX export failed.");
+    } catch (error) {
+      console.error("DOCX export error:", error);
+      alert(error instanceof Error ? error.message : "DOCX export failed. Please try again.");
     } finally {
       setExportingDocx(false);
     }
@@ -341,7 +410,7 @@ export default function PreviewStep() {
           disabled={exportingPdf}
           className="flex items-center gap-2 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white px-5 py-2.5 rounded-lg font-medium transition-colors"
         >
-          📄 {exportingPdf ? "Preparing..." : "Download PDF"}
+          📄 {exportingPdf ? "Preparing PDF..." : "Download PDF"}
         </button>
         <button
           onClick={exportDocx}
@@ -368,26 +437,25 @@ export default function PreviewStep() {
         </a>
       </div>
 
-      {/* Off-screen export target — renders at full native width for capture accuracy */}
+      {/* Off-screen export target — positioned at (0,0) so html2canvas can paint it; hidden behind page via zIndex */}
       <div
+        ref={visualExportRef}
         aria-hidden="true"
         style={{
           position: "fixed",
-          left: "-10000px",
+          left: 0,
           top: 0,
-          width: "210mm",
-          minHeight: "297mm",
-          padding: bleedMode ? 0 : "12mm 12mm",
+          width: "794px",
+          minHeight: "1123px",
+          padding: BLEED_TEMPLATES.has(selectedTemplate) ? 0 : PAGE_PADDING_PX,
           boxSizing: "border-box",
-          margin: "0 auto",
           background: "#fff",
           pointerEvents: "none",
-          zIndex: -1,
+          zIndex: -9999,
+          overflow: "visible",
         }}
       >
-        <div ref={visualExportRef} style={{ background: "#fff", width: "100%", height: "100%", zoom: 1 }}>
-          <ResumeRenderer data={resumeData} templateId={selectedTemplate} accentColor={templateAccentColor} />
-        </div>
+        <ResumeRenderer data={resumeData} templateId={selectedTemplate} accentColor={templateAccentColor} />
       </div>
 
       <div className="flex justify-between mt-8">

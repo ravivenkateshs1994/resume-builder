@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createElement } from "react";
-import { renderToBuffer } from "@react-pdf/renderer";
+import { createExportSession, deleteExportSession } from "@/lib/exportSessions";
 import type { ResumeData, TemplateId } from "@/types/resume";
-import { ResumePdfDocument } from "@/lib/resume-pdf-document";
 
 export const runtime = "nodejs";
 
@@ -17,6 +15,7 @@ function buildPdfFileName(fullName: string): string {
 
 export async function POST(req: NextRequest) {
   let resumeData: ResumeData | null = null;
+  let sessionId: string | null = null;
 
   try {
     const body = (await req.json()) as {
@@ -32,24 +31,49 @@ export async function POST(req: NextRequest) {
     }
 
     const selectedTemplate = body.selectedTemplate ?? "modern";
-    const pdfBuffer = await renderToBuffer(
-      createElement(ResumePdfDocument, {
-        resumeData,
-        selectedTemplate,
-        accentColor: body.templateAccentColor,
-      }) as Parameters<typeof renderToBuffer>[0]
-    );
+    const templateAccentColor = body.templateAccentColor;
 
-    const fileName = buildPdfFileName(resumeData.personalInfo.fullName);
+    // Store resume data in server-side session so the print page can access it
+    sessionId = createExportSession({ resumeData, selectedTemplate, templateAccentColor });
 
-    return new NextResponse(pdfBuffer as unknown as BodyInit, {
-      status: 200,
-      headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="${fileName}"`,
-        "Cache-Control": "no-store",
-      },
-    });
+    // Determine the base URL — loopback is fastest on Render (same machine)
+    const port = process.env.PORT ?? "3000";
+    const baseUrl = process.env.PUPPETEER_BASE_URL ?? `http://localhost:${port}`;
+
+    const { launchPdfBrowser } = await import("@/lib/puppeteer");
+    const browser = await launchPdfBrowser();
+    const page = await browser.newPage();
+
+    try {
+      await page.setViewport({ width: 794, height: 1123 });
+      await page.goto(`${baseUrl}/print/resume/${sessionId}`, {
+        waitUntil: "networkidle0",
+        timeout: 30_000,
+      });
+
+      // Allow React hydration and fonts to settle
+      await new Promise((r) => setTimeout(r, 800));
+
+      const pdf = await page.pdf({
+        format: "A4",
+        printBackground: true,
+        margin: { top: 0, right: 0, bottom: 0, left: 0 },
+      });
+
+      const fileName = buildPdfFileName(resumeData.personalInfo.fullName);
+
+      return new NextResponse(pdf as unknown as BodyInit, {
+        status: 200,
+        headers: {
+          "Content-Type": "application/pdf",
+          "Content-Disposition": `attachment; filename="${fileName}"`,
+          "Cache-Control": "no-store",
+        },
+      });
+    } finally {
+      await browser.close();
+      if (sessionId) deleteExportSession(sessionId);
+    }
   } catch (error) {
     console.error("[/api/export/pdf]", error);
     return NextResponse.json(

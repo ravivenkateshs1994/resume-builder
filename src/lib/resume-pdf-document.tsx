@@ -12,6 +12,7 @@ interface ResumePdfDocumentProps {
   resumeData: ResumeData;
   selectedTemplate: TemplateId;
   accentColor?: string;
+  visualPages?: Array<{ dataUrl: string; width: number; height: number }>;
 }
 
 const DEFAULT_ACCENT = "#2563eb";
@@ -124,7 +125,239 @@ function contactLine(parts: Array<string | undefined | null>): string {
   return dedupePreserveOrder(parts.filter((part): part is string => typeof part === "string" && part.length > 0)).join(" • ");
 }
 
-export function ResumePdfDocument({ resumeData, selectedTemplate, accentColor }: ResumePdfDocumentProps) {
+type NormalizedExperience = {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  startDate: string;
+  endDate: string;
+  bullets: string[];
+};
+
+type NormalizedEducation = {
+  id: string;
+  institution: string;
+  degree: string;
+  field: string;
+  startDate: string;
+  endDate: string;
+  gpa: string;
+  honors: string;
+};
+
+type NormalizedCertification = {
+  id: string;
+  name: string;
+  issuer: string;
+  date: string;
+};
+
+interface SlatePdfDocumentProps {
+  resumeData: ResumeData;
+  templateLabel: string;
+  themeColor: string;
+  displayName: string;
+  headline: string;
+  headshotUrl?: string;
+  summary: string;
+  skills: string[];
+  experiences: NormalizedExperience[];
+  education: NormalizedEducation[];
+  certifications: NormalizedCertification[];
+}
+
+interface VisualPdfDocumentProps {
+  displayName: string;
+  headline: string;
+  templateLabel: string;
+  visualPages: Array<{ dataUrl: string; width: number; height: number }>;
+}
+
+function getInitials(fullName: string): string {
+  return normalizeText(fullName)
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("") || "?";
+}
+
+function SlatePdfDocument({
+  resumeData,
+  templateLabel,
+  themeColor,
+  displayName,
+  headline,
+  headshotUrl,
+  summary,
+  skills,
+  experiences,
+  education,
+  certifications,
+}: SlatePdfDocumentProps) {
+  const initials = getInitials(displayName);
+
+  return (
+    <Document
+      title={`${displayName} Resume`}
+      author={displayName}
+      subject={headline || `${templateLabel} resume`}
+      creator="AI Resume Builder"
+      producer="AI Resume Builder"
+      keywords={[displayName, headline, templateLabel].filter(Boolean).join(", ")}
+    >
+      <Page size="A4" style={slateStyles.page} wrap>
+        <View fixed style={slateStyles.sidebar}>
+          <View style={slateStyles.headshotFrame}>
+            {headshotUrl ? (
+              // eslint-disable-next-line jsx-a11y/alt-text -- react-pdf Image does not support alt text
+              <Image src={headshotUrl} style={slateStyles.headshotImage} />
+            ) : (
+              <View style={slateStyles.headshotFallback}>
+                <Text style={slateStyles.headshotInitials}>{initials}</Text>
+              </View>
+            )}
+          </View>
+
+          <Text style={slateStyles.sidebarName}>{displayName}</Text>
+          {headline ? <Text style={slateStyles.sidebarTitle}>{headline}</Text> : null}
+
+          <View style={slateStyles.sidebarSection}>
+            <Text style={slateStyles.sidebarHeading}>Contact</Text>
+            <View>
+              {resumeData.personalInfo.email ? <ContactRow icon="✉" text={resumeData.personalInfo.email} /> : null}
+              {resumeData.personalInfo.phone ? <ContactRow icon="✆" text={resumeData.personalInfo.phone} /> : null}
+              {resumeData.personalInfo.location ? <ContactRow icon="⊙" text={resumeData.personalInfo.location} /> : null}
+              {resumeData.personalInfo.linkedin ? <ContactRow icon="in" text={resumeData.personalInfo.linkedin} /> : null}
+              {resumeData.personalInfo.website ? <ContactRow icon="🌐" text={resumeData.personalInfo.website} /> : null}
+            </View>
+          </View>
+
+          {skills.length > 0 ? (
+            <View style={slateStyles.sidebarSection}>
+              <Text style={slateStyles.sidebarHeading}>Skills</Text>
+              <View style={slateStyles.skillWrap}>
+                {skills.map((skill) => (
+                  <View key={skill} style={slateStyles.skillChip}>
+                    <Text style={slateStyles.skillChipText}>{skill}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          ) : null}
+
+          {education.length > 0 ? (
+            <View style={slateStyles.sidebarSection}>
+              <Text style={slateStyles.sidebarHeading}>Education</Text>
+              {education.map((entry) => (
+                <View key={entry.id} style={slateStyles.sidebarEntry}>
+                  <Text style={slateStyles.sidebarEntryTitle}>
+                    {entry.degree}
+                    {entry.field ? ` in ${entry.field}` : ""}
+                  </Text>
+                  <Text style={slateStyles.sidebarEntryMeta}>{entry.institution}</Text>
+                  <Text style={slateStyles.sidebarEntryPeriod}>
+                    {entry.startDate} – {entry.endDate}
+                    {entry.gpa ? ` · GPA ${entry.gpa}` : ""}
+                  </Text>
+                  {entry.honors ? <Text style={slateStyles.sidebarEntryHonors}>{entry.honors}</Text> : null}
+                </View>
+              ))}
+            </View>
+          ) : null}
+
+          {certifications.length > 0 ? (
+            <View style={slateStyles.sidebarSection}>
+              <Text style={slateStyles.sidebarHeading}>Certifications</Text>
+              {certifications.map((certification) => (
+                <View key={certification.id} style={slateStyles.sidebarEntry}>
+                  <Text style={slateStyles.sidebarEntryTitle}>{certification.name}</Text>
+                  <Text style={slateStyles.sidebarEntryMeta}>{certification.issuer}</Text>
+                  {certification.date ? <Text style={slateStyles.sidebarEntryPeriod}>{certification.date}</Text> : null}
+                </View>
+              ))}
+            </View>
+          ) : null}
+        </View>
+
+        <View style={slateStyles.main}>
+          <View style={[slateStyles.topStripe, { backgroundColor: themeColor }]} />
+
+          {summary ? (
+            <View style={slateStyles.mainSection}>
+              <Text style={[slateStyles.mainHeading, { color: themeColor }]}>Profile</Text>
+              <Text style={slateStyles.mainSummary}>{summary}</Text>
+            </View>
+          ) : null}
+
+          {experiences.length > 0 ? (
+            <View style={slateStyles.mainSection}>
+              <Text style={[slateStyles.mainHeading, { color: themeColor }]}>Work Experience</Text>
+              {experiences.map((experience) => (
+                <View key={experience.id} style={slateStyles.experienceEntry}>
+                  <View style={slateStyles.experienceHeader}>
+                    <View style={slateStyles.experienceHeaderCopy}>
+                      <Text style={slateStyles.experienceTitle}>{experience.title}</Text>
+                      <Text style={[slateStyles.experienceMeta, { color: themeColor }]}>
+                        {[experience.company, experience.location].filter(Boolean).join(" · ")}
+                      </Text>
+                    </View>
+                    <Text style={slateStyles.experiencePeriod}>
+                      {experience.startDate} – {experience.endDate}
+                    </Text>
+                  </View>
+
+                  {experience.bullets.length > 0 ? (
+                    <View style={slateStyles.bulletList}>
+                      {experience.bullets.map((bullet, index) => (
+                        <View key={`${experience.id}-${index}`} style={slateStyles.bulletRow}>
+                          <Text style={[slateStyles.bulletMark, { color: themeColor }]}>•</Text>
+                          <Text style={slateStyles.bulletText}>{bullet}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  ) : null}
+                </View>
+              ))}
+            </View>
+          ) : null}
+        </View>
+      </Page>
+    </Document>
+  );
+}
+
+function VisualPdfDocument({ displayName, headline, templateLabel, visualPages }: VisualPdfDocumentProps) {
+  return (
+    <Document
+      title={`${displayName} Resume`}
+      author={displayName}
+      subject={headline || `${templateLabel} resume`}
+      creator="AI Resume Builder"
+      producer="AI Resume Builder"
+      keywords={[displayName, headline, templateLabel].filter(Boolean).join(", ")}
+    >
+      {visualPages.map((page, index) => (
+        <Page key={`${templateLabel}-${index}`} size="A4" style={visualPdfStyles.page}>
+          {/* eslint-disable-next-line jsx-a11y/alt-text -- react-pdf Image does not support alt text */}
+          <Image src={page.dataUrl} style={visualPdfStyles.image} />
+        </Page>
+      ))}
+    </Document>
+  );
+}
+
+function ContactRow({ icon, text }: { icon: string; text: string }) {
+  return (
+    <View style={slateStyles.contactRow}>
+      <Text style={slateStyles.contactIcon}>{icon}</Text>
+      <Text style={slateStyles.contactText}>{text}</Text>
+    </View>
+  );
+}
+
+export function ResumePdfDocument({ resumeData, selectedTemplate, accentColor, visualPages }: ResumePdfDocumentProps) {
   const themeColor = normalizeAccentColor(accentColor);
   const templateLabel = TEMPLATE_LABELS[selectedTemplate];
   const headshotUrl = safeImageSource(resumeData.personalInfo.headshotUrl);
@@ -173,6 +406,35 @@ export function ResumePdfDocument({ resumeData, selectedTemplate, accentColor }:
       date: normalizeText(entry.date),
     }))
     .filter((entry) => entry.name || entry.issuer || entry.date);
+
+  if (visualPages?.length) {
+    return (
+      <VisualPdfDocument
+        displayName={displayName}
+        headline={headline}
+        templateLabel={templateLabel}
+        visualPages={visualPages}
+      />
+    );
+  }
+
+  if (selectedTemplate === "slate") {
+    return (
+      <SlatePdfDocument
+        resumeData={resumeData}
+        templateLabel={templateLabel}
+        themeColor={themeColor}
+        displayName={displayName}
+        headline={headline}
+        headshotUrl={headshotUrl}
+        summary={summary}
+        skills={skills}
+        experiences={experiences}
+        education={education}
+        certifications={certifications}
+      />
+    );
+  }
 
   return (
     <Document
@@ -508,5 +770,252 @@ const styles = StyleSheet.create({
     fontSize: 8,
     color: "#94a3b8",
     textAlign: "center",
+  },
+});
+
+const slateStyles = StyleSheet.create({
+  page: {
+    paddingTop: 24,
+    paddingRight: 24,
+    paddingBottom: 24,
+    paddingLeft: 24,
+    fontFamily: "Helvetica",
+    fontSize: 10,
+    color: "#0f172a",
+    backgroundColor: "#ffffff",
+    lineHeight: 1.42,
+  },
+  sidebar: {
+    position: "absolute",
+    top: 24,
+    left: 24,
+    bottom: 24,
+    width: 162,
+    backgroundColor: "#1e293b",
+    paddingTop: 16,
+    paddingRight: 14,
+    paddingBottom: 16,
+    paddingLeft: 14,
+  },
+  headshotFrame: {
+    width: 92,
+    height: 92,
+    padding: 4,
+    marginBottom: 12,
+    borderRadius: 16,
+    backgroundColor: "#334155",
+    borderWidth: 1,
+    borderColor: "#475569",
+  },
+  headshotImage: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 12,
+  },
+  headshotFallback: {
+    width: "100%",
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 12,
+    backgroundColor: "#334155",
+  },
+  headshotInitials: {
+    fontSize: 26,
+    fontWeight: 700,
+    color: "#ffffff",
+  },
+  sidebarName: {
+    fontSize: 12,
+    fontWeight: 700,
+    color: "#ffffff",
+    lineHeight: 1.15,
+    textTransform: "uppercase",
+  },
+  sidebarTitle: {
+    marginTop: 2,
+    fontSize: 8.8,
+    fontWeight: 700,
+    color: "#e2e8f0",
+    lineHeight: 1.2,
+  },
+  sidebarSection: {
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: "#334155",
+  },
+  sidebarHeading: {
+    marginBottom: 8,
+    fontSize: 7.8,
+    fontWeight: 700,
+    color: "#f8fafc",
+    letterSpacing: 1,
+    textTransform: "uppercase",
+  },
+  contactRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginBottom: 5,
+  },
+  contactIcon: {
+    width: 12,
+    marginTop: 1,
+    marginRight: 5,
+    fontSize: 8.5,
+    color: "#cbd5e1",
+  },
+  contactText: {
+    flex: 1,
+    fontSize: 8.4,
+    lineHeight: 1.3,
+    color: "#f8fafc",
+  },
+  skillWrap: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
+  skillChip: {
+    marginRight: 4,
+    marginBottom: 4,
+    paddingTop: 2.5,
+    paddingRight: 5.5,
+    paddingBottom: 2.5,
+    paddingLeft: 5.5,
+    borderRadius: 3,
+    backgroundColor: "#0ea5e9",
+  },
+  skillChipText: {
+    fontSize: 7.7,
+    fontWeight: 700,
+    lineHeight: 1.1,
+    color: "#ffffff",
+  },
+  sidebarEntry: {
+    marginBottom: 8,
+  },
+  sidebarEntryTitle: {
+    fontSize: 8.4,
+    fontWeight: 700,
+    lineHeight: 1.15,
+    color: "#ffffff",
+  },
+  sidebarEntryMeta: {
+    marginTop: 1,
+    fontSize: 7.8,
+    lineHeight: 1.15,
+    color: "#cbd5e1",
+  },
+  sidebarEntryPeriod: {
+    marginTop: 1,
+    fontSize: 7.4,
+    lineHeight: 1.15,
+    color: "#94a3b8",
+  },
+  sidebarEntryHonors: {
+    marginTop: 1,
+    fontSize: 7.4,
+    lineHeight: 1.15,
+    color: "#38bdf8",
+  },
+  main: {
+    marginLeft: 180,
+    paddingTop: 4,
+  },
+  topStripe: {
+    width: 42,
+    height: 4,
+    marginTop: 2,
+    marginBottom: 16,
+    borderRadius: 999,
+  },
+  mainSection: {
+    marginBottom: 12,
+  },
+  mainHeading: {
+    marginBottom: 6,
+    fontSize: 8.7,
+    fontWeight: 700,
+    letterSpacing: 1,
+    textTransform: "uppercase",
+  },
+  mainSummary: {
+    fontSize: 10.2,
+    color: "#334155",
+    lineHeight: 1.45,
+  },
+  experienceEntry: {
+    marginBottom: 10,
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e2e8f0",
+  },
+  experienceHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 4,
+  },
+  experienceHeaderCopy: {
+    flexGrow: 1,
+    flexShrink: 1,
+    paddingRight: 8,
+  },
+  experienceTitle: {
+    fontSize: 10.3,
+    fontWeight: 700,
+    lineHeight: 1.15,
+    color: "#0f172a",
+  },
+  experienceMeta: {
+    marginTop: 1,
+    fontSize: 8.4,
+    fontWeight: 700,
+    lineHeight: 1.15,
+  },
+  experiencePeriod: {
+    flexShrink: 0,
+    paddingTop: 3,
+    paddingRight: 8,
+    paddingBottom: 3,
+    paddingLeft: 8,
+    borderRadius: 999,
+    backgroundColor: "#f1f5f9",
+    fontSize: 8.1,
+    fontWeight: 700,
+    color: "#94a3b8",
+  },
+  bulletList: {
+    marginTop: 2,
+  },
+  bulletRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginBottom: 2,
+  },
+  bulletMark: {
+    width: 8,
+    marginTop: 0.5,
+    marginRight: 4,
+    fontSize: 11,
+    lineHeight: 1.1,
+  },
+  bulletText: {
+    flex: 1,
+    fontSize: 8.8,
+    lineHeight: 1.35,
+    color: "#334155",
+  },
+});
+
+const visualPdfStyles = StyleSheet.create({
+  page: {
+    margin: 0,
+    padding: 0,
+    backgroundColor: "#ffffff",
+  },
+  image: {
+    width: "100%",
+    height: "100%",
   },
 });

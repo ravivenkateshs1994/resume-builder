@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { parseResume } from "@/lib/parseResume";
-import { extractResumeSignals } from "@/lib/resume-intelligence";
+import { extractResumeSignals, extractResumeStructure } from "@/lib/resume-intelligence";
 
 // POST /api/parse — AI-powered (Gemini) resume parsing with regex fallback
 // Body A (PDF):  JSON  { text: string, layoutText?: string, images?: string[] }
@@ -109,17 +109,17 @@ export async function POST(req: NextRequest) {
     const normalizedText = normalizeExtractedText(text);
     const normalizedLayoutText = normalizeExtractedText(layoutText);
     const parseSourceText = normalizedLayoutText || normalizedText;
-    const fallbackParsed = parseResume(parseSourceText);
-    const resumeSignals = await extractResumeSignals({ resumeText: parseSourceText });
+    const parsed = await extractResumeStructure({ resumeText: parseSourceText, images });
+    const resumeSignals = await extractResumeSignals({ resumeText: parseSourceText, resumeData: parsed });
 
-    const parsed = {
-      personalInfo: fallbackParsed.personalInfo,
-      summary: fallbackParsed.summary,
-      workExperience: fallbackParsed.workExperience,
-      education: fallbackParsed.education,
+    const response = {
+      personalInfo: parsed.personalInfo,
+      summary: parsed.summary,
+      workExperience: parsed.workExperience,
+      education: parsed.education,
       skills: normalizeSkillsList(
         [
-          ...fallbackParsed.skills,
+          ...parsed.skills,
           ...resumeSignals.skills,
           ...resumeSignals.technologies,
           ...resumeSignals.tools,
@@ -128,11 +128,11 @@ export async function POST(req: NextRequest) {
         ],
         []
       ),
-      certifications: mergeCertificationItems(fallbackParsed.certifications, resumeSignals.certifications),
-      targetRole: fallbackParsed.targetRole || resumeSignals.jobTitles[0] || fallbackParsed.personalInfo.jobTitle,
+      certifications: mergeCertificationItems(parsed.certifications, resumeSignals.certifications),
+      targetRole: parsed.targetRole || resumeSignals.jobTitles[0] || parsed.personalInfo.jobTitle,
     };
 
-    return NextResponse.json(parsed);
+    return NextResponse.json(response);
   } catch (error) {
     // ── 3. Fallback to regex parser if enrichment fails ───────────────────────
     const msg = error instanceof Error ? error.message : String(error);

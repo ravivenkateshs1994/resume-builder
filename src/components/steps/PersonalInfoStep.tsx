@@ -109,8 +109,8 @@ export default function PersonalInfoStep() {
               headshotUrl={form.headshotUrl}
               initials={initials}
               alt={`${form.fullName || "Candidate"} headshot`}
-              className="h-24 w-24 shrink-0 overflow-hidden rounded-2xl border-2 border-violet-200 bg-violet-100"
-              fallbackClassName="h-full w-full flex items-center justify-center text-violet-600 font-bold text-2xl"
+              className="h-32 w-32 shrink-0 overflow-hidden rounded-3xl border-2 border-violet-200 bg-violet-100"
+              fallbackClassName="h-full w-full flex items-center justify-center text-violet-600 font-bold text-4xl"
             />
             <div className="min-w-0">
               <p className="text-sm font-semibold text-gray-800 truncate">{form.fullName || "Your Name"}</p>

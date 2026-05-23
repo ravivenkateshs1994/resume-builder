@@ -1,5 +1,5 @@
 import type { ResumeData } from "@/types/resume";
-import { parseResume } from "./parseResume";
+import { parseResume, type ParsedResume } from "./parseResume";
 import {
   findSkillsInText,
   normalizeSkillBatch,
@@ -112,8 +112,339 @@ interface ResumeSignalSource {
   }>;
 }
 
+interface AiResumePersonalInfoPayload {
+  fullName?: unknown;
+  email?: unknown;
+  phone?: unknown;
+  location?: unknown;
+  linkedin?: unknown;
+  website?: unknown;
+  jobTitle?: unknown;
+}
+
+interface AiResumeExperiencePayload {
+  company?: unknown;
+  title?: unknown;
+  location?: unknown;
+  startDate?: unknown;
+  endDate?: unknown;
+  bullets?: unknown;
+  description?: unknown;
+}
+
+interface AiResumeEducationPayload {
+  institution?: unknown;
+  degree?: unknown;
+  field?: unknown;
+  startDate?: unknown;
+  endDate?: unknown;
+  gpa?: unknown;
+  honors?: unknown;
+}
+
+interface AiResumeCertificationPayload {
+  name?: unknown;
+  issuer?: unknown;
+  date?: unknown;
+  credentialId?: unknown;
+  validFrom?: unknown;
+  validTo?: unknown;
+  neverExpires?: unknown;
+}
+
+interface AiResumeStructurePayload {
+  personalInfo?: AiResumePersonalInfoPayload;
+  summary?: unknown;
+  workExperience?: unknown;
+  education?: unknown;
+  skills?: unknown;
+  certifications?: unknown;
+  targetRole?: unknown;
+}
+
 function normalizeWhitespace(value: string): string {
   return value.replace(/\s+/g, " ").trim();
+}
+
+function uid() {
+  return Math.random().toString(36).slice(2, 9);
+}
+
+function normalizeExtractedText(value: string): string {
+  return value
+    .replace(/\u00a0/g, " ")
+    .replace(/\t/g, "  ")
+    .replace(/([^\n])-\n([a-z])/g, "$1$2")
+    .replace(/[ \t]{3,}/g, "  ")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+function normalizeAiString(value: unknown): string {
+  return typeof value === "string" ? normalizeWhitespace(value) : "";
+}
+
+function escapeHtml(value: string): string {
+  return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function normalizeContactUrl(value: string): string {
+  if (!value) {
+    return "";
+  }
+
+  if (/^https?:\/\//i.test(value)) {
+    return value;
+  }
+
+  return `https://${value.replace(/^\/+/, "")}`;
+}
+
+function collectBullets(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return toArrayOfStrings(value);
+  }
+
+  if (typeof value !== "string") {
+    return [];
+  }
+
+  return value
+    .split(/\r?\n+/)
+    .map((line) => line.replace(/^[\s*-•·\d.)]+/, "").trim())
+    .filter(Boolean);
+}
+
+function bulletsToHtml(bullets: string[]): string {
+  if (bullets.length === 0) {
+    return "";
+  }
+
+  return `<ul>${bullets.map((bullet) => `<li><p>${escapeHtml(bullet)}</p></li>`).join("")}</ul>`;
+}
+
+function isLikelyName(value: string): boolean {
+  const normalized = value.trim();
+  if (!normalized || normalized.length > 60) {
+    return false;
+  }
+
+  if (/[.@/:]|linkedin|http|www|resume|curriculum|profile|contact|summary|experience/i.test(normalized)) {
+    return false;
+  }
+
+  const words = normalized.split(/\s+/).filter(Boolean);
+  if (words.length < 2 || words.length > 4) {
+    return false;
+  }
+
+  return words.every((word) => /^[A-Z][A-Za-z'.-]*$/.test(word) || /^[A-Z]\.?$/.test(word));
+}
+
+function isLikelyTitle(value: string): boolean {
+  const normalized = value.trim();
+  if (!normalized || normalized.length > 80) {
+    return false;
+  }
+
+  if (/[.@/:]|linkedin|http|www/i.test(normalized)) {
+    return false;
+  }
+
+  if (/\b(summary|experience|education|skills|certifications?)\b/i.test(normalized)) {
+    return false;
+  }
+
+  const words = normalized.split(/\s+/).filter(Boolean);
+  return words.length >= 2 && words.length <= 8;
+}
+
+function chooseStructuredText(aiValue: string, fallbackValue: string, validator: (value: string) => boolean): string {
+  if (validator(aiValue)) {
+    return aiValue;
+  }
+
+  if (validator(fallbackValue)) {
+    return fallbackValue;
+  }
+
+  return aiValue || fallbackValue;
+}
+
+function normalizePersonalInfo(
+  aiPersonalInfo: AiResumePersonalInfoPayload | undefined,
+  fallback: ParsedResume["personalInfo"]
+): ParsedResume["personalInfo"] {
+  const aiFullName = normalizeAiString(aiPersonalInfo?.fullName);
+  const fallbackFullName = normalizeAiString(fallback.fullName);
+  const aiJobTitle = normalizeAiString(aiPersonalInfo?.jobTitle);
+  const fallbackJobTitle = normalizeAiString(fallback.jobTitle);
+
+  return {
+    fullName: chooseStructuredText(aiFullName, fallbackFullName, isLikelyName),
+    email: normalizeAiString(aiPersonalInfo?.email) || fallback.email,
+    phone: normalizeAiString(aiPersonalInfo?.phone) || fallback.phone,
+    location: normalizeAiString(aiPersonalInfo?.location) || fallback.location,
+    linkedin: normalizeContactUrl(normalizeAiString(aiPersonalInfo?.linkedin) || fallback.linkedin),
+    website: normalizeContactUrl(normalizeAiString(aiPersonalInfo?.website) || fallback.website),
+    jobTitle: chooseStructuredText(aiJobTitle, fallbackJobTitle, isLikelyTitle),
+  };
+}
+
+function normalizeExperienceEntries(entries: unknown): ParsedResume["workExperience"] {
+  if (!Array.isArray(entries)) {
+    return [];
+  }
+
+  return entries
+    .map((item) => {
+      if (!item || typeof item !== "object") {
+        return null;
+      }
+
+      const candidate = item as AiResumeExperiencePayload;
+      const title = normalizeAiString(candidate.title);
+      const company = normalizeAiString(candidate.company);
+      const location = normalizeAiString(candidate.location);
+      const startDate = normalizeAiString(candidate.startDate);
+      const endDate = normalizeAiString(candidate.endDate);
+      const bullets = collectBullets(candidate.bullets).length > 0 ? collectBullets(candidate.bullets) : collectBullets(candidate.description);
+
+      if (!title && !company && !location && !startDate && !endDate && bullets.length === 0) {
+        return null;
+      }
+
+      return {
+        id: uid(),
+        company,
+        title,
+        location,
+        startDate,
+        endDate,
+        description: bulletsToHtml(bullets),
+      };
+    })
+    .filter((entry): entry is ParsedResume["workExperience"][number] => Boolean(entry));
+}
+
+function normalizeEducationEntries(entries: unknown): ParsedResume["education"] {
+  if (!Array.isArray(entries)) {
+    return [];
+  }
+
+  return entries
+    .map((item) => {
+      if (!item || typeof item !== "object") {
+        return null;
+      }
+
+      const candidate = item as AiResumeEducationPayload;
+      const institution = normalizeAiString(candidate.institution);
+      const degree = normalizeAiString(candidate.degree);
+      const field = normalizeAiString(candidate.field);
+      const startDate = normalizeAiString(candidate.startDate);
+      const endDate = normalizeAiString(candidate.endDate);
+      const gpa = normalizeAiString(candidate.gpa);
+      const honors = normalizeAiString(candidate.honors);
+
+      if (!institution && !degree && !field && !startDate && !endDate && !gpa && !honors) {
+        return null;
+      }
+
+      return {
+        id: uid(),
+        institution,
+        degree,
+        field,
+        startDate,
+        endDate,
+        gpa,
+        honors,
+      };
+    })
+    .filter((entry): entry is ParsedResume["education"][number] => Boolean(entry));
+}
+
+function normalizeCertificationEntries(entries: unknown): ParsedResume["certifications"] {
+  if (!Array.isArray(entries)) {
+    return [];
+  }
+
+  return entries
+    .map((item) => {
+      if (!item || typeof item !== "object") {
+        return null;
+      }
+
+      const candidate = item as AiResumeCertificationPayload;
+      const name = normalizeAiString(candidate.name);
+      const issuer = normalizeAiString(candidate.issuer);
+      const date = normalizeAiString(candidate.date);
+
+      if (!name && !issuer && !date) {
+        return null;
+      }
+
+      return {
+        id: uid(),
+        name,
+        issuer,
+        date,
+      };
+    })
+    .filter((entry): entry is ParsedResume["certifications"][number] => Boolean(entry));
+}
+
+function mergeCertificationEntries(
+  primary: ParsedResume["certifications"],
+  secondary: ParsedResume["certifications"]
+): ParsedResume["certifications"] {
+  const merged = new Map<string, ParsedResume["certifications"][number]>();
+
+  for (const entry of [...primary, ...secondary]) {
+    const key = entry.name.trim().toLowerCase();
+    if (!key) {
+      continue;
+    }
+
+    const existing = merged.get(key);
+    if (!existing) {
+      merged.set(key, { ...entry, id: uid() });
+      continue;
+    }
+
+    merged.set(key, {
+      ...existing,
+      issuer: existing.issuer || entry.issuer,
+      date: existing.date || entry.date,
+    });
+  }
+
+  return [...merged.values()];
+}
+
+function mergeResumeStructure(fallback: ParsedResume, aiPayload: AiResumeStructurePayload | null): ParsedResume {
+  if (!aiPayload) {
+    return fallback;
+  }
+
+  const aiPersonalInfo = normalizePersonalInfo(aiPayload.personalInfo, fallback.personalInfo);
+  const aiWorkExperience = normalizeExperienceEntries(aiPayload.workExperience);
+  const aiEducation = normalizeEducationEntries(aiPayload.education);
+  const aiCertifications = normalizeCertificationEntries(aiPayload.certifications);
+  const aiSkills = dedupePreserveOrder(toArrayOfStrings(aiPayload.skills));
+  const aiSummary = normalizeAiString(aiPayload.summary);
+  const aiTargetRole = normalizeAiString(aiPayload.targetRole);
+
+  return {
+    personalInfo: aiPersonalInfo,
+    summary: aiSummary || fallback.summary,
+    workExperience: aiWorkExperience.length > 0 ? aiWorkExperience : fallback.workExperience,
+    education: aiEducation.length > 0 ? aiEducation : fallback.education,
+    skills: dedupePreserveOrder([...aiSkills, ...fallback.skills]),
+    certifications: mergeCertificationEntries(aiCertifications, fallback.certifications),
+    targetRole: aiTargetRole || aiPersonalInfo.jobTitle || fallback.targetRole,
+  };
 }
 
 function stripMarkdownFences(value: string): string {
@@ -156,19 +487,68 @@ function parseJsonObject<T>(raw: string): T | null {
   }
 }
 
-async function generateJson<T>(prompt: string): Promise<T | null> {
+async function generateJson<T>(prompt: string, imageDataUrls: string[] = []): Promise<T | null> {
   if (!process.env.GEMINI_API_KEY) {
     return null;
   }
 
   try {
-    const { generate } = await import("./openai");
-    const raw = await generate(prompt, 0);
+    const { generate, generateWithImages } = await import("./openai");
+    const raw =
+      imageDataUrls.length > 0
+        ? await generateWithImages(prompt, imageDataUrls.filter((url) => typeof url === "string" && url.startsWith("data:image/")).slice(0, 3), 0)
+        : await generate(prompt, 0);
     return parseJsonObject<T>(raw);
   } catch (error) {
     console.warn("[resume-intelligence] AI request failed:", error);
     return null;
   }
+}
+
+export async function extractResumeStructure(input: {
+  resumeText?: string;
+  images?: string[];
+  useAi?: boolean;
+}): Promise<ParsedResume> {
+  const useAi = input.useAi ?? Boolean(process.env.GEMINI_API_KEY);
+  const text = normalizeExtractedText(input.resumeText ?? "");
+  const fallback = parseResume(text);
+
+  if (!useAi) {
+    return fallback;
+  }
+
+  const images = (input.images ?? [])
+    .filter((image): image is string => typeof image === "string" && image.startsWith("data:image/"))
+    .slice(0, 3);
+
+  const prompt = [
+    "You extract a resume into strict JSON.",
+    "Return ONLY valid JSON with this exact shape:",
+    "{",
+    '  "personalInfo": { "fullName": "", "email": "", "phone": "", "location": "", "linkedin": "", "website": "", "jobTitle": "" },',
+    '  "summary": "",',
+    '  "workExperience": [ { "company": "", "title": "", "location": "", "startDate": "", "endDate": "", "bullets": [] } ],',
+    '  "education": [ { "institution": "", "degree": "", "field": "", "startDate": "", "endDate": "", "gpa": "", "honors": "" } ],',
+    '  "skills": [],',
+    '  "certifications": [ { "name": "", "issuer": "", "date": "", "credentialId": "", "validFrom": "", "validTo": "", "neverExpires": false } ],',
+    '  "targetRole": ""',
+    "}",
+    "Rules:",
+    "- Use only information explicitly visible in the resume.",
+    "- Prefer the visual layout over raw line order when the document is multi-column.",
+    "- Keep fields empty when missing.",
+    "- Do not invent employers, degrees, dates, or skills.",
+    "- Preserve the original order of experience and education entries.",
+    "- For workExperience.bullets, capture only the bullet points that belong to that role.",
+    "- Normalize linkedin to a full URL when present.",
+    "- Do not include markdown fences.",
+    "Resume text:",
+    text.slice(0, 14000) || "(No text extraction available. Parse from the resume images only.)",
+  ].join("\n");
+
+  const raw = await generateJson<AiResumeStructurePayload>(prompt, images);
+  return mergeResumeStructure(fallback, raw);
 }
 
 function composeResumeText(source: ResumeSignalSource): string {

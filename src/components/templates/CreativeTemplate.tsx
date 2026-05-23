@@ -12,14 +12,14 @@ export default function CreativeTemplate({ data, accentColor }: Props) {
   return (
     <div className="font-sans text-[12.5px] leading-relaxed max-w-[780px] mx-auto bg-white flex min-h-[900px]">
       {/* Sidebar */}
-      <div className="w-64 px-5 py-8 flex-shrink-0" style={{ backgroundColor: theme.accentDeep, color: theme.contrastDeep }}>
+      <div className="w-72 px-6 py-8 flex-shrink-0" style={{ backgroundColor: theme.accentDeep, color: theme.contrastDeep }}>
         <div className="mb-6">
           <HeadshotAvatar
             headshotUrl={personalInfo.headshotUrl}
             initials={personalInfo.fullName?.charAt(0) || "?"}
             alt={`${personalInfo.fullName || "Candidate"} headshot`}
-            className="w-20 h-20 rounded-2xl overflow-hidden mb-3 border border-white/10 bg-white/10"
-            fallbackClassName="h-full w-full flex items-center justify-center text-2xl font-bold"
+            className="w-32 h-32 rounded-3xl overflow-hidden mb-4 border border-white/10 bg-white/10"
+            fallbackClassName="h-full w-full flex items-center justify-center text-4xl font-bold"
             style={{ backgroundColor: theme.accent, color: theme.contrast }}
           />
           <h1 className="text-lg font-bold leading-tight">

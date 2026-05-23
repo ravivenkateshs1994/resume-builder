@@ -19,8 +19,8 @@ export default function ChronosTemplate({ data, accentColor }: Props) {
               headshotUrl={personalInfo.headshotUrl}
               initials={personalInfo.fullName ? personalInfo.fullName.charAt(0).toUpperCase() : "?"}
               alt={`${personalInfo.fullName || "Candidate"} headshot`}
-              className="w-20 h-20 rounded-2xl overflow-hidden shrink-0 border border-slate-200 bg-slate-100"
-              fallbackClassName="h-full w-full flex items-center justify-center text-lg font-bold text-gray-700"
+              className="w-32 h-32 rounded-3xl overflow-hidden shrink-0 border border-slate-200 bg-slate-100"
+              fallbackClassName="h-full w-full flex items-center justify-center text-3xl font-bold text-gray-700"
             />
             <div className="min-w-0">
               <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">

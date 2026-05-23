@@ -19,15 +19,15 @@ export default function SlateTemplate({ data, accentColor }: Props) {
   return (
     <div className="font-sans text-[12.5px] leading-relaxed max-w-[780px] mx-auto bg-white flex min-h-[900px]">
       {/* ── Left Sidebar ── */}
-      <div className="w-56 flex-shrink-0 bg-slate-800 text-white flex flex-col">
+      <div className="w-64 flex-shrink-0 bg-slate-800 text-white flex flex-col">
         {/* Avatar + name */}
-        <div className="px-5 pt-8 pb-6 border-b border-slate-700">
+        <div className="px-6 pt-8 pb-6 border-b border-slate-700">
           <HeadshotAvatar
             headshotUrl={personalInfo.headshotUrl}
             initials={initials || "?"}
             alt={`${personalInfo.fullName || "Candidate"} headshot`}
-            className="w-20 h-20 rounded-2xl overflow-hidden mb-4"
-            fallbackClassName="h-full w-full flex items-center justify-center text-xl font-bold text-white"
+            className="w-32 h-32 rounded-3xl overflow-hidden mb-5"
+            fallbackClassName="h-full w-full flex items-center justify-center text-3xl font-bold text-white"
             style={{ backgroundColor: theme.accent, color: theme.contrast }}
           />
           <h1 className="text-base font-bold leading-tight text-white">

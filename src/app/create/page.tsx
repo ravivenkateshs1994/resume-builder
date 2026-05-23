@@ -6,8 +6,8 @@ import { useResumeStore } from "@/store/resumeStore";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import StepIndicator from "@/components/StepIndicator";
-import AccentColorPicker from "@/components/AccentColorPicker";
-import { getDefaultTemplateAccent } from "@/lib/templateTheme";
+import { TEMPLATE_CATALOG as TEMPLATE_OPTIONS, TemplateGalleryCard } from "@/components/templates/templateGallery";
+import type { TemplateCatalogItem } from "@/components/templates/templateGallery";
 import type { TemplateId } from "@/types/resume";
 
 const StepShell = ({ title }: { title: string }) => (
@@ -67,28 +67,6 @@ const PreviewStep = dynamic(() => import("@/components/steps/PreviewStep"), {
   ssr: false,
   loading: () => <StepShell title="Preview" />,
 });
-
-const TEMPLATE_OPTIONS: {
-  id: TemplateId;
-  name: string;
-  accent: string;
-  style: string;
-  category: "simple" | "modern" | "professional" | "ats";
-  tags: string[];
-}[] = [
-  { id: "modern", name: "Modern", accent: "bg-blue-600", style: "Balanced two-column with clean hierarchy.", category: "modern", tags: ["ATS", "Popular"] },
-  { id: "classic", name: "Classic", accent: "bg-slate-700", style: "Traditional format with conservative styling.", category: "professional", tags: ["Formal", "ATS"] },
-  { id: "creative", name: "Creative", accent: "bg-violet-700", style: "Bold sidebar layout for standout portfolios.", category: "modern", tags: ["Design", "Modern"] },
-  { id: "minimal", name: "Minimal", accent: "bg-gray-400", style: "Minimal whitespace-focused, elegant look.", category: "simple", tags: ["Simple", "Clean"] },
-  { id: "executive", name: "Executive", accent: "bg-gray-900", style: "Premium corporate style for leadership roles.", category: "professional", tags: ["Senior", "Corporate"] },
-  { id: "slate", name: "Slate", accent: "bg-slate-800", style: "Dark-accent professional two-pane composition.", category: "modern", tags: ["Structured", "Modern"] },
-  { id: "chronos", name: "Chronos", accent: "bg-teal-600", style: "Timeline-centric storytelling layout.", category: "modern", tags: ["Timeline", "Elegant"] },
-  { id: "terra", name: "Terra", accent: "bg-amber-700", style: "Warm editorial tone with refined typography.", category: "professional", tags: ["Creative", "Warm"] },
-  { id: "tech", name: "Tech", accent: "bg-cyan-600", style: "Sharp high-contrast style for tech profiles.", category: "ats", tags: ["Tech", "Bold"] },
-  { id: "nova", name: "Nova", accent: "bg-blue-500", style: "Avatar header with vibrant full-width accent banner.", category: "modern", tags: ["Photo", "Modern"] },
-  { id: "prism", name: "Prism", accent: "bg-teal-500", style: "Light sidebar with accent-tinted left panel.", category: "modern", tags: ["Two-Column", "Elegant"] },
-  { id: "apex", name: "Apex", accent: "bg-slate-600", style: "Bold headers, grid skills — maximally ATS-safe.", category: "ats", tags: ["ATS", "Clean"] },
-];
 
 function AppHeader() {
   return (
@@ -155,107 +133,6 @@ function FlowStrip({ activeStep }: { activeStep: number }) {
   );
 }
 
-type TemplateOption = (typeof TEMPLATE_OPTIONS)[number];
-
-function PreviewLine({ width, color }: { width: string; color?: string }) {
-  return <div className={`h-2 rounded-full ${color ?? "bg-slate-200"}`} style={color ? { width, backgroundColor: color } : { width }} />;
-}
-
-function PreviewPill({ label, color }: { label: string; color: string }) {
-  return (
-    <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold" style={{ borderColor: color, color }}>
-      {label}
-    </span>
-  );
-}
-
-function TemplatePreviewCard({ template }: { template: TemplateOption }) {
-  const accentColor = getDefaultTemplateAccent(template.id);
-  const isOneColumn = ["classic", "minimal", "executive", "terra"].includes(template.id);
-  const isPhoto = ["creative", "chronos", "slate", "nova", "prism"].includes(template.id);
-  const isAts = template.category === "ats";
-
-  return (
-    <div className="relative h-full min-h-[415px] overflow-hidden bg-white">
-      <div className="absolute inset-x-0 top-0 h-1.5" style={{ backgroundColor: accentColor }} />
-
-      <div className={`flex h-full ${isOneColumn ? "flex-col" : "flex-row"}`}>
-        {!isOneColumn && (
-          <div
-            className={`w-28 shrink-0 border-r border-slate-100 p-3 ${isAts ? "bg-slate-50" : "bg-slate-50/90"}`}
-            style={isAts ? { backgroundImage: "linear-gradient(180deg, rgba(15,23,42,0.02), rgba(15,23,42,0))" } : undefined}
-          >
-            <div className="h-12 w-12 rounded-2xl border bg-white shadow-sm" style={{ borderColor: accentColor }} />
-            <div className="mt-4 space-y-2">
-              <PreviewLine width="78%" />
-              <PreviewLine width="92%" />
-              <PreviewLine width="66%" />
-            </div>
-            <div className="mt-4 space-y-2">
-              <PreviewPill label={template.category.toUpperCase()} color={accentColor} />
-              <PreviewPill label={template.tags[0] ?? "TEMPLATE"} color={accentColor} />
-            </div>
-          </div>
-        )}
-
-        <div className="flex-1 p-4">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex-1 space-y-2">
-              <div className="h-2.5 w-28 rounded-full bg-slate-200" />
-              <div className="h-6 w-40 rounded-lg bg-slate-900/80" />
-              <div className="h-2.5 w-32 rounded-full" style={{ backgroundColor: accentColor, opacity: 0.45 }} />
-            </div>
-            {isPhoto && <div className="h-14 w-14 rounded-2xl border-2 bg-slate-100" style={{ borderColor: accentColor }} />}
-          </div>
-
-          <div className="mt-5 space-y-3">
-            <div className="rounded-2xl border border-slate-100 bg-slate-50/80 p-3">
-              <div className="mb-3 flex items-center gap-2">
-                <span className="h-1.5 w-6 rounded-full" style={{ backgroundColor: accentColor }} />
-                <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Summary</span>
-              </div>
-              <div className="space-y-2">
-                <PreviewLine width="92%" />
-                <PreviewLine width="78%" />
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-slate-100 bg-slate-50/80 p-3">
-              <div className="mb-3 flex items-center gap-2">
-                <span className="h-1.5 w-6 rounded-full" style={{ backgroundColor: accentColor }} />
-                <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Experience</span>
-              </div>
-              <div className="space-y-2">
-                <PreviewLine width="96%" />
-                <PreviewLine width="88%" />
-                <PreviewLine width="74%" />
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-slate-100 bg-slate-50/80 p-3">
-              <div className="mb-3 flex items-center gap-2">
-                <span className="h-1.5 w-6 rounded-full" style={{ backgroundColor: accentColor }} />
-                <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Skills</span>
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {template.tags.slice(0, 2).map((tag) => (
-                  <span
-                    key={tag}
-                    className="rounded-full border px-2 py-0.5 text-[10px] font-semibold"
-                    style={{ borderColor: accentColor, color: accentColor }}
-                  >
-                    {tag}
-                  </span>
-                ))}
-                <span className="rounded-full border border-slate-200 px-2 py-0.5 text-[10px] font-semibold text-slate-600">ATS-ready</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function CreatePageContent() {
   const {
@@ -302,7 +179,7 @@ function CreatePageContent() {
   const [uploadKey, setUploadKey] = useState(0);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const visibleTemplates = TEMPLATE_OPTIONS.filter((t) => {
+  const visibleTemplates: TemplateCatalogItem[] = TEMPLATE_OPTIONS.filter((t: TemplateCatalogItem) => {
     if (activeFilter === "all") return true;
     if (activeFilter === "ats") return t.tags.includes("ATS") || t.category === "ats";
     if (activeFilter === "one-column") return ["classic", "minimal", "executive", "terra"].includes(t.id);
@@ -635,37 +512,12 @@ function CreatePageContent() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
             {visibleTemplates.map((t) => (
-              <article key={t.id}
-                className={`group border rounded-2xl p-3 bg-[#f3f6fb] shadow-sm cursor-pointer transition-all hover:shadow-lg hover:-translate-y-0.5 ${
-                  selectedTemplate === t.id
-                    ? "ring-2 ring-violet-500 border-violet-300"
-                    : "border-slate-200 hover:border-violet-200"
-                }`}
-                onClick={() => askStartPath(t.id)}
-              >
-                <div className="border border-slate-200 rounded-xl overflow-hidden bg-white mb-3 pointer-events-none select-none">
-                  <TemplatePreviewCard template={t} />
-                </div>
-
-                <div className="flex items-start justify-between gap-3 mb-2">
-                  <div>
-                    <h3 className="text-base font-semibold text-slate-900">{t.name}</h3>
-                    <p className="text-xs text-slate-500">{t.style}</p>
-                  </div>
-                  <div className="flex flex-wrap gap-1.5 justify-end">
-                    {t.tags.map((tag) => (
-                      <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between" onClick={(e) => e.stopPropagation()}>
-                  <AccentColorPicker templateId={t.id} />
-                  <span className="text-xs font-semibold text-violet-600 group-hover:underline">Select →</span>
-                </div>
-              </article>
+              <TemplateGalleryCard
+                key={t.id}
+                template={t}
+                selected={selectedTemplate === t.id}
+                onSelect={() => askStartPath(t.id)}
+              />
             ))}
           </div>
 

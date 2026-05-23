@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
               spacing: { before: 0, after: 0 },
               children: [
                 new ImageRun({
-                  type: "jpg",
+                  type: page.dataUrl.startsWith("data:image/png") ? "png" : "jpg",
                   data: dataUrlToBuffer(page.dataUrl),
                   transformation: {
                     width: 794,

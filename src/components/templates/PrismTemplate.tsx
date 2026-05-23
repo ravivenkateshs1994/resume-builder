@@ -27,7 +27,7 @@ export default function PrismTemplate({ data, accentColor }: Props) {
     >
       {/* ── Left sidebar ──────────────────────────────────────────────────────── */}
       <aside
-        className="w-[220px] flex-shrink-0 px-5 py-7"
+        className="w-[240px] flex-shrink-0 px-6 py-7"
         style={{ backgroundColor: theme.accentSofter }}
       >
         {/* Avatar */}
@@ -35,8 +35,8 @@ export default function PrismTemplate({ data, accentColor }: Props) {
           headshotUrl={personalInfo.headshotUrl}
           initials={initials}
           alt={`${personalInfo.fullName || "Candidate"} headshot`}
-          className="w-20 h-20 rounded-2xl overflow-hidden mb-4 mx-auto"
-          fallbackClassName="h-full w-full flex items-center justify-center text-lg font-bold select-none"
+          className="w-32 h-32 rounded-3xl overflow-hidden mb-5 mx-auto"
+          fallbackClassName="h-full w-full flex items-center justify-center text-3xl font-bold select-none"
           style={{ backgroundColor: theme.accent, color: theme.contrast }}
         />
 
