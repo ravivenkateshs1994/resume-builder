@@ -1,9 +1,10 @@
 "use client";
 
-import type { ReactNode } from "react";
+import type { KeyboardEvent, ReactNode } from "react";
 import { useResumeStore } from "@/store/resumeStore";
 import AccentColorPicker from "@/components/AccentColorPicker";
 import ResumeRenderer from "@/components/templates/ResumeRenderer";
+import RecommendationTooltip from "@/components/ui/RecommendationTooltip";
 import { getDefaultTemplateAccent } from "@/lib/templateTheme";
 import type { ResumeData, TemplateId } from "@/types/resume";
 import {
@@ -561,6 +562,9 @@ export function TemplateGalleryCard({
   isPremium,
   atsScore,
   recommendedFor,
+  isRecommended,
+  matchScore,
+  recommendationReason,
   badgeType,
   locked,
   variant = "grid",
@@ -573,6 +577,9 @@ export function TemplateGalleryCard({
   isPremium?: boolean;
   atsScore?: number;
   recommendedFor?: string[];
+  isRecommended?: boolean;
+  matchScore?: number;
+  recommendationReason?: string;
   badgeType?: string;
   locked?: boolean;
   variant?: "grid" | "sidebar";
@@ -582,19 +589,46 @@ export function TemplateGalleryCard({
   const roles = recommendedFor ?? template.recommendedFor;
   const selectedState = isSelected ?? selected;
   const cardLocked = locked ?? false;
+  const recommended = Boolean(isRecommended);
+  const recommendationScore = matchScore ?? score;
+
+  function handleCardKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      onSelect();
+    }
+  }
 
   if (variant === "sidebar") {
     return (
       <div
         onClick={onSelect}
+        onKeyDown={handleCardKeyDown}
+        tabIndex={0}
         className={`crp-template-card border-2 rounded-xl p-2.5 cursor-pointer transition-all flex h-full flex-col ${
           premium ? "crp-premium-card" : ""
         } ${
-          selectedState ? "border-indigo-600 shadow-md shadow-indigo-100" : "border-slate-200 hover:border-slate-300"
+          selectedState
+            ? "border-indigo-600 shadow-md shadow-indigo-100"
+            : recommended
+            ? "border-violet-400 shadow-[0_18px_38px_-24px_rgba(99,102,241,0.55)] scale-[1.01] hover:border-violet-500"
+            : "border-slate-200 hover:border-slate-300"
         }`}
         role="button"
-        aria-label={`Select ${template.name} template`}
+        aria-label={recommended ? `AI recommended template ${template.name}, ${recommendationScore}% match` : `Select ${template.name} template`}
       >
+        {recommended && (
+          <div className="mb-2 flex items-start justify-between gap-2">
+            <span className="crp-ai-pick-badge" aria-label={`AI pick ${recommendationScore}% match`}>
+              <span className="text-[11px]">✨ AI Pick</span>
+              <span className="text-[10px] opacity-95">{recommendationScore}% Match</span>
+            </span>
+            <RecommendationTooltip
+              id={`recommendation-reason-${template.id}-sidebar`}
+              reason={recommendationReason || "Recommended based on role relevance, ATS compatibility, and formatting quality."}
+            />
+          </div>
+        )}
         <TemplatePreviewCard template={template} compact />
         <div className="mt-2 flex flex-wrap items-center gap-1">
           {premium && (
@@ -644,20 +678,40 @@ export function TemplateGalleryCard({
   return (
     <div
       onClick={onSelect}
+      onKeyDown={handleCardKeyDown}
+      tabIndex={0}
       className={`crp-template-card flex h-full cursor-pointer flex-col rounded-xl border-2 p-3 text-left transition-all ${
         premium ? "crp-premium-card" : ""
       } ${
-        selectedState ? "border-indigo-600 shadow-md shadow-indigo-100" : "border-slate-200 hover:border-slate-300"
+        selectedState
+          ? "border-indigo-600 shadow-md shadow-indigo-100"
+          : recommended
+          ? "border-violet-400 shadow-[0_20px_42px_-22px_rgba(99,102,241,0.58)] scale-[1.02] hover:border-violet-500"
+          : "border-slate-200 hover:border-slate-300"
       }`}
       role="button"
-      aria-label={`Select ${template.name} template`}
+      aria-label={recommended ? `AI recommended template ${template.name}, ${recommendationScore}% match` : `Select ${template.name} template`}
     >
       <div className="mb-2 flex items-center justify-between gap-2">
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {recommended && (
+            <span className="crp-ai-pick-badge" aria-label={`AI pick ${recommendationScore}% match`}>
+              <span className="text-[11px]">✨ AI Pick</span>
+              <span className="text-[10px] opacity-95">{recommendationScore}% Match</span>
+            </span>
+          )}
           {premium && <span className="crp-premium-badge">{badgeType || template.premiumBadgeType || "Premium"}</span>}
           {score > 0 && <span className="crp-ats-badge">ATS Optimized {score}</span>}
         </div>
-        {selectedState && <span className="text-xs font-semibold text-indigo-700">✓</span>}
+        <div className="flex items-center gap-2">
+          {recommended && (
+            <RecommendationTooltip
+              id={`recommendation-reason-${template.id}`}
+              reason={recommendationReason || "Recommended based on role relevance, ATS compatibility, and formatting quality."}
+            />
+          )}
+          {selectedState && <span className="text-xs font-semibold text-indigo-700">✓</span>}
+        </div>
       </div>
       <TemplatePreviewCard template={template} />
       <p className="text-sm font-semibold tracking-tight text-slate-900">{template.name}</p>

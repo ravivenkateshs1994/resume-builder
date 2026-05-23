@@ -343,6 +343,53 @@ select:focus {
   overflow: hidden;
 }
 
+@keyframes crp-ai-shimmer {
+  0%,
+  86%,
+  100% {
+    transform: translateX(-125%);
+    opacity: 0;
+  }
+  89% {
+    opacity: 0.34;
+  }
+  95% {
+    transform: translateX(155%);
+    opacity: 0.1;
+  }
+}
+
+.crp-ai-pick-badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.34rem;
+  overflow: hidden;
+  border-radius: 9999px;
+  border: 1px solid rgb(167 139 250 / 0.65);
+  padding: 0.22rem 0.58rem;
+  background: linear-gradient(90deg, rgb(139 92 246 / 0.96), rgb(59 130 246 / 0.93));
+  color: #ffffff;
+  box-shadow: 0 10px 26px -16px rgb(99 102 241 / 0.56);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.crp-ai-pick-badge::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 38%;
+  background: linear-gradient(95deg, transparent 0%, rgb(255 255 255 / 0.56) 48%, transparent 100%);
+  animation: crp-ai-shimmer 8s ease-in-out infinite;
+}
+
+:is(.dark .crp-ai-pick-badge) {
+  border-color: rgb(129 140 248 / 0.6);
+  background: linear-gradient(90deg, rgb(109 40 217 / 0.96), rgb(37 99 235 / 0.92));
+  box-shadow: 0 10px 26px -16px rgb(79 70 229 / 0.62);
+}
+
 /* ── Rich text description rendered inside resume templates ─────────────────── */
 .resume-desc ul { list-style: disc; padding-left: 1.25rem; margin-top: 0.25rem; }
 .resume-desc ul li { margin-bottom: 2px; }
