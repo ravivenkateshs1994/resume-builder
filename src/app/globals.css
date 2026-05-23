@@ -15,6 +15,11 @@
   --brand-2: #4f46e5;
   --brand-3: #a78bfa;
   --ring: #8b5cf6;
+  --premium-gold-100: #fef3c7;
+  --premium-gold-300: #fcd34d;
+  --premium-gold-700: #b45309;
+  --ats-green-100: #dcfce7;
+  --ats-green-700: #15803d;
 }
 
 body {
@@ -43,6 +48,208 @@ h3 {
   backdrop-filter: blur(8px);
   border: 1px solid #e2e8f0;
   box-shadow: 0 12px 30px -18px rgb(2 8 23 / 0.28);
+}
+
+/* ── Career readiness design system primitives ─────────────────────────────── */
+.crp-shell {
+  background:
+    radial-gradient(1200px 520px at -8% -10%, #e7eafe 0%, transparent 56%),
+    radial-gradient(1000px 420px at 108% -8%, #dff4ff 0%, transparent 54%),
+    linear-gradient(180deg, #f9fbff 0%, #f6f8fc 40%, #f8fafc 100%);
+}
+
+.crp-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  background: #ffffff;
+  box-shadow: 0 18px 45px -30px rgb(15 23 42 / 0.35);
+}
+
+.crp-card-soft {
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  background: linear-gradient(180deg, #ffffff 0%, #f8faff 100%);
+  box-shadow: 0 18px 45px -33px rgb(15 23 42 / 0.32);
+}
+
+.crp-section-title {
+  font-size: 1.75rem;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.crp-section-copy {
+  color: #475569;
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.crp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid #c7d2fe;
+  background: #eef2ff;
+  color: #4338ca;
+  border-radius: 9999px;
+  padding: 0.24rem 0.62rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.crp-btn-primary {
+  border: none;
+  border-radius: 0.78rem;
+  background: linear-gradient(90deg, #4f46e5 0%, #06b6d4 100%);
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 14px 32px -18px rgb(79 70 229 / 0.7);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+}
+
+.crp-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 36px -20px rgb(79 70 229 / 0.8);
+}
+
+.crp-btn-primary:disabled {
+  opacity: 0.48;
+  transform: none;
+  box-shadow: none;
+}
+
+.crp-btn-secondary {
+  border: 1px solid #cbd5e1;
+  border-radius: 0.78rem;
+  background: #ffffff;
+  color: #334155;
+  font-weight: 700;
+  transition: border-color 0.18s ease, color 0.18s ease, background-color 0.18s ease;
+}
+
+.crp-btn-secondary:hover {
+  border-color: #94a3b8;
+  background-color: #f8fafc;
+}
+
+.crp-input,
+.crp-textarea {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.78rem;
+  background: #ffffff;
+  color: #0f172a;
+  padding: 0.68rem 0.85rem;
+  font-size: 0.92rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.crp-input:focus,
+.crp-textarea:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgb(99 102 241 / 0.22);
+}
+
+.crp-progress-step {
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  background: #ffffff;
+  padding: 0.52rem 0.68rem;
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.crp-premium-badge {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--premium-gold-300);
+  background: var(--premium-gold-100);
+  color: var(--premium-gold-700);
+  border-radius: 9999px;
+  padding: 0.12rem 0.46rem;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.crp-ats-badge {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #86efac;
+  background: var(--ats-green-100);
+  color: var(--ats-green-700);
+  border-radius: 9999px;
+  padding: 0.12rem 0.46rem;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.crp-premium-card:hover {
+  border-color: #f59e0b;
+  box-shadow: 0 12px 30px -20px rgb(245 158 11 / 0.5);
+}
+
+@media (prefers-color-scheme: dark) {
+  .crp-shell {
+    background:
+      radial-gradient(1200px 540px at -8% -10%, rgb(37 49 97 / 0.45) 0%, transparent 56%),
+      radial-gradient(980px 430px at 108% -8%, rgb(14 67 84 / 0.4) 0%, transparent 54%),
+      linear-gradient(180deg, #020617 0%, #0b1222 42%, #020617 100%);
+  }
+
+  .crp-card,
+  .crp-card-soft {
+    border-color: #1e293b;
+    background: #0f172a;
+    box-shadow: 0 16px 45px -32px rgb(15 23 42 / 0.92);
+  }
+
+  .crp-section-title {
+    color: #f8fafc;
+  }
+
+  .crp-section-copy {
+    color: #cbd5e1;
+  }
+
+  .crp-badge {
+    border-color: #3749a0;
+    background: #1f2a59;
+    color: #c7d2fe;
+  }
+
+  .crp-btn-secondary {
+    border-color: #334155;
+    background: #0f172a;
+    color: #cbd5e1;
+  }
+
+  .crp-btn-secondary:hover {
+    border-color: #475569;
+    background: #111c32;
+  }
+
+  .crp-input,
+  .crp-textarea {
+    border-color: #334155;
+    background: #020617;
+    color: #e2e8f0;
+  }
+
+  .crp-progress-step {
+    border-color: #334155;
+    background: #0f172a;
+    color: #cbd5e1;
+  }
 }
 
 /* ── Rich text description rendered inside resume templates ─────────────────── */

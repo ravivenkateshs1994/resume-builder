@@ -15,8 +15,8 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "AI Resume Builder",
-  description: "Create a professional, ATS-optimized resume in minutes with AI",
+  title: "AI Career Readiness Platform",
+  description: "Become interview-ready with AI-powered resume tailoring, JD match analysis, skill-gap insights, and personalized learning roadmaps.",
 };
 
 export default function RootLayout({

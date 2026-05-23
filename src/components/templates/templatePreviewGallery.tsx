@@ -6,33 +6,14 @@ import AccentColorPicker from "@/components/AccentColorPicker";
 import ResumeRenderer from "@/components/templates/ResumeRenderer";
 import { getDefaultTemplateAccent } from "@/lib/templateTheme";
 import type { ResumeData, TemplateId } from "@/types/resume";
+import {
+  TEMPLATE_CATALOG,
+  type TemplateCatalogItem,
+  type TemplateCategory,
+} from "@/lib/templateCatalog";
 
-export type TemplateCategory = "simple" | "modern" | "professional" | "ats";
-
-export interface TemplateCatalogItem {
-  id: TemplateId;
-  name: string;
-  description: string;
-  style: string;
-  previewColor: string;
-  category: TemplateCategory;
-  tags: string[];
-}
-
-export const TEMPLATE_CATALOG: TemplateCatalogItem[] = [
-  { id: "modern", name: "Modern", description: "Balanced two-column with clean hierarchy.", style: "Balanced two-column with clean hierarchy.", previewColor: "bg-blue-600", category: "modern", tags: ["ATS", "Popular"] },
-  { id: "classic", name: "Classic", description: "Traditional format with conservative styling.", style: "Traditional format with conservative styling.", previewColor: "bg-slate-700", category: "professional", tags: ["Formal", "ATS"] },
-  { id: "creative", name: "Creative", description: "Bold sidebar layout for standout portfolios.", style: "Bold sidebar layout for standout portfolios.", previewColor: "bg-violet-700", category: "modern", tags: ["Design", "Modern"] },
-  { id: "minimal", name: "Minimal", description: "Minimal whitespace-focused, elegant look.", style: "Minimal whitespace-focused, elegant look.", previewColor: "bg-gray-400", category: "simple", tags: ["Simple", "Clean"] },
-  { id: "executive", name: "Executive", description: "Premium corporate style for leadership roles.", style: "Premium corporate style for leadership roles.", previewColor: "bg-gray-900", category: "professional", tags: ["Senior", "Corporate"] },
-  { id: "slate", name: "Slate", description: "Dark-accent professional two-pane composition.", style: "Dark-accent professional two-pane composition.", previewColor: "bg-slate-800", category: "modern", tags: ["Structured", "Modern"] },
-  { id: "chronos", name: "Chronos", description: "Timeline-centric storytelling layout.", style: "Timeline-centric storytelling layout.", previewColor: "bg-teal-600", category: "modern", tags: ["Timeline", "Elegant"] },
-  { id: "terra", name: "Terra", description: "Warm editorial tone with refined typography.", style: "Warm editorial tone with refined typography.", previewColor: "bg-amber-700", category: "professional", tags: ["Creative", "Warm"] },
-  { id: "tech", name: "Tech", description: "Sharp high-contrast style for tech profiles.", style: "Sharp high-contrast style for tech profiles.", previewColor: "bg-cyan-600", category: "ats", tags: ["Tech", "Bold"] },
-  { id: "nova", name: "Nova", description: "Avatar header with vibrant full-width accent banner.", style: "Avatar header with vibrant full-width accent banner.", previewColor: "bg-blue-500", category: "modern", tags: ["Photo", "Modern"] },
-  { id: "prism", name: "Prism", description: "Light sidebar with accent-tinted left panel.", style: "Light sidebar with accent-tinted left panel.", previewColor: "bg-teal-500", category: "modern", tags: ["Two-Column", "Elegant"] },
-  { id: "apex", name: "Apex", description: "Bold headers, grid skills — maximally ATS-safe.", style: "Bold headers, grid skills — maximally ATS-safe.", previewColor: "bg-slate-600", category: "ats", tags: ["ATS", "Clean"] },
-];
+export { TEMPLATE_CATALOG };
+export type { TemplateCatalogItem, TemplateCategory };
 
 type ResumeSeed = {
   fullName: string;
@@ -569,25 +550,64 @@ export function TemplatePreviewCard({ template, compact = false }: { template: T
 export function TemplateGalleryCard({
   template,
   selected = false,
+  isSelected,
   onSelect,
+  onPreview,
+  isPremium,
+  atsScore,
+  recommendedFor,
+  badgeType,
+  locked,
   variant = "grid",
 }: {
   template: TemplateCatalogItem;
   selected?: boolean;
+  isSelected?: boolean;
   onSelect: () => void;
+  onPreview?: () => void;
+  isPremium?: boolean;
+  atsScore?: number;
+  recommendedFor?: string[];
+  badgeType?: string;
+  locked?: boolean;
   variant?: "grid" | "sidebar";
 }) {
+  const premium = isPremium ?? template.isPremium;
+  const score = atsScore ?? template.atsScore ?? 0;
+  const roles = recommendedFor ?? template.recommendedFor;
+  const selectedState = isSelected ?? selected;
+  const cardLocked = locked ?? false;
+
   if (variant === "sidebar") {
     return (
       <div
         onClick={onSelect}
         className={`border-2 rounded-xl p-2.5 cursor-pointer transition-all flex h-full flex-col ${
-          selected ? "border-blue-600 shadow-md shadow-blue-100" : "border-gray-200 hover:border-gray-300"
+          premium ? "crp-premium-card" : ""
+        } ${
+          selectedState ? "border-blue-600 shadow-md shadow-blue-100" : "border-gray-200 hover:border-gray-300"
         }`}
+        role="button"
+        aria-label={`Select ${template.name} template`}
       >
         <TemplatePreviewCard template={template} compact />
+        <div className="mt-2 flex flex-wrap items-center gap-1">
+          {premium && (
+            <span className="crp-premium-badge">{badgeType || template.premiumBadgeType || "Premium"}</span>
+          )}
+          {score > 0 && <span className="crp-ats-badge">ATS {score}</span>}
+        </div>
         <p className="mt-2 text-xs font-semibold text-gray-800">{template.name}</p>
         <p className="mt-0.5 text-[10px] leading-tight text-gray-500">{template.style}</p>
+        {!!roles.length && (
+          <div className="mt-1.5 flex flex-wrap gap-1">
+            {roles.slice(0, 2).map((role) => (
+              <span key={role} className="rounded-full bg-slate-100 px-1.5 py-0.5 text-[9px] text-slate-600">
+                {role}
+              </span>
+            ))}
+          </div>
+        )}
         <div className="mt-1.5 flex flex-wrap gap-1">
           {template.tags.map((tag) => (
             <span key={tag} className="rounded-full bg-gray-100 px-1.5 py-0.5 text-[9px] text-gray-500">
@@ -595,7 +615,20 @@ export function TemplateGalleryCard({
             </span>
           ))}
         </div>
-        {selected && <div className="mt-1.5 text-[10px] font-semibold text-blue-600">✓ Selected</div>}
+        {selectedState && <div className="mt-1.5 text-[10px] font-semibold text-blue-600">✓ Selected</div>}
+        {onPreview && (
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              onPreview();
+            }}
+            className="mt-2 rounded-lg border border-slate-200 px-2 py-1 text-[10px] font-semibold text-slate-600 hover:bg-slate-50"
+          >
+            Preview
+          </button>
+        )}
+        {cardLocked && <div className="mt-1 text-[10px] text-amber-700">Premium access coming soon</div>}
         <div className="mt-2" onClick={(event) => event.stopPropagation()}>
           <AccentColorPicker templateId={template.id} />
         </div>
@@ -607,12 +640,32 @@ export function TemplateGalleryCard({
     <div
       onClick={onSelect}
       className={`flex h-full cursor-pointer flex-col rounded-xl border-2 p-3 text-left transition-all ${
-        selected ? "border-blue-600 shadow-md shadow-blue-100" : "border-gray-200 hover:border-gray-300"
+        premium ? "crp-premium-card" : ""
+      } ${
+        selectedState ? "border-blue-600 shadow-md shadow-blue-100" : "border-gray-200 hover:border-gray-300"
       }`}
+      role="button"
+      aria-label={`Select ${template.name} template`}
     >
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-1.5">
+          {premium && <span className="crp-premium-badge">{badgeType || template.premiumBadgeType || "Premium"}</span>}
+          {score > 0 && <span className="crp-ats-badge">ATS Optimized {score}</span>}
+        </div>
+        {selectedState && <span className="text-xs font-semibold text-blue-600">✓</span>}
+      </div>
       <TemplatePreviewCard template={template} />
       <p className="mt-3 text-xs font-semibold text-gray-800">{template.name}</p>
       <p className="mt-0.5 text-[10px] leading-tight text-gray-500">{template.description}</p>
+      {!!roles.length && (
+        <div className="mt-2 flex flex-wrap gap-1">
+          {roles.slice(0, 3).map((role) => (
+            <span key={role} className="rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] text-indigo-700">
+              {role}
+            </span>
+          ))}
+        </div>
+      )}
       <div className="mt-1.5 flex flex-wrap gap-1">
         {template.tags.map((tag) => (
           <span key={tag} className="rounded-full bg-gray-100 px-1.5 py-0.5 text-[9px] text-gray-500">
@@ -620,7 +673,22 @@ export function TemplateGalleryCard({
           </span>
         ))}
       </div>
-      {selected && <div className="mt-1.5 text-[10px] font-semibold text-blue-600">✓ Selected</div>}
+      {selectedState && <div className="mt-1.5 text-[10px] font-semibold text-blue-600">✓ Selected</div>}
+      {onPreview && (
+        <button
+          type="button"
+          onClick={(event) => {
+            event.stopPropagation();
+            onPreview();
+          }}
+          className={`mt-2 rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition-colors ${
+            premium ? "border-amber-200 text-amber-700 hover:bg-amber-50" : "border-slate-200 text-slate-700 hover:bg-slate-50"
+          }`}
+        >
+          Preview
+        </button>
+      )}
+      {cardLocked && <div className="mt-1 text-xs text-amber-700">Premium locking will be enabled soon.</div>}
       <div className="mt-2" onClick={(event) => event.stopPropagation()}>
         <AccentColorPicker templateId={template.id} />
       </div>

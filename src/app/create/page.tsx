@@ -1,14 +1,21 @@
 "use client";
 
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useResumeStore } from "@/store/resumeStore";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import StepIndicator from "@/components/StepIndicator";
-import { TEMPLATE_CATALOG as TEMPLATE_OPTIONS, TemplateGalleryCard } from "@/components/templates/templateGallery";
+import {
+  TEMPLATE_CATALOG as TEMPLATE_OPTIONS,
+  TemplateGalleryCard,
+  TemplatePreviewCard,
+} from "@/components/templates/templateGallery";
 import type { TemplateCatalogItem } from "@/components/templates/templateGallery";
 import type { TemplateId } from "@/types/resume";
+import { trackEvent } from "@/lib/analytics";
+import { isPremiumTemplatesEnabledClient } from "@/lib/featureFlags";
+import type { CareerLevel, RoleCategory, TemplateTierFilter } from "@/lib/templateCatalog";
 
 const StepShell = ({ title }: { title: string }) => (
   <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -70,24 +77,30 @@ const PreviewStep = dynamic(() => import("@/components/steps/PreviewStep"), {
 
 function AppHeader() {
   return (
-    <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-slate-100">
-      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/85 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/75">
+      <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-6 gap-4">
         <Link href="/" className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-white font-bold text-sm">
-            R
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-cyan-500 text-sm font-bold text-white shadow-sm shadow-indigo-300/40">
+            CR
           </div>
-          <span className="font-bold text-slate-900 text-lg tracking-tight">ResumeAI</span>
+          <span className="text-sm font-bold tracking-wide sm:text-base text-slate-900 dark:text-slate-100">Career Readiness Platform</span>
         </Link>
-        <nav className="hidden sm:flex items-center gap-6 text-sm text-slate-600 font-medium">
-          <Link href="/" className="hover:text-slate-900 transition-colors">
+        <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600 dark:text-slate-300">
+          <Link href="/" className="transition-colors hover:text-slate-900 dark:hover:text-white">
             Home
           </Link>
-          <Link href="/gap-analysis" className="hover:text-slate-900 transition-colors">
-            Gap Analyzer
+          <Link href="/create" className="transition-colors hover:text-slate-900 dark:hover:text-white">
+            Resume Tailoring
           </Link>
-          <Link href="/create" className="hover:text-slate-900 transition-colors">
-            Builder
+          <Link href="/gap-analysis" className="transition-colors hover:text-slate-900 dark:hover:text-white">
+            Gap Analysis
           </Link>
+          <Link href="/learning-resources" className="transition-colors hover:text-slate-900 dark:hover:text-white">
+            Learning Resources
+          </Link>
+          <a href="#roadmap" className="transition-colors hover:text-slate-900 dark:hover:text-white">
+            Roadmap
+          </a>
         </nav>
       </div>
     </header>
@@ -102,23 +115,23 @@ const flowStages = [
 
 function FlowStrip({ activeStep }: { activeStep: number }) {
   return (
-    <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 py-4">
-      <div className="rounded-full border border-slate-200 bg-white/85 px-3 py-2 shadow-sm backdrop-blur">
+    <div className="mx-auto w-full max-w-7xl px-6 py-4">
+      <div className="rounded-full border border-slate-200/90 bg-white/90 px-3 py-2 shadow-[0_14px_35px_-24px_rgba(15,23,42,0.35)] backdrop-blur">
         <div className="flex items-center justify-center gap-2 overflow-x-auto whitespace-nowrap">
-          <span className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.22em] text-violet-600">
+          <span className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.22em] text-indigo-600">
             Template flow
           </span>
           {flowStages.map((step, index) => (
             <div
               key={step.number}
               className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-                index === activeStep ? "bg-violet-50 text-slate-900" : "text-slate-500"
+                index === activeStep ? "bg-indigo-50 text-slate-900" : "text-slate-500"
               }`}
             >
               <span
                 className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
                   index === activeStep
-                    ? "bg-gradient-to-br from-violet-600 to-indigo-600 text-white shadow-sm shadow-violet-200"
+                    ? "bg-gradient-to-br from-indigo-600 to-cyan-500 text-white shadow-sm shadow-indigo-200"
                     : "border border-slate-200 bg-white text-slate-500"
                 }`}
               >
@@ -156,6 +169,7 @@ function CreatePageContent() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
   const [uploadMsgIdx, setUploadMsgIdx] = useState(0);
@@ -171,21 +185,112 @@ function CreatePageContent() {
   const [prefilled, setPrefilled] = useState(false);
   const [showStartChoice, setShowStartChoice] = useState(false);
   const [pendingTemplate, setPendingTemplate] = useState<TemplateId | null>(null);
+  const [activeTierFilter, setActiveTierFilter] = useState<TemplateTierFilter>("all");
+  const [activeRoleCategory, setActiveRoleCategory] = useState<RoleCategory>("all");
+  const [activeLevelCategory, setActiveLevelCategory] = useState<CareerLevel>("all");
   const [activeFilter, setActiveFilter] = useState<
     "all" | "simple" | "modern" | "one-column" | "with-photo" | "professional" | "ats"
   >("all");
+  const [templates, setTemplates] = useState<TemplateCatalogItem[]>(TEMPLATE_OPTIONS);
+  const [recommendedTemplateIds, setRecommendedTemplateIds] = useState<TemplateId[]>([]);
+  const [previewTemplate, setPreviewTemplate] = useState<TemplateCatalogItem | null>(null);
+  const premiumEnabled = isPremiumTemplatesEnabledClient();
+  const trackedViews = useRef<Set<string>>(new Set());
   // Incrementing this forces step components to remount so their useState
   // initializers re-run against the freshly-populated store.
   const [uploadKey, setUploadKey] = useState(0);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const visibleTemplates: TemplateCatalogItem[] = TEMPLATE_OPTIONS.filter((t: TemplateCatalogItem) => {
-    if (activeFilter === "all") return true;
-    if (activeFilter === "ats") return t.tags.includes("ATS") || t.category === "ats";
-    if (activeFilter === "one-column") return ["classic", "minimal", "executive", "terra"].includes(t.id);
-    if (activeFilter === "with-photo") return ["creative", "chronos", "slate", "nova", "prism"].includes(t.id);
-    return t.category === activeFilter;
-  });
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadTemplates() {
+      try {
+        const res = await fetch("/api/templates", { cache: "no-store" });
+        if (!res.ok) return;
+        const payload = await res.json();
+        if (!cancelled && Array.isArray(payload.templates)) {
+          setTemplates(payload.templates as TemplateCatalogItem[]);
+        }
+      } catch {
+        // Fail open with local fallback catalog.
+      }
+    }
+
+    async function loadRecommendations() {
+      try {
+        const jdId = searchParams.get("jdId") || "default";
+        const res = await fetch(`/api/templates/recommend?jdId=${encodeURIComponent(jdId)}`, {
+          cache: "no-store",
+        });
+        if (!res.ok) return;
+        const payload = await res.json();
+        if (!cancelled && Array.isArray(payload.templateIds)) {
+          setRecommendedTemplateIds(payload.templateIds as TemplateId[]);
+        }
+      } catch {
+        // Keep recommendations optional.
+      }
+    }
+
+    void loadTemplates();
+    void loadRecommendations();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [searchParams]);
+
+  const visibleTemplates = useMemo(() => {
+    return templates.filter((t) => {
+      if (activeFilter !== "all") {
+        if (activeFilter === "ats" && !(t.tags.some((tag: string) => tag.includes("ATS")) || t.category === "ats")) {
+          return false;
+        }
+        if (activeFilter === "one-column" && !["classic", "minimal", "executive", "terra"].includes(t.id)) {
+          return false;
+        }
+        if (activeFilter === "with-photo" && !["creative", "chronos", "slate", "nova", "prism"].includes(t.id)) {
+          return false;
+        }
+        if (!["ats", "one-column", "with-photo"].includes(activeFilter) && t.category !== activeFilter) {
+          return false;
+        }
+      }
+
+      if (activeTierFilter === "free" && t.isPremium) return false;
+      if (activeTierFilter === "premium" && !t.isPremium) return false;
+      if (activeTierFilter === "recommended" && !recommendedTemplateIds.includes(t.id)) return false;
+      if (activeRoleCategory !== "all" && t.roleCategory !== activeRoleCategory) return false;
+      if (activeLevelCategory !== "all" && t.levelCategory !== activeLevelCategory) return false;
+      if (!premiumEnabled && t.isPremium) return false;
+
+      return true;
+    });
+  }, [
+    activeFilter,
+    activeTierFilter,
+    activeRoleCategory,
+    activeLevelCategory,
+    premiumEnabled,
+    recommendedTemplateIds,
+    templates,
+  ]);
+
+  const freeTemplates = visibleTemplates.filter((template) => !template.isPremium);
+  const premiumTemplates = visibleTemplates.filter((template) => template.isPremium);
+
+  useEffect(() => {
+    visibleTemplates.forEach((template) => {
+      if (trackedViews.current.has(template.id)) return;
+      trackedViews.current.add(template.id);
+      trackEvent("template_view", {
+        templateId: template.id,
+        isPremium: template.isPremium,
+        priceModel: template.priceModel,
+      });
+    });
+  }, [visibleTemplates]);
 
   function startFreshFlow(templateToKeep?: TemplateId) {
     reset();
@@ -196,10 +301,29 @@ function CreatePageContent() {
     setUploadKey((k) => k + 1);
   }
 
+  async function persistTemplateSelection(templateId: TemplateId) {
+    try {
+      await fetch("/api/user/templates/select", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ templateId }),
+      });
+    } catch {
+      // Selection already persists in local state; API persistence is best-effort.
+    }
+  }
+
   function askStartPath(templateId: TemplateId) {
     setSelectedTemplate(templateId);
     setPendingTemplate(templateId);
     setShowStartChoice(true);
+    void persistTemplateSelection(templateId);
+    const template = templates.find((item) => item.id === templateId);
+    trackEvent("template_select", {
+      templateId,
+      isPremium: template?.isPremium ?? false,
+      priceModel: template?.priceModel ?? "free",
+    });
   }
 
   /** Load PDF.js from CDN (avoids webpack bundling the 3 MB library) */
@@ -454,72 +578,208 @@ function CreatePageContent() {
   // ── Gate screen ──────────────────────────────────────────────────────────────
   if (mode === "gate") {
     return (
-      <div className="min-h-screen bg-[#f8f9fc] flex flex-col">
+      <div className="min-h-screen crp-shell flex flex-col">
         <AppHeader />
 
         <FlowStrip activeStep={0} />
 
-        <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 pt-6">
+        <div className="mx-auto w-full max-w-7xl px-6 pt-4">
+          <div className="crp-card p-6">
+            <span className="crp-badge">Resume Tailoring</span>
+            <h1 className="crp-section-title mt-3">Resume Tailoring</h1>
+            <p className="crp-section-copy mt-2 max-w-3xl">
+              Upload your resume and paste a job description to receive targeted improvements.
+            </p>
+          </div>
+        </div>
+
+        <div className="mx-auto w-full max-w-7xl px-6 pt-6">
           <div className="flex justify-end">
             <button
               type="button"
               onClick={() => setMode("form")}
-              className="border-2 border-slate-200 bg-white hover:border-slate-300 text-slate-700 px-5 py-2 rounded-xl text-sm font-semibold transition-colors"
+              className="crp-btn-secondary px-5 py-2 text-sm shadow-sm"
             >
               Choose Later
             </button>
           </div>
         </div>
 
-        <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 py-4">
-          <div className="border-b border-slate-200 mb-6">
-            <div className="flex items-center gap-4 overflow-x-auto pb-0.5">
+        <div className="mx-auto w-full max-w-7xl px-6 py-4">
+          <div className="crp-card-soft p-4 mb-6">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-indigo-600">Template Studio</p>
+                <p className="mt-1 text-sm text-slate-600">Choose the format that best matches your target role.</p>
+              </div>
+              <span className="crp-badge">ATS Ready</span>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
               {[
-                { key: "all", label: "All Templates" },
-                { key: "simple", label: "Simple" },
-                { key: "modern", label: "Modern" },
-                { key: "one-column", label: "One column" },
-                { key: "with-photo", label: "With photo" },
-                { key: "professional", label: "Professional" },
-                { key: "ats", label: "ATS" },
+                { key: "recommended", label: "Recommended" },
+                { key: "all", label: "All" },
+                { key: "free", label: "Free" },
+                ...(premiumEnabled ? [{ key: "premium", label: "Premium" }] : []),
               ].map((f) => (
                 <button
                   key={f.key}
                   type="button"
-                  onClick={() =>
-                    setActiveFilter(
-                      f.key as
-                        | "all"
-                        | "simple"
-                        | "modern"
-                        | "one-column"
-                        | "with-photo"
-                        | "professional"
-                        | "ats"
-                    )
-                  }
-                  className={`whitespace-nowrap px-3 py-2 text-lg font-semibold border-b-2 transition-colors ${
-                    activeFilter === f.key
-                      ? "text-violet-600 border-violet-600"
-                      : "text-slate-500 border-transparent hover:text-slate-700"
+                  onClick={() => setActiveTierFilter(f.key as TemplateTierFilter)}
+                  className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
+                    activeTierFilter === f.key
+                      ? "border-indigo-300 bg-indigo-50 text-indigo-700"
+                      : "border-slate-200 bg-white text-slate-600 hover:text-slate-800"
                   }`}
                 >
                   {f.label}
                 </button>
               ))}
             </div>
+
+            <div className="mt-3 flex flex-wrap items-center gap-4">
+              <div className="flex flex-wrap items-center gap-2">
+                {[
+                  { key: "all", label: "All Templates" },
+                  { key: "simple", label: "Simple" },
+                  { key: "modern", label: "Modern" },
+                  { key: "one-column", label: "One column" },
+                  { key: "with-photo", label: "With photo" },
+                  { key: "professional", label: "Professional" },
+                  { key: "ats", label: "ATS" },
+                ].map((f) => (
+                  <button
+                    key={f.key}
+                    type="button"
+                    onClick={() =>
+                      setActiveFilter(
+                        f.key as
+                          | "all"
+                          | "simple"
+                          | "modern"
+                          | "one-column"
+                          | "with-photo"
+                          | "professional"
+                          | "ats"
+                      )
+                    }
+                    className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
+                      activeFilter === f.key
+                        ? "bg-slate-900 text-white"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    }`}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+
+              <select
+                value={activeRoleCategory}
+                onChange={(event) => setActiveRoleCategory(event.target.value as RoleCategory)}
+                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700"
+                aria-label="Filter by role category"
+              >
+                <option value="all">All role categories</option>
+                <option value="software">Software</option>
+                <option value="design">Design</option>
+                <option value="product">Product</option>
+                <option value="operations">Operations</option>
+                <option value="leadership">Leadership</option>
+              </select>
+
+              <select
+                value={activeLevelCategory}
+                onChange={(event) => setActiveLevelCategory(event.target.value as CareerLevel)}
+                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700"
+                aria-label="Filter by level category"
+              >
+                <option value="all">All levels</option>
+                <option value="entry">Entry</option>
+                <option value="mid">Mid</option>
+                <option value="senior">Senior</option>
+              </select>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-            {visibleTemplates.map((t) => (
-              <TemplateGalleryCard
-                key={t.id}
-                template={t}
-                selected={selectedTemplate === t.id}
-                onSelect={() => askStartPath(t.id)}
-              />
-            ))}
+          <div className="mb-4 crp-card-soft px-4 py-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-indigo-700">ATS Checklist</p>
+            <p className="mt-1 text-xs text-slate-700">
+              Templates are ATS-safe with standard fonts (Arial/Calibri), clear section headings, bullet lists,
+              and screen-reader friendly reading order. Avoid image-based headings and table-heavy structures.
+            </p>
           </div>
+
+          {!!freeTemplates.length && (
+            <div>
+              <h3 className="mb-3 text-sm font-bold text-slate-800">Free Templates</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                {freeTemplates.map((t) => (
+                  <div key={t.id} className="relative">
+                    {recommendedTemplateIds.includes(t.id) && (
+                      <div className="mb-2 rounded-xl border border-cyan-200 bg-cyan-50 px-3 py-2 text-xs text-cyan-900">
+                        <p className="font-semibold">Recommended for You</p>
+                        <p>Matches your target role</p>
+                      </div>
+                    )}
+                    <TemplateGalleryCard
+                      template={t}
+                      selected={selectedTemplate === t.id}
+                      isSelected={selectedTemplate === t.id}
+                      onSelect={() => askStartPath(t.id)}
+                      onPreview={() => {
+                        setPreviewTemplate(t);
+                        trackEvent("template_preview", {
+                          templateId: t.id,
+                          isPremium: t.isPremium,
+                          priceModel: t.priceModel,
+                        });
+                      }}
+                      isPremium={false}
+                      atsScore={t.atsScore ?? undefined}
+                      recommendedFor={t.recommendedFor}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {premiumEnabled && (
+            <div className="mt-8">
+              <h3 className="mb-3 text-sm font-bold text-slate-800">Premium Templates</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                {premiumTemplates.map((t) => (
+                  <TemplateGalleryCard
+                    key={t.id}
+                    template={t}
+                    selected={selectedTemplate === t.id}
+                    isSelected={selectedTemplate === t.id}
+                    onSelect={() => askStartPath(t.id)}
+                    onPreview={() => {
+                      setPreviewTemplate(t);
+                      trackEvent("template_preview", {
+                        templateId: t.id,
+                        isPremium: t.isPremium,
+                        priceModel: t.priceModel,
+                      });
+                    }}
+                    isPremium
+                    atsScore={t.atsScore ?? undefined}
+                    recommendedFor={t.recommendedFor}
+                    badgeType={t.premiumBadgeType ?? "Premium"}
+                    locked={false}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {visibleTemplates.length === 0 && (
+            <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-sm text-slate-600">
+              No templates match your current filters.
+            </div>
+          )}
 
           {uploading && (
             <div className="fixed inset-0 z-30 bg-slate-900/30 backdrop-blur-sm flex items-center justify-center px-4">
@@ -546,22 +806,24 @@ function CreatePageContent() {
                   <button
                     type="button"
                     onClick={() => {
+                      trackEvent("template_apply_attempt", { action: "import_resume", templateId: pendingTemplate || selectedTemplate });
                       if (pendingTemplate) setSelectedTemplate(pendingTemplate);
                       setShowStartChoice(false);
                       fileRef.current?.click();
                     }}
-                    className="w-full border border-slate-300 hover:border-slate-400 text-slate-700 text-sm px-4 py-2.5 rounded-lg font-semibold"
+                    className="w-full crp-btn-secondary text-sm px-4 py-2.5"
                   >
                     Import Resume
                   </button>
                   <button
                     type="button"
                     onClick={() => {
+                      trackEvent("template_apply_attempt", { action: "start_afresh", templateId: pendingTemplate || selectedTemplate });
                       startFreshFlow(pendingTemplate || selectedTemplate);
                       setShowStartChoice(false);
                       setMode("form");
                     }}
-                    className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white text-sm px-4 py-2.5 rounded-lg font-semibold transition-all"
+                    className="w-full crp-btn-primary text-sm px-4 py-2.5"
                   >
                     Start Afresh
                   </button>
@@ -579,6 +841,67 @@ function CreatePageContent() {
               </div>
             </div>
           )}
+
+          {previewTemplate && (
+            <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center px-4 py-6">
+              <div className="w-full max-w-5xl max-h-full overflow-auto rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl">
+                <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1.4fr_1fr]">
+                  <div>
+                    <TemplatePreviewCard template={previewTemplate} />
+                  </div>
+                  <div className="crp-card-soft p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <h3 className="text-lg font-bold text-slate-900">{previewTemplate.name}</h3>
+                      {previewTemplate.isPremium && <span className="crp-premium-badge">Premium</span>}
+                    </div>
+                    <p className="mt-1 text-sm text-slate-600">{previewTemplate.description}</p>
+
+                    {previewTemplate.atsScore != null ? (
+                      <p className="mt-3 text-sm font-semibold text-emerald-700">ATS Score: {previewTemplate.atsScore}</p>
+                    ) : (
+                      <p className="mt-3 text-sm text-slate-500">No template selected. Please choose one to preview.</p>
+                    )}
+
+                    <div className="mt-3">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Strengths</p>
+                      <div className="mt-1 flex flex-wrap gap-1">
+                        {previewTemplate.tags.map((tag: string) => (
+                          <span key={tag} className="rounded-full bg-white px-2 py-0.5 text-xs text-slate-700 border border-slate-200">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="mt-3">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Recommended Industries</p>
+                      <p className="mt-1 text-sm text-slate-700">{previewTemplate.recommendedIndustries.join(", ")}</p>
+                    </div>
+
+                    <div className="mt-4 flex gap-2">
+                      <button
+                        type="button"
+                        className="crp-btn-primary px-4 py-2 text-sm"
+                        onClick={() => {
+                          askStartPath(previewTemplate.id);
+                          setPreviewTemplate(null);
+                        }}
+                      >
+                        Use This Template
+                      </button>
+                      <button
+                        type="button"
+                        className="crp-btn-secondary px-4 py-2 text-sm"
+                        onClick={() => setPreviewTemplate(null)}
+                      >
+                        Close
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {fileInput}
@@ -588,15 +911,25 @@ function CreatePageContent() {
 
   // ── Form screen ──────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#f8f9fc]">
+    <div className="min-h-screen crp-shell">
       <AppHeader />
 
       <FlowStrip activeStep={currentStep === "preview" ? 2 : 1} />
 
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 pt-6">
-        <div className="flex items-center justify-between gap-4 rounded-2xl border border-slate-100 bg-white/80 backdrop-blur px-4 py-3 shadow-sm">
+      <div className="mx-auto w-full max-w-7xl px-6 pt-2">
+        <div className="crp-card p-6">
+          <span className="crp-badge">Resume Tailoring</span>
+          <h1 className="crp-section-title mt-3">Resume Tailoring</h1>
+          <p className="crp-section-copy mt-2 max-w-3xl">
+            Upload your resume and paste a job description to receive targeted improvements.
+          </p>
+        </div>
+      </div>
+
+      <div className="mx-auto w-full max-w-7xl px-6 pt-6">
+        <div className="crp-card-soft flex items-center justify-between gap-4 px-4 py-3">
           <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Builder workspace</p>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-600">Builder workspace</p>
             <p className="text-sm text-slate-600 mt-0.5">Keep editing, or reset and return to template selection.</p>
           </div>
           <button
@@ -604,7 +937,7 @@ function CreatePageContent() {
               startFreshFlow();
               setMode("gate");
             }}
-            className="border-2 border-slate-200 bg-white hover:border-slate-300 text-slate-700 px-5 py-2 rounded-xl text-sm font-semibold transition-colors whitespace-nowrap"
+            className="crp-btn-secondary px-5 py-2 text-sm whitespace-nowrap"
           >
             Start over
           </button>
@@ -657,6 +990,28 @@ function CreatePageContent() {
           </div>
         </div>
       </div>
+
+      <section id="roadmap" className="max-w-7xl mx-auto px-4 pb-14">
+        <div className="crp-card-soft p-5 sm:p-6">
+          <div className="flex items-center justify-between gap-3 mb-4">
+            <h2 className="text-lg font-bold text-slate-900">Coming Soon</h2>
+            <span className="crp-badge">Roadmap</span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
+            {[
+              { title: "Mock Interviews", desc: "Practice role-specific interviews generated from your profile and target JD." },
+              { title: "Interview Question Generator", desc: "Generate likely questions from job requirements and missing skills." },
+              { title: "AI Interview Feedback", desc: "Get clarity on technical depth, communication quality, and confidence." },
+              { title: "Personalized Study Plans", desc: "Turn your role target into a weekly learning and preparation path." },
+            ].map((item) => (
+              <article key={item.title} className="rounded-xl border border-dashed border-slate-300 bg-white p-4">
+                <p className="text-sm font-semibold text-slate-900">{item.title}</p>
+                <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">{item.desc}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

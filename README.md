@@ -53,7 +53,11 @@ Create a `.env.local` file in the root:
 
 ```env
 GEMINI_API_KEY=your_gemini_api_key_here
+FEATURE_PREMIUM_TEMPLATES=off
+NEXT_PUBLIC_FEATURE_PREMIUM_TEMPLATES=off
 ```
+
+Set both premium flags to `on` to enable Premium Templates UI and API output.
 
 ### Run the Development Server
 
@@ -100,6 +104,17 @@ src/
 3. For each gap, choose:
    - **"Yes, I know this"** → Prompted to add it to your resume (links directly to Skills or Experience step)
    - **"Show me how to learn"** → AI-curated learning resources from Coursera, YouTube, Udemy, official docs, etc.
+
+---
+
+## Template APIs
+
+- `GET /api/templates`
+   - Returns template metadata including `isPremium`, `priceModel`, `recommendedRoles`, `atsScore`, `premiumBadgeType`.
+- `GET /api/templates/recommend?jdId=<jobId>`
+   - Returns a deterministic list of recommended template IDs.
+- `POST /api/user/templates/select`
+   - Persists selected template (`{ templateId }`) for analytics/selection tracking.
 
 ---
 

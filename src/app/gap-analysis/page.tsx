@@ -51,6 +51,8 @@ interface UploadedResume {
   resumeData: ResumeData;
 }
 
+const SAMPLE_JD = `We are hiring a Senior Frontend Engineer with strong React, TypeScript, and Next.js experience. Candidates should be comfortable building responsive UI systems, collaborating with product/design, improving performance, and writing maintainable component architecture. Experience with testing, accessibility, and API integration is preferred.`;
+
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
 function platformUrl(resource: LearningResource): string {
@@ -267,19 +269,22 @@ export default function GapAnalysisPage() {
     : [];
   const recommendations = result?.recommendations ?? [];
   const issues = result?.issues ?? [];
+  const matchingSkills = result?.matchedKeywords ?? [];
+  const missingSkills = result?.missingKeywords ?? [];
+  const readinessEstimate = Math.min(100, overallScore + Math.max(0, highGaps.length * -6 + mediumGaps.length * -3) + 18);
 
   const knownCount = Object.values(gapStatus).filter((s) => s === "known").length;
   const learningCount = Object.values(gapStatus).filter((s) => s === "learning").length;
 
   return (
-    <main className="min-h-screen bg-[#f8f9fc]">
+    <main className="min-h-screen crp-shell">
       <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-slate-100">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-white font-bold text-sm">
-              R
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-cyan-500 flex items-center justify-center text-white font-bold text-[11px]">
+              CR
             </div>
-            <span className="font-bold text-slate-900 text-lg tracking-tight">ResumeAI</span>
+            <span className="font-bold text-slate-900 text-lg tracking-tight">Career Readiness Platform</span>
           </Link>
 
           <nav className="hidden sm:flex items-center gap-6 text-sm text-slate-600 font-medium">
@@ -287,15 +292,24 @@ export default function GapAnalysisPage() {
               Home
             </Link>
             <Link href="/create" className="hover:text-slate-900 transition-colors">
-              Builder
+              Resume Tailoring
             </Link>
+            <Link href="/gap-analysis" className="hover:text-slate-900 transition-colors">
+              Gap Analysis
+            </Link>
+            <Link href="/learning-resources" className="hover:text-slate-900 transition-colors">
+              Learning Resources
+            </Link>
+            <a href="#roadmap" className="hover:text-slate-900 transition-colors">
+              Roadmap
+            </a>
           </nav>
 
           <Link
             href="/create"
-            className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white px-5 py-2 rounded-xl text-sm font-semibold transition-all shadow-md shadow-violet-200"
+            className="crp-btn-primary px-5 py-2 text-sm"
           >
-            Open Builder
+            Analyze My Resume
           </Link>
         </div>
       </header>
@@ -309,28 +323,28 @@ export default function GapAnalysisPage() {
         <div className="relative max-w-5xl mx-auto px-6 pt-20 pb-16 text-center">
           <span className="inline-flex items-center gap-2 bg-white border border-violet-100 text-violet-700 text-xs font-semibold px-4 py-1.5 rounded-full shadow-sm mb-8">
             <span className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse" />
-            ATS Gap Analyzer
+            Career Intelligence
           </span>
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-slate-900 leading-[1.08] tracking-tight">
-            See exactly what to fix before you apply
+            Gap Analysis
           </h1>
           <p className="text-xl text-slate-500 mt-6 max-w-2xl mx-auto leading-relaxed">
-            Upload an existing resume or use the one you built in the app, paste a job description, and get a clear scorecard with learning resources for every gap.
+            Compare your profile against a target role and discover what is missing.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10">
             <button
               type="button"
               onClick={scrollToAnalysisWorkspace}
               disabled={resumeUploading}
-              className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 disabled:opacity-50 text-white px-8 py-4 rounded-2xl text-lg font-semibold transition-all shadow-xl shadow-violet-200"
+              className="crp-btn-primary disabled:opacity-50 px-8 py-4 rounded-2xl text-lg font-semibold"
             >
               {resumeUploading ? "Parsing Resume..." : usingUploadedResume ? "Replace Uploaded Resume →" : "Upload Existing Resume →"}
             </button>
             <Link
               href="/create"
-              className="border-2 border-slate-200 bg-white hover:border-slate-300 text-slate-700 px-8 py-4 rounded-2xl text-lg font-semibold transition-colors"
+              className="crp-btn-secondary px-8 py-4 rounded-2xl text-lg"
             >
-              Open Builder
+              Resume Tailoring
             </Link>
           </div>
           <p className="text-xs text-slate-400 mt-5">
@@ -471,15 +485,24 @@ export default function GapAnalysisPage() {
               onChange={(e) => setJobDescription(e.target.value)}
               rows={8}
               placeholder="Paste the full job description here — the more detail, the better the analysis."
-              className="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-violet-500 bg-white"
+              className="crp-textarea resize-none"
             />
-            <p className="text-xs text-slate-400 mt-1">{jobDescription.length} characters</p>
+            <div className="mt-2 flex items-center justify-between gap-3">
+              <p className="text-xs text-slate-400">{jobDescription.length} characters</p>
+              <button
+                type="button"
+                onClick={() => setJobDescription(SAMPLE_JD)}
+                className="text-xs font-semibold text-indigo-600 hover:text-indigo-700"
+              >
+                Use Sample JD
+              </button>
+            </div>
           </div>
 
           <button
             onClick={analyze}
             disabled={analyzing || resumeUploading || !jobDescription.trim() || !hasActiveResume}
-            className="flex items-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 disabled:opacity-40 text-white px-6 py-2.5 rounded-xl font-semibold text-sm transition-all shadow-sm"
+            className="crp-btn-primary flex items-center gap-2 disabled:opacity-40 px-6 py-2.5 text-sm"
           >
             {analyzing ? (
               <>
@@ -501,15 +524,70 @@ export default function GapAnalysisPage() {
           )}
         </div>
 
+        {analyzing && (
+          <div className="crp-card-soft p-5 mb-6">
+            <p className="text-sm font-semibold text-slate-800 mb-3">Analysis in progress</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-2.5">
+              {[
+                "Parsing Resume",
+                "Analyzing Job Description",
+                "Comparing Skills",
+                "Generating Recommendations",
+                "Preparing Learning Roadmap",
+              ].map((step, idx) => (
+                <div key={step} className="crp-progress-step flex items-center gap-2">
+                  <span className={`inline-block h-2 w-2 rounded-full ${idx <= 2 ? "bg-indigo-500 animate-pulse" : "bg-slate-300"}`} />
+                  <span>{step}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
             {error}
           </div>
         )}
 
+        {!result && !analyzing && !error && (
+          <div className="crp-card-soft p-8 mb-6 text-center">
+            <div className="text-4xl mb-3">🧭</div>
+            <p className="text-lg font-semibold text-slate-800">No analysis available yet.</p>
+            <p className="text-sm text-slate-500 mt-1">
+              Upload your resume and provide a job description to get started.
+            </p>
+          </div>
+        )}
+
         {/* Results */}
         {result && (
           <>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-6">
+              <div className="crp-card p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Overall Match Score</p>
+                <p className="text-3xl font-extrabold text-slate-900 mt-1">{overallScore}%</p>
+              </div>
+              <div className="crp-card p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Matching Skills</p>
+                <p className="text-sm text-slate-700 mt-1.5">{matchingSkills.slice(0, 5).join(" · ") || "No strong matches detected yet."}</p>
+              </div>
+              <div className="crp-card p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Missing Skills</p>
+                <p className="text-sm text-slate-700 mt-1.5">{missingSkills.slice(0, 5).join(" · ") || "No major keyword gaps detected."}</p>
+              </div>
+              <div className="crp-card p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Priority Areas</p>
+                <p className="text-sm text-slate-700 mt-1.5">High: {highGaps.length} · Medium: {mediumGaps.length} · Low: {lowGaps.length}</p>
+              </div>
+              <div className="crp-card p-4 md:col-span-2 xl:col-span-2">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Career Readiness Assessment</p>
+                <p className="text-sm text-slate-700 mt-1.5">
+                  Current readiness: <span className="font-semibold">{overallScore}%</span>. Estimated readiness after implementing priority actions: <span className="font-semibold">{readinessEstimate}%</span>.
+                </p>
+              </div>
+            </div>
+
             {/* Score bar */}
             <div className="app-panel rounded-2xl p-6 mb-6">
               <div className="flex items-center justify-between mb-3">
@@ -705,6 +783,28 @@ export default function GapAnalysisPage() {
           )}
           </>
         )}
+
+        <section id="roadmap" className="mt-10">
+          <div className="crp-card-soft p-5 sm:p-6">
+            <div className="flex items-center justify-between gap-3 mb-4">
+              <h2 className="text-lg font-bold text-slate-900">Coming Soon</h2>
+              <span className="crp-badge">Roadmap</span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
+              {[
+                { title: "Mock Interviews", desc: "Practice role-specific interviews generated from your resume and target JD." },
+                { title: "Interview Question Generator", desc: "Generate likely interview questions from job descriptions and required skills." },
+                { title: "AI Interview Feedback", desc: "Receive detailed feedback on communication, confidence, and technical depth." },
+                { title: "Personalized Study Plans", desc: "Get role-aligned learning plans mapped to your priority skill gaps." },
+              ].map((item) => (
+                <article key={item.title} className="rounded-xl border border-dashed border-slate-300 bg-white p-4">
+                  <p className="text-sm font-semibold text-slate-900">{item.title}</p>
+                  <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">{item.desc}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
       </div>
     </main>
   );

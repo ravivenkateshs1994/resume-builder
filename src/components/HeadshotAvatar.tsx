@@ -13,20 +13,21 @@ interface HeadshotAvatarProps {
 
 export default function HeadshotAvatar({
   headshotUrl,
-  initials,
+  initials: _initials,
   alt,
   className,
   imageClassName = "h-full w-full object-cover",
-  fallbackClassName = "h-full w-full flex items-center justify-center",
+  fallbackClassName: _fallbackClassName = "h-full w-full flex items-center justify-center",
   style,
 }: HeadshotAvatarProps) {
+  const normalizedHeadshotUrl = headshotUrl?.trim();
+  if (!normalizedHeadshotUrl) {
+    return null;
+  }
+
   return (
     <div className={`relative overflow-hidden ${className}`} style={style}>
-      {headshotUrl ? (
-        <Image src={headshotUrl} alt={alt} fill unoptimized sizes="100vw" className={imageClassName} />
-      ) : (
-        <div className={fallbackClassName}>{initials || "?"}</div>
-      )}
+      <Image src={normalizedHeadshotUrl} alt={alt} fill unoptimized sizes="100vw" className={imageClassName} />
     </div>
   );
 }
