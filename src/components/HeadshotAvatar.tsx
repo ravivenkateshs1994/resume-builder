@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { CSSProperties } from "react";
 
 interface HeadshotAvatarProps {
@@ -20,9 +21,9 @@ export default function HeadshotAvatar({
   style,
 }: HeadshotAvatarProps) {
   return (
-    <div className={className} style={style}>
+    <div className={`relative overflow-hidden ${className}`} style={style}>
       {headshotUrl ? (
-        <img src={headshotUrl} alt={alt} className={imageClassName} />
+        <Image src={headshotUrl} alt={alt} fill unoptimized sizes="100vw" className={imageClassName} />
       ) : (
         <div className={fallbackClassName}>{initials || "?"}</div>
       )}

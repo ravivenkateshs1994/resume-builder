@@ -397,10 +397,6 @@ function textToBulletLines(value: string): string[] {
   return splitBulletsAndSentences(value);
 }
 
-function flattenTextBlocks(blocks: string[]): string {
-  return normalizeWhitespace(blocks.filter(Boolean).join(" "));
-}
-
 function normalizeString(value: unknown): string {
   return typeof value === "string" ? value : "";
 }
@@ -965,17 +961,6 @@ function guessFirstTextBlock(lines: string[], excludedSectionIndex: number): str
   return normalizeWhitespace(beforeFirstHeader.join(" "));
 }
 
-function buildStructuredExperienceRanges(workExperience: WorkExperience[]): ParsedDateRange[] {
-  const ranges: ParsedDateRange[] = [];
-  for (const entry of workExperience) {
-    const range = buildDateRange(entry.startDate, entry.endDate);
-    if (range) {
-      ranges.push(range);
-    }
-  }
-  return ranges;
-}
-
 function extractKeywordCandidates(jobDescription: string): Array<{ keyword: string; source: "dictionary" | "phrase"; score: number }> {
   const normalizedJobDescription = jobDescription.trim();
   if (!normalizedJobDescription) {
@@ -1346,7 +1331,6 @@ export class ResumeParser {
       })
     );
 
-    const sections = this.config.sectionAliases;
     const fullTextParts = [
       normalizedResumeData.personalInfo.fullName,
       normalizedResumeData.personalInfo.email,
@@ -1860,7 +1844,7 @@ export class ATSScoringService {
   }
 
   optimize(input: { resumeData?: Partial<ResumeData>; resumeText?: string; jobDescription?: string }): AtsOptimizationResult {
-    const baseResume = input.resumeData ?? null;
+    const baseResume = input.resumeData ? normalizeResumeData(input.resumeData) : null;
     const analysis = this.analyze(input);
     const parsedResume = this.parser.parse(input.resumeData ?? input.resumeText ?? "");
     const topMissingKeywords = analysis.missingKeywords.slice(0, this.config.optimization.maxSuggestedSkills);

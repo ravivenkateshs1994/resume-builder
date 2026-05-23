@@ -1,7 +1,6 @@
 import {
   AlignmentType,
   BorderStyle,
-  HeadingLevel,
   ImageRun,
   Paragraph,
   Table,
@@ -19,10 +18,6 @@ import { createTemplateTheme, getDefaultTemplateAccent, normalizeHexColor } from
 
 type DocxBlock = Paragraph | Table;
 type Theme = ReturnType<typeof createTemplateTheme>;
-
-const PAGE_WIDTH = 11906;
-const PAGE_HEIGHT = 16838;
-const PAGE_MARGIN = { top: 720, right: 900, bottom: 720, left: 900 };
 const STANDARD_FONT = "Aptos";
 const SERIF_FONT = "Times New Roman";
 const MONO_FONT = "Consolas";
@@ -322,7 +317,9 @@ function makeSidebarAvatar(initials: string, fill: string, textColor: string, op
     const match = headshotUrl.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/);
     if (match) {
       const size = options.headshotSize ?? 96;
+      const imageType = match[1].split("/")[1]?.toLowerCase();
       const image = new ImageRun({
+        type: imageType === "jpeg" ? "jpg" : imageType === "jpg" ? "jpg" : "png",
         data: Buffer.from(match[2], "base64"),
         transformation: { width: size, height: size },
       });

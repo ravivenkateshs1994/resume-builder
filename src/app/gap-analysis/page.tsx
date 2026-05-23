@@ -25,6 +25,10 @@ interface Gap {
 }
 
 interface GapResult {
+  overallScore?: number;
+  atsCompatibilityScore?: number;
+  jobMatchScore?: number;
+  recruiterAppealScore?: number;
   atsScore: number;
   keywordScore: number;
   sectionScore: number;
@@ -241,7 +245,19 @@ export default function GapAnalysisPage() {
   const highGaps = result?.gaps.filter((g) => g.importance === "high") ?? [];
   const mediumGaps = result?.gaps.filter((g) => g.importance === "medium") ?? [];
   const lowGaps = result?.gaps.filter((g) => g.importance === "low") ?? [];
+  const overallScore = result ? result.overallScore ?? result.atsScore ?? result.matchScore : 0;
+  const atsCompatibilityScore = result ? result.atsCompatibilityScore ?? result.atsScore ?? result.matchScore : 0;
+  const jobMatchScore = result ? result.jobMatchScore ?? result.keywordScore : 0;
+  const recruiterAppealScore = result ? result.recruiterAppealScore ?? result.qualityScore : 0;
   const scoreCards = result
+    ? [
+        { label: "Overall Score", score: overallScore, color: "from-violet-500 to-indigo-500", note: "Deterministic blend" },
+        { label: "ATS Compatibility", score: atsCompatibilityScore, color: "from-sky-500 to-cyan-500", note: "Structure + quality" },
+        { label: "Job Match", score: jobMatchScore, color: "from-emerald-500 to-teal-500", note: "Skill alignment" },
+        { label: "Recruiter Appeal", score: recruiterAppealScore, color: "from-amber-500 to-orange-500", note: "Impact + readability" },
+      ]
+    : [];
+  const atsDetailCards = result
     ? [
         { label: "Keywords", score: result.keywordScore, color: "from-violet-500 to-indigo-500" },
         { label: "Sections", score: result.sectionScore, color: "from-sky-500 to-cyan-500" },
@@ -498,37 +514,58 @@ export default function GapAnalysisPage() {
             <div className="app-panel rounded-2xl p-6 mb-6">
               <div className="flex items-center justify-between mb-3">
                 <div>
-                  <p className="text-sm font-semibold text-slate-700">ATS Match Score</p>
+                  <p className="text-sm font-semibold text-slate-700">Overall Intelligence Score</p>
                   <p className="text-xs text-slate-500 mt-0.5">{result.analysisSummary || result.matchSummary}</p>
                 </div>
                 <span
                   className={`text-3xl font-bold ${
-                    (result.atsScore ?? result.matchScore) >= 70
+                    overallScore >= 70
                       ? "text-green-600"
-                      : (result.atsScore ?? result.matchScore) >= 50
+                      : overallScore >= 50
                       ? "text-amber-600"
                       : "text-red-600"
                   }`}
                 >
-                  {result.atsScore ?? result.matchScore}%
+                  {overallScore}%
                 </span>
               </div>
               <div className="w-full bg-slate-100 rounded-full h-3">
                 <div
                   className={`h-3 rounded-full transition-all ${
-                    (result.atsScore ?? result.matchScore) >= 70
+                    overallScore >= 70
                       ? "bg-green-500"
-                      : (result.atsScore ?? result.matchScore) >= 50
+                      : overallScore >= 50
                       ? "bg-amber-500"
                       : "bg-red-500"
                   }`}
-                  style={{ width: `${result.atsScore ?? result.matchScore}%` }}
+                  style={{ width: `${overallScore}%` }}
                 />
               </div>
 
               {scoreCards.length > 0 && (
-                <div className="mt-5 grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
                   {scoreCards.map((card) => (
+                    <div key={card.label} className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+                      <div className="flex items-start justify-between gap-2 mb-1.5">
+                        <div>
+                          <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{card.label}</p>
+                          <p className="text-[10px] text-slate-400 mt-0.5">{card.note}</p>
+                        </div>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full bg-gradient-to-r ${card.color} text-white`}>
+                          {card.score}%
+                        </span>
+                      </div>
+                      <div className="w-full bg-slate-100 rounded-full h-2">
+                        <div className={`h-2 rounded-full bg-gradient-to-r ${card.color}`} style={{ width: `${card.score}%` }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {atsDetailCards.length > 0 && (
+                <div className="mt-5 grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {atsDetailCards.map((card) => (
                     <div key={card.label} className="rounded-xl border border-slate-200 bg-white p-3">
                       <div className="flex items-center justify-between gap-2 mb-2">
                         <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{card.label}</p>

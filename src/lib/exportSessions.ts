@@ -10,7 +10,6 @@ export type ExportSession = {
 const SESSION_TTL_MS = 10 * 60 * 1000;
 
 declare global {
-  // eslint-disable-next-line no-var
   var __resumeExportSessions: Map<string, ExportSession> | undefined;
 }
 

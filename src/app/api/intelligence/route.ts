@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
-import type { ResumeData } from "@/types/resume";
-import { buildGapInsightsFromAnalysis, buildLegacyGapAnalysisResponse } from "@/lib/ats-engine";
 import { buildResumeIntelligenceReport } from "@/lib/resume-intelligence";
+import type { ResumeData } from "@/types/resume";
 
 export async function POST(req: Request) {
   try {
     const body = (await req.json()) as {
-      resumeData?: ResumeData;
+      resumeData?: Partial<ResumeData>;
       resumeText?: string;
       jobDescription?: string;
     };
@@ -25,14 +24,9 @@ export async function POST(req: Request) {
       jobDescription: body.jobDescription,
     });
 
-    return NextResponse.json({
-      ...report,
-      ...report.deterministicAnalysis,
-      ...buildLegacyGapAnalysisResponse(report.deterministicAnalysis),
-      gaps: buildGapInsightsFromAnalysis(report.deterministicAnalysis),
-    });
+    return NextResponse.json(report);
   } catch (error) {
-    console.error("Gap analysis error:", error);
-    return NextResponse.json({ error: "Gap analysis failed." }, { status: 500 });
+    console.error("Intelligence report error:", error);
+    return NextResponse.json({ error: "Failed to build intelligence report." }, { status: 500 });
   }
 }

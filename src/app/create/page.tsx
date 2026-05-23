@@ -1,19 +1,72 @@
 "use client";
 
 import { Suspense, useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import { useResumeStore } from "@/store/resumeStore";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import StepIndicator from "@/components/StepIndicator";
 import AccentColorPicker from "@/components/AccentColorPicker";
-import ResumeRenderer from "@/components/templates/ResumeRenderer";
 import { getDefaultTemplateAccent } from "@/lib/templateTheme";
-import PersonalInfoStep from "@/components/steps/PersonalInfoStep";
-import ExperienceStep from "@/components/steps/ExperienceStep";
-import EducationStep from "@/components/steps/EducationStep";
-import SkillsStep from "@/components/steps/SkillsStep";
-import PreviewStep from "@/components/steps/PreviewStep";
-import type { ResumeData, TemplateId } from "@/types/resume";
+import type { TemplateId } from "@/types/resume";
+
+const StepShell = ({ title }: { title: string }) => (
+  <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="animate-pulse space-y-4">
+      <div>
+        <div className="h-3 w-28 rounded-full bg-slate-200" />
+        <div className="mt-3 h-8 w-72 max-w-full rounded-xl bg-slate-200" />
+        <div className="mt-2 h-4 w-52 max-w-full rounded-full bg-slate-100" />
+      </div>
+      <div className="grid gap-3 md:grid-cols-2">
+        <div className="space-y-3 rounded-2xl border border-slate-100 bg-slate-50 p-4">
+          <div className="h-4 w-24 rounded-full bg-slate-200" />
+          <div className="space-y-2">
+            <div className="h-3 w-full rounded-full bg-slate-200" />
+            <div className="h-3 w-5/6 rounded-full bg-slate-200" />
+            <div className="h-3 w-2/3 rounded-full bg-slate-200" />
+          </div>
+        </div>
+        <div className="space-y-3 rounded-2xl border border-slate-100 bg-slate-50 p-4">
+          <div className="h-4 w-24 rounded-full bg-slate-200" />
+          <div className="space-y-2">
+            <div className="h-3 w-full rounded-full bg-slate-200" />
+            <div className="h-3 w-5/6 rounded-full bg-slate-200" />
+            <div className="h-3 w-2/3 rounded-full bg-slate-200" />
+          </div>
+        </div>
+      </div>
+      <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/60 px-4 py-3 text-sm text-slate-500">
+        Loading {title}...
+      </div>
+    </div>
+  </div>
+);
+
+const PersonalInfoStep = dynamic(() => import("@/components/steps/PersonalInfoStep"), {
+  ssr: false,
+  loading: () => <StepShell title="Personal information" />,
+});
+
+const ExperienceStep = dynamic(() => import("@/components/steps/ExperienceStep"), {
+  ssr: false,
+  loading: () => <StepShell title="Experience" />,
+});
+
+const EducationStep = dynamic(() => import("@/components/steps/EducationStep"), {
+  ssr: false,
+  loading: () => <StepShell title="Education" />,
+});
+
+const SkillsStep = dynamic(() => import("@/components/steps/SkillsStep"), {
+  ssr: false,
+  loading: () => <StepShell title="Skills" />,
+});
+
+const PreviewStep = dynamic(() => import("@/components/steps/PreviewStep"), {
+  ssr: false,
+  loading: () => <StepShell title="Preview" />,
+});
 
 const TEMPLATE_OPTIONS: {
   id: TemplateId;
@@ -102,95 +155,112 @@ function FlowStrip({ activeStep }: { activeStep: number }) {
   );
 }
 
-const templatePreviewData: ResumeData = {
-  personalInfo: {
-    fullName: "Alex Morgan",
-    email: "alex.morgan@email.com",
-    phone: "+1 555 112 3344",
-    location: "Austin, TX",
-    linkedin: "linkedin.com/in/alexmorgan",
-    website: "alexmorgan.dev",
-    jobTitle: "Senior Product Manager",
-  },
-  targetRole: "Senior Product Manager",
-  jobDescription: "",
-  summary:
-    "Product leader with 9+ years building SaaS platforms, leading cross-functional teams, and shipping customer-centric features at scale. Strong track record across activation, retention, and monetization, with measurable business outcomes in fast-moving B2B environments.",
-  workExperience: [
-    {
-      id: "preview-exp-1",
-      company: "Nova Systems",
-      title: "Product Manager",
-      location: "Austin, TX",
-      startDate: "Jan 2021",
-      endDate: "Present",
-      description:
-        "<ul><li><p>Launched onboarding improvements that increased activation by 24% across 30k+ monthly users.</p></li><li><p>Partnered with engineering and design to ship 3 high-impact roadmap initiatives in under two quarters.</p></li><li><p>Introduced KPI dashboards and weekly experiment reviews, cutting decision turnaround time by 40%.</p></li></ul>",
-    },
-    {
-      id: "preview-exp-2",
-      company: "Aster Cloud",
-      title: "Associate Product Manager",
-      location: "Remote",
-      startDate: "Jul 2018",
-      endDate: "Dec 2020",
-      description:
-        "<ul><li><p>Owned billing and subscription workflows that improved trial-to-paid conversion by 18%.</p></li><li><p>Collaborated with support and sales to prioritize customer pain points and reduce churn.</p></li><li><p>Delivered quarterly roadmap planning with clear milestone alignment across product and engineering.</p></li></ul>",
-    },
-    {
-      id: "preview-exp-3",
-      company: "BrightForge Labs",
-      title: "Business Analyst",
-      location: "Dallas, TX",
-      startDate: "Jun 2015",
-      endDate: "Jun 2018",
-      description:
-        "<ul><li><p>Analyzed customer usage data to identify adoption blockers and recommend product improvements.</p></li><li><p>Built reporting models that improved forecast accuracy for quarterly planning cycles.</p></li></ul>",
-    },
-  ],
-  education: [
-    {
-      id: "preview-edu-1",
-      institution: "University of Texas",
-      degree: "BBA",
-      field: "Management Information Systems",
-      startDate: "2014",
-      endDate: "2018",
-      gpa: "",
-      honors: "",
-    },
-    {
-      id: "preview-edu-2",
-      institution: "Coursera / DeepLearning.AI",
-      degree: "Professional Certificate",
-      field: "AI Product Management",
-      startDate: "2022",
-      endDate: "2023",
-      gpa: "",
-      honors: "",
-    },
-  ],
-  skills: [
-    "Product Strategy",
-    "Roadmapping",
-    "User Research",
-    "A/B Testing",
-    "Data Analytics",
-    "KPI Design",
-    "Agile Delivery",
-    "Stakeholder Management",
-  ],
-  certifications: [
-    { id: "preview-cert-1", name: "Certified Scrum Product Owner (CSPO)", issuer: "Scrum Alliance", date: "2021" },
-    { id: "preview-cert-2", name: "Google Data Analytics", issuer: "Google", date: "2020" },
-  ],
-};
+type TemplateOption = (typeof TEMPLATE_OPTIONS)[number];
+
+function PreviewLine({ width, color }: { width: string; color?: string }) {
+  return <div className={`h-2 rounded-full ${color ?? "bg-slate-200"}`} style={color ? { width, backgroundColor: color } : { width }} />;
+}
+
+function PreviewPill({ label, color }: { label: string; color: string }) {
+  return (
+    <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold" style={{ borderColor: color, color }}>
+      {label}
+    </span>
+  );
+}
+
+function TemplatePreviewCard({ template }: { template: TemplateOption }) {
+  const accentColor = getDefaultTemplateAccent(template.id);
+  const isOneColumn = ["classic", "minimal", "executive", "terra"].includes(template.id);
+  const isPhoto = ["creative", "chronos", "slate", "nova", "prism"].includes(template.id);
+  const isAts = template.category === "ats";
+
+  return (
+    <div className="relative h-full min-h-[415px] overflow-hidden bg-white">
+      <div className="absolute inset-x-0 top-0 h-1.5" style={{ backgroundColor: accentColor }} />
+
+      <div className={`flex h-full ${isOneColumn ? "flex-col" : "flex-row"}`}>
+        {!isOneColumn && (
+          <div
+            className={`w-28 shrink-0 border-r border-slate-100 p-3 ${isAts ? "bg-slate-50" : "bg-slate-50/90"}`}
+            style={isAts ? { backgroundImage: "linear-gradient(180deg, rgba(15,23,42,0.02), rgba(15,23,42,0))" } : undefined}
+          >
+            <div className="h-12 w-12 rounded-2xl border bg-white shadow-sm" style={{ borderColor: accentColor }} />
+            <div className="mt-4 space-y-2">
+              <PreviewLine width="78%" />
+              <PreviewLine width="92%" />
+              <PreviewLine width="66%" />
+            </div>
+            <div className="mt-4 space-y-2">
+              <PreviewPill label={template.category.toUpperCase()} color={accentColor} />
+              <PreviewPill label={template.tags[0] ?? "TEMPLATE"} color={accentColor} />
+            </div>
+          </div>
+        )}
+
+        <div className="flex-1 p-4">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1 space-y-2">
+              <div className="h-2.5 w-28 rounded-full bg-slate-200" />
+              <div className="h-6 w-40 rounded-lg bg-slate-900/80" />
+              <div className="h-2.5 w-32 rounded-full" style={{ backgroundColor: accentColor, opacity: 0.45 }} />
+            </div>
+            {isPhoto && <div className="h-14 w-14 rounded-2xl border-2 bg-slate-100" style={{ borderColor: accentColor }} />}
+          </div>
+
+          <div className="mt-5 space-y-3">
+            <div className="rounded-2xl border border-slate-100 bg-slate-50/80 p-3">
+              <div className="mb-3 flex items-center gap-2">
+                <span className="h-1.5 w-6 rounded-full" style={{ backgroundColor: accentColor }} />
+                <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Summary</span>
+              </div>
+              <div className="space-y-2">
+                <PreviewLine width="92%" />
+                <PreviewLine width="78%" />
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-slate-100 bg-slate-50/80 p-3">
+              <div className="mb-3 flex items-center gap-2">
+                <span className="h-1.5 w-6 rounded-full" style={{ backgroundColor: accentColor }} />
+                <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Experience</span>
+              </div>
+              <div className="space-y-2">
+                <PreviewLine width="96%" />
+                <PreviewLine width="88%" />
+                <PreviewLine width="74%" />
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-slate-100 bg-slate-50/80 p-3">
+              <div className="mb-3 flex items-center gap-2">
+                <span className="h-1.5 w-6 rounded-full" style={{ backgroundColor: accentColor }} />
+                <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Skills</span>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {template.tags.slice(0, 2).map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-full border px-2 py-0.5 text-[10px] font-semibold"
+                    style={{ borderColor: accentColor, color: accentColor }}
+                  >
+                    {tag}
+                  </span>
+                ))}
+                <span className="rounded-full border border-slate-200 px-2 py-0.5 text-[10px] font-semibold text-slate-600">ATS-ready</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function CreatePageContent() {
   const {
     currentStep,
     selectedTemplate,
-    templateAccentColor,
     setSelectedTemplate,
     setResumeData,
     goToStep,
@@ -211,7 +281,6 @@ function CreatePageContent() {
   }, []);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
-  const [uploadStatus, setUploadStatus] = useState("");
   const [uploadMsgIdx, setUploadMsgIdx] = useState(0);
 
   const UPLOAD_MESSAGES = [
@@ -247,7 +316,6 @@ function CreatePageContent() {
     goToStep("personal");
     setPrefilled(false);
     setUploadError("");
-    setUploadStatus("");
     setUploadKey((k) => k + 1);
   }
 
@@ -476,7 +544,6 @@ function CreatePageContent() {
     } finally {
       clearInterval(msgInterval);
       setUploading(false);
-      setUploadStatus("");
       setPendingTemplate(null);
     }
   }
@@ -577,12 +644,7 @@ function CreatePageContent() {
                 onClick={() => askStartPath(t.id)}
               >
                 <div className="border border-slate-200 rounded-xl overflow-hidden bg-white mb-3 pointer-events-none select-none">
-                  <div className="h-1.5" style={{ backgroundColor: getDefaultTemplateAccent(t.id) }} />
-                  <div className="h-[415px] overflow-hidden bg-white">
-                    <div style={{ zoom: 0.39 }}>
-                      <ResumeRenderer data={templatePreviewData} templateId={t.id} accentColor={getDefaultTemplateAccent(t.id)} />
-                    </div>
-                  </div>
+                  <TemplatePreviewCard template={t} />
                 </div>
 
                 <div className="flex items-start justify-between gap-3 mb-2">

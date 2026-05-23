@@ -1,124 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  Document,
-  Packer,
-  Paragraph,
-  TextRun,
-  HeadingLevel,
-  AlignmentType,
-  BorderStyle,
-  UnderlineType,
-  ImageRun,
-} from "docx";
+import { Document, ImageRun, Packer, Paragraph } from "docx";
 import type { ResumeData, TemplateId } from "@/types/resume";
-import { getDefaultTemplateAccent, normalizeHexColor } from "@/lib/templateTheme";
 import { buildDocxChildren } from "@/lib/docxLayouts";
 
 const A4_PAGE_WIDTH_TWIPS = 11906;
 const A4_PAGE_HEIGHT_TWIPS = 16838;
-const WORD_DEFAULT_MARGIN_TWIPS = 1440;
 
 function dataUrlToBuffer(dataUrl: string): Buffer {
   const m = dataUrl.match(/^data:image\/(png|jpeg|jpg);base64,(.+)$/i);
   if (!m) throw new Error("Invalid image data URL for DOCX export.");
   return Buffer.from(m[2], "base64");
-}
-
-function decodeEntities(input: string): string {
-  return input
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'");
-}
-
-function stripHtml(input: string): string {
-  return decodeEntities(input.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim());
-}
-
-function inlineRunsFromHtml(html: string): TextRun[] {
-  const tokens = html
-    .replace(/<br\s*\/?>(\s*)/gi, "\n")
-    .split(/(<[^>]+>)/g)
-    .filter(Boolean);
-
-  const runs: TextRun[] = [];
-  const state = { bold: false, italics: false, underline: false };
-
-  for (const token of tokens) {
-    if (token.startsWith("<")) {
-      const tag = token.toLowerCase().replace(/[<>/]/g, "").trim().split(" ")[0];
-      const isClosing = token.startsWith("</");
-      if (tag === "strong" || tag === "b") state.bold = !isClosing;
-      if (tag === "em" || tag === "i") state.italics = !isClosing;
-      if (tag === "u") state.underline = !isClosing;
-      continue;
-    }
-
-    const text = decodeEntities(token);
-    if (!text) continue;
-
-    runs.push(
-      new TextRun({
-        text,
-        bold: state.bold,
-        italics: state.italics,
-        underline: state.underline ? { type: UnderlineType.SINGLE } : undefined,
-      })
-    );
-  }
-
-  return runs.length ? runs : [new TextRun("")];
-}
-
-function paragraphsFromRichHtml(description: string): Paragraph[] {
-  const html = description || "";
-  const listItems = Array.from(html.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi)).map((m) => m[1] ?? "");
-  if (listItems.length) {
-    return listItems
-      .map((item) => stripHtml(item))
-      .filter(Boolean)
-      .map(
-        (text) =>
-          new Paragraph({
-            children: [new TextRun(text)],
-            bullet: { level: 0 },
-            spacing: { after: 80 },
-          })
-      );
-  }
-
-  const blocks = Array.from(html.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)).map((m) => m[1] ?? "");
-  if (blocks.length) {
-    return blocks
-      .map((block) => inlineRunsFromHtml(block))
-      .map(
-        (children) =>
-          new Paragraph({
-            children,
-            spacing: { after: 120 },
-          })
-      );
-  }
-
-  const plain = stripHtml(html);
-  return plain
-    ? [
-        new Paragraph({
-          children: [new TextRun(plain)],
-          spacing: { after: 120 },
-        }),
-      ]
-    : [];
-}
-
-function headingColorForTemplate(templateId?: TemplateId, accentColor?: string): string {
-  const resolved = normalizeHexColor(
-    accentColor ?? (templateId ? getDefaultTemplateAccent(templateId) : getDefaultTemplateAccent("modern"))
-  );
-  return resolved.replace(/^#/, "");
 }
 
 // POST /api/export/docx

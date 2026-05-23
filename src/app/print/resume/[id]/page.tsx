@@ -1,9 +1,8 @@
-import { notFound } from "next/navigation";
-import Script from "next/script";
-import ResumeRenderer from "@/components/templates/ResumeRenderer";
-import { getExportSession } from "@/lib/exportSessions";
+"use client";
 
-export const dynamic = "force-dynamic";
+import { useEffect, useState } from "react";
+import ResumeRenderer from "@/components/templates/ResumeRenderer";
+import { useResumeStore } from "@/store/resumeStore";
 
 const PAGE_BACKGROUND_BY_TEMPLATE: Partial<Record<string, string>> = {
   terra: "#fdf8f3",
@@ -18,38 +17,29 @@ const BLEED_TEMPLATES = new Set([
   "tech",
 ]);
 
-export default async function PrintResumePage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const session = getExportSession(id);
+export default function PrintResumePage() {
+  const { resumeData, selectedTemplate, templateAccentColor } = useResumeStore();
+  const [hydrated, setHydrated] = useState(false);
 
-  if (!session) {
-    notFound();
-  }
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
 
-  const bleedMode = BLEED_TEMPLATES.has(session.selectedTemplate);
-  const pageBackground = PAGE_BACKGROUND_BY_TEMPLATE[session.selectedTemplate];
+  const bleedMode = BLEED_TEMPLATES.has(selectedTemplate);
+  const pageBackground = PAGE_BACKGROUND_BY_TEMPLATE[selectedTemplate];
+  const hasResume =
+    hydrated &&
+    Boolean(
+      resumeData.personalInfo.fullName ||
+        resumeData.summary ||
+        resumeData.skills.length ||
+        resumeData.workExperience.length ||
+        resumeData.education.length ||
+        resumeData.certifications.length
+    );
 
   return (
     <>
-      <Script
-        id="tailwind-config"
-        strategy="beforeInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            tailwind.config = {
-              theme: {
-                extend: {
-                  fontFamily: {
-                    sans: ['var(--font-sans)', 'sans-serif'],
-                    serif: ['var(--font-serif)', 'serif'],
-                  },
-                },
-              },
-            };
-          `,
-        }}
-      />
-      <Script src="https://cdn.tailwindcss.com" strategy="beforeInteractive" />
       <style>{`
         @page {
           size: A4;
@@ -160,7 +150,13 @@ export default async function PrintResumePage({ params }: { params: Promise<{ id
           />
         )}
         <div style={{ position: "relative", zIndex: 1 }}>
-          <ResumeRenderer data={session.resumeData} templateId={session.selectedTemplate} />
+          {hasResume ? (
+            <ResumeRenderer data={resumeData} templateId={selectedTemplate} accentColor={templateAccentColor} />
+          ) : (
+            <div className="mx-auto max-w-2xl rounded-2xl border border-dashed border-slate-300 bg-white px-8 py-12 text-center text-slate-500 shadow-sm">
+              Open the builder in this browser to load the saved resume draft for print preview.
+            </div>
+          )}
         </div>
       </div>
     </>

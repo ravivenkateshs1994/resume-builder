@@ -22,7 +22,6 @@ import {
   Undo2,
   Redo2,
   Minus,
-  Sparkles as _Sparkles,
 } from "lucide-react";
 
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];

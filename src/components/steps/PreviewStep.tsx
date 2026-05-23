@@ -21,7 +21,6 @@ export default function PreviewStep() {
     templateAccentColor,
     setResumeData,
     prevStep,
-    isGenerating,
     setIsGenerating,
   } = useResumeStore();
   const previewScale = 0.85;
@@ -45,56 +44,6 @@ export default function PreviewStep() {
   const bleedMode = BLEED_TEMPLATES.has(selectedTemplate);
   const previewRef = useRef<HTMLDivElement>(null);
   const visualExportRef = useRef<HTMLDivElement>(null);
-
-  type VisualPage = { dataUrl: string; width: number; height: number };
-
-  async function capturePreviewCanvas() {
-    const html2canvasModule = await import("html2canvas-pro").catch(() => import("html2canvas"));
-    const html2canvas = html2canvasModule.default;
-    const target = visualExportRef.current;
-    if (!target) throw new Error("Preview capture target is unavailable.");
-
-    const width = Math.ceil(target.scrollWidth);
-    const height = Math.ceil(target.scrollHeight);
-
-    return html2canvas(target, {
-      scale: 2,
-      useCORS: true,
-      logging: false,
-      backgroundColor: "#ffffff",
-      width,
-      height,
-      windowWidth: width,
-      windowHeight: height,
-      scrollX: 0,
-      scrollY: 0,
-    });
-  }
-
-  function canvasToA4Jpegs(canvas: HTMLCanvasElement): VisualPage[] {
-    const pageAspect = 297 / 210;
-    const pageHeightPx = Math.max(1, Math.floor(canvas.width * pageAspect));
-    const pages: VisualPage[] = [];
-
-    for (let y = 0; y < canvas.height; y += pageHeightPx) {
-      const sliceHeight = Math.min(pageHeightPx, canvas.height - y);
-      const pageCanvas = document.createElement("canvas");
-      pageCanvas.width = canvas.width;
-      pageCanvas.height = sliceHeight;
-      const ctx = pageCanvas.getContext("2d");
-      if (!ctx) continue;
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
-      ctx.drawImage(canvas, 0, y, canvas.width, sliceHeight, 0, 0, pageCanvas.width, sliceHeight);
-      pages.push({
-        dataUrl: pageCanvas.toDataURL("image/jpeg", 0.92),
-        width: pageCanvas.width,
-        height: pageCanvas.height,
-      });
-    }
-
-    return pages;
-  }
 
   useEffect(() => {
     setTargetRoleInput(resumeData.targetRole || "");
