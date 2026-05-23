@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useResumeStore } from "@/store/resumeStore";
 import { useState, useEffect } from "react";
@@ -46,7 +46,7 @@ export default function TargetRoleStep() {
               setError("");
             }}
             placeholder="e.g. Senior Product Manager"
-            className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 ${
+            className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
               error ? "border-red-400" : "border-gray-300"
             }`}
           />
@@ -56,17 +56,17 @@ export default function TargetRoleStep() {
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">
             Job Description{" "}
-            <span className="text-gray-400 font-normal">(optional — enables ATS tailoring)</span>
+            <span className="text-gray-400 font-normal">(optional â€” enables ATS tailoring)</span>
           </label>
           <textarea
             value={jd}
             onChange={(e) => setJd(e.target.value)}
             rows={8}
             placeholder="Paste the full job description here..."
-            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 resize-none"
+            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
           />
           <p className="text-xs text-slate-400 mt-1">
-            {jd.length} characters — AI uses the first ~2,000 for optimization
+            {jd.length} characters â€” AI uses the first ~2,000 for optimization
           </p>
         </div>
       </div>
@@ -76,15 +76,16 @@ export default function TargetRoleStep() {
           onClick={prevStep}
           className="border border-slate-200 text-slate-600 px-5 py-2.5 rounded-lg font-medium hover:bg-slate-50 transition-colors"
         >
-          ← Back
+          â† Back
         </button>
         <button
           onClick={handleNext}
-          className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
+          className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
         >
-          Next: Experience →
+          Next: Experience â†’
         </button>
       </div>
     </div>
   );
 }
+

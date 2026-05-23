@@ -81,7 +81,7 @@ function LegalSection({ title, items }: Section) {
       <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-600">
         {items.map((item) => (
           <li key={item} className="flex gap-3">
-            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-violet-500" />
+            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-500" />
             <span>{item}</span>
           </li>
         ))}
@@ -96,7 +96,7 @@ export default function PrivacyPage() {
       <header className="sticky top-0 z-30 border-b border-slate-100 bg-white/80 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 text-sm font-bold text-white">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 to-cyan-500 text-sm font-bold text-white">
               R
             </div>
             <span className="text-lg font-bold tracking-tight text-slate-900">ResumeAI</span>
@@ -117,11 +117,11 @@ export default function PrivacyPage() {
 
       <section className="relative overflow-hidden">
         <div aria-hidden className="pointer-events-none absolute inset-0">
-          <div className="absolute -top-32 -left-32 h-[560px] w-[560px] rounded-full bg-violet-100/70 blur-3xl" />
+          <div className="absolute -top-32 -left-32 h-[560px] w-[560px] rounded-full bg-indigo-100/70 blur-3xl" />
           <div className="absolute top-16 right-0 h-[360px] w-[360px] rounded-full bg-sky-100/70 blur-3xl" />
         </div>
         <div className="relative mx-auto max-w-5xl px-6 pb-14 pt-20 sm:pt-24">
-          <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white px-4 py-1.5 text-xs font-semibold text-violet-700 shadow-sm">
+          <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white px-4 py-1.5 text-xs font-semibold text-indigo-700 shadow-sm">
             Privacy Policy
           </span>
           <h1 className="max-w-3xl text-5xl font-extrabold leading-[1.08] tracking-tight text-slate-900 sm:text-6xl">
@@ -133,15 +133,15 @@ export default function PrivacyPage() {
           </p>
           <div className="mt-10 grid gap-4 sm:grid-cols-3">
             <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-              <p className="text-xs font-bold uppercase tracking-widest text-violet-600">No sign-in</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-indigo-600">No sign-in</p>
               <p className="mt-2 text-sm leading-6 text-slate-600">The current version does not require an account to use the app.</p>
             </div>
             <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-              <p className="text-xs font-bold uppercase tracking-widest text-violet-600">Browser storage</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-indigo-600">Browser storage</p>
               <p className="mt-2 text-sm leading-6 text-slate-600">Your draft and preferences are saved locally in your browser.</p>
             </div>
             <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-              <p className="text-xs font-bold uppercase tracking-widest text-violet-600">AI processing</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-indigo-600">AI processing</p>
               <p className="mt-2 text-sm leading-6 text-slate-600">Resume text may be sent to server-side AI features when you ask for them.</p>
             </div>
           </div>

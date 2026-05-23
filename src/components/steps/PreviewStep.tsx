@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useResumeStore } from "@/store/resumeStore";
 import TemplatePicker from "@/components/TemplatePicker";
@@ -78,7 +78,7 @@ export default function PreviewStep() {
 
   return (
     <div className="flex gap-6 min-h-0">
-      {/* ── Left sidebar: template picker ── */}
+      {/* Left sidebar: template picker */}
       <div className="w-52 flex-shrink-0">
         <h3 className="text-sm font-semibold text-slate-700 mb-3">Templates</h3>
         <div className="overflow-y-auto max-h-[calc(100vh-220px)] pr-0.5">
@@ -86,7 +86,7 @@ export default function PreviewStep() {
         </div>
       </div>
 
-      {/* ── Right: controls + preview ── */}
+      {/* Right: controls + preview */}
       <div className="flex-1 min-w-0">
       <h2 className="text-xl font-bold text-slate-800 mb-1">Preview & Export</h2>
       <p className="text-sm text-gray-500 mb-4">
@@ -109,18 +109,18 @@ export default function PreviewStep() {
       </div>
 
       {/* Gap Analyzer CTA */}
-      <div className="app-panel rounded-xl p-4 mb-6 flex items-center justify-between gap-4 flex-wrap border border-violet-100">
+      <div className="app-panel rounded-xl p-4 mb-6 flex items-center justify-between gap-4 flex-wrap border border-blue-100">
         <div>
-          <p className="text-sm font-semibold text-slate-800">🔍 Analyze skill gaps for a specific role</p>
+          <p className="text-sm font-semibold text-slate-800">Analyze skill gaps for a specific role</p>
           <p className="text-xs text-slate-500 mt-0.5">
             Compare your resume against any job description and get personalized learning resources.
           </p>
         </div>
         <a
           href="/gap-analysis"
-          className="flex-shrink-0 bg-violet-600 hover:bg-violet-700 text-white text-sm px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap"
+          className="flex-shrink-0 bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap"
         >
-          Open Gap Analyzer →
+          Open Gap Analyzer
         </a>
       </div>
 
@@ -131,14 +131,14 @@ export default function PreviewStep() {
           disabled={exportingPdf}
           className="flex items-center gap-2 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white px-5 py-2.5 rounded-lg font-medium transition-colors"
         >
-          📄 {exportingPdf ? "Preparing PDF..." : "Download PDF"}
+          PDF {exportingPdf ? "Preparing PDF..." : "Download PDF"}
         </button>
         <button
           onClick={exportDocx}
           disabled={exportingDocx}
-          className="flex items-center gap-2 bg-violet-700 hover:bg-violet-800 disabled:opacity-50 text-white px-5 py-2.5 rounded-lg font-medium transition-colors"
+          className="flex items-center gap-2 bg-blue-700 hover:bg-blue-800 disabled:opacity-50 text-white px-5 py-2.5 rounded-lg font-medium transition-colors"
         >
-          📝 {exportingDocx ? "Exporting..." : "Download DOCX"}
+          DOCX {exportingDocx ? "Exporting..." : "Download DOCX"}
         </button>
       </div>
 
@@ -147,10 +147,11 @@ export default function PreviewStep() {
           onClick={prevStep}
           className="border border-slate-200 text-slate-600 px-5 py-2.5 rounded-lg font-medium hover:bg-slate-50 transition-colors"
         >
-          ← Back
+          Back
         </button>
       </div>
       </div>{/* end right column */}
     </div>
   );
 }
+

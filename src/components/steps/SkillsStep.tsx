@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useResumeStore } from "@/store/resumeStore";
 import { useState } from "react";
@@ -111,9 +111,9 @@ export default function SkillsStep() {
           <label className="block text-sm font-medium text-slate-700">Skills</label>
           <button
             onClick={suggestSkills}
-            className="flex items-center gap-1.5 bg-violet-600 hover:bg-violet-700 text-white text-xs px-4 py-1.5 rounded-lg font-medium transition-colors"
+            className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs px-4 py-1.5 rounded-lg font-medium transition-colors"
           >
-            ✨ Suggest skills for role
+            âœ¨ Suggest skills for role
           </button>
         </div>
         <div className="flex gap-2 mb-3">
@@ -122,27 +122,27 @@ export default function SkillsStep() {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && addSkill()}
             placeholder="Type a skill and press Enter"
-            className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+            className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
             onClick={() => addSkill()}
-            className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white px-4 rounded-lg text-sm font-medium transition-colors"
+            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-4 rounded-lg text-sm font-medium transition-colors"
           >
             Add
           </button>
         </div>
 
         {skillSuggestions.length > 0 && (
-          <div className="mb-3 p-3 bg-violet-50 border border-violet-200 rounded-xl">
-            <p className="text-[11px] font-semibold text-violet-600 uppercase tracking-wide mb-2">
-              Suggested — click to add
+          <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-xl">
+            <p className="text-[11px] font-semibold text-blue-600 uppercase tracking-wide mb-2">
+              Suggested â€” click to add
             </p>
             <div className="flex flex-wrap gap-2">
               {skillSuggestions.map((s) => (
                 <button
                   key={s}
                   onClick={() => addSuggestedSkill(s)}
-                  className="inline-flex items-center gap-1 bg-white border border-violet-300 text-violet-700 hover:bg-violet-100 rounded-full px-3 py-1 text-xs font-medium transition-colors"
+                  className="inline-flex items-center gap-1 bg-white border border-blue-300 text-blue-700 hover:bg-blue-100 rounded-full px-3 py-1 text-xs font-medium transition-colors"
                 >
                   + {s}
                 </button>
@@ -155,14 +155,14 @@ export default function SkillsStep() {
           {resumeData.skills.map((skill) => (
             <span
               key={skill}
-              className="inline-flex items-center gap-1 bg-violet-50 text-violet-700 border border-violet-200 rounded-full px-3 py-1 text-sm"
+              className="inline-flex items-center gap-1 bg-blue-50 text-blue-700 border border-blue-200 rounded-full px-3 py-1 text-sm"
             >
               {skill}
               <button
                 onClick={() => removeSkill(skill)}
-                className="text-violet-400 hover:text-violet-600 leading-none"
+                className="text-blue-400 hover:text-blue-600 leading-none"
               >
-                ✕
+                âœ•
               </button>
             </span>
           ))}
@@ -179,12 +179,12 @@ export default function SkillsStep() {
           <button
             onClick={generateSummary}
             disabled={generatingSummary}
-            className="flex items-center gap-1.5 bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white text-xs px-4 py-1.5 rounded-lg font-medium transition-colors"
+            className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs px-4 py-1.5 rounded-lg font-medium transition-colors"
           >
             {generatingSummary ? (
-              <><span className="animate-spin">⟳</span> Generating...</>
+              <><span className="animate-spin">âŸ³</span> Generating...</>
             ) : (
-              <>✨ Generate with AI</>
+              <>âœ¨ Generate with AI</>
             )}
           </button>
         </div>
@@ -193,7 +193,7 @@ export default function SkillsStep() {
           onChange={(e) => setSummary(e.target.value)}
           rows={5}
           placeholder="Write your professional summary or click 'Generate with AI'..."
-          className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 resize-none"
+          className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
         />
         {summaryError && (
           <p className="text-red-500 text-xs mt-1.5">{summaryError}</p>
@@ -206,15 +206,16 @@ export default function SkillsStep() {
           onClick={prevStep}
           className="border border-slate-200 text-slate-600 px-5 py-2.5 rounded-lg font-medium hover:bg-slate-50 transition-colors"
         >
-          ← Back
+          â† Back
         </button>
         <button
           onClick={nextStep}
-          className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
+          className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
         >
-          Next: Preview & Export →
+          Next: Preview & Export â†’
         </button>
       </div>
     </div>
   );
 }
+

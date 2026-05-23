@@ -77,28 +77,28 @@ const PreviewStep = dynamic(() => import("@/components/steps/PreviewStep"), {
 
 function AppHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/85 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/75">
+    <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/85 backdrop-blur-md">
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-6 gap-4">
         <Link href="/" className="flex items-center gap-2.5">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-cyan-500 text-sm font-bold text-white shadow-sm shadow-indigo-300/40">
             CR
           </div>
-          <span className="text-sm font-bold tracking-wide sm:text-base text-slate-900 dark:text-slate-100">Career Readiness Platform</span>
+          <span className="text-sm font-bold tracking-wide sm:text-base text-slate-900">Career Readiness Platform</span>
         </Link>
-        <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600 dark:text-slate-300">
-          <Link href="/" className="transition-colors hover:text-slate-900 dark:hover:text-white">
+        <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
+          <Link href="/" className="crp-nav-link">
             Home
           </Link>
-          <Link href="/create" className="transition-colors hover:text-slate-900 dark:hover:text-white">
+          <Link href="/create" className="crp-nav-link crp-nav-link-active">
             Resume Tailoring
           </Link>
-          <Link href="/gap-analysis" className="transition-colors hover:text-slate-900 dark:hover:text-white">
+          <Link href="/gap-analysis" className="crp-nav-link">
             Gap Analysis
           </Link>
-          <Link href="/learning-resources" className="transition-colors hover:text-slate-900 dark:hover:text-white">
+          <Link href="/learning-resources" className="crp-nav-link">
             Learning Resources
           </Link>
-          <a href="#roadmap" className="transition-colors hover:text-slate-900 dark:hover:text-white">
+          <a href="#roadmap" className="crp-nav-link">
             Roadmap
           </a>
         </nav>
@@ -279,6 +279,13 @@ function CreatePageContent() {
 
   const freeTemplates = visibleTemplates.filter((template) => !template.isPremium);
   const premiumTemplates = visibleTemplates.filter((template) => template.isPremium);
+  const featuredRecommendedTemplate = useMemo(() => {
+    return (
+      visibleTemplates.find((template) => recommendedTemplateIds.includes(template.id)) ??
+      visibleTemplates[0] ??
+      null
+    );
+  }, [recommendedTemplateIds, visibleTemplates]);
 
   useEffect(() => {
     visibleTemplates.forEach((template) => {
@@ -584,12 +591,21 @@ function CreatePageContent() {
         <FlowStrip activeStep={0} />
 
         <div className="mx-auto w-full max-w-7xl px-6 pt-4">
-          <div className="crp-card p-6">
-            <span className="crp-badge">Resume Tailoring</span>
-            <h1 className="crp-section-title mt-3">Resume Tailoring</h1>
-            <p className="crp-section-copy mt-2 max-w-3xl">
-              Upload your resume and paste a job description to receive targeted improvements.
-            </p>
+          <div className="crp-card crp-module-accent crp-soft-radial p-6 relative overflow-hidden">
+            <div className="pointer-events-none absolute -right-10 -top-14 h-32 w-32 rounded-full bg-indigo-100/70 blur-2xl" />
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+              <div>
+                <span className="crp-badge">Template Selection</span>
+                <h1 className="crp-section-title mt-3">Choose Your Resume Template</h1>
+                <p className="crp-section-copy mt-2 max-w-3xl">
+                  Select a professional ATS-friendly design for your tailored resume.
+                </p>
+              </div>
+              <div className="rounded-xl border border-indigo-100 bg-white/85 px-3 py-2 text-xs text-slate-600 shadow-sm min-w-[220px]">
+                <p className="font-semibold text-slate-700">All templates are ATS-optimized</p>
+                <p className="mt-0.5 text-[11px] text-slate-500">Designed to pass ATS scanners and impress recruiters.</p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -606,7 +622,7 @@ function CreatePageContent() {
         </div>
 
         <div className="mx-auto w-full max-w-7xl px-6 py-4">
-          <div className="crp-card-soft p-4 mb-6">
+          <div className="crp-card-soft crp-glass crp-module-accent p-4 mb-6">
             <div className="mb-3 flex items-center justify-between gap-3">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-indigo-600">Template Studio</p>
@@ -702,7 +718,7 @@ function CreatePageContent() {
             </div>
           </div>
 
-          <div className="mb-4 crp-card-soft px-4 py-3">
+          <div className="mb-4 app-panel crp-module-accent px-4 py-3">
             <p className="text-xs font-semibold uppercase tracking-wide text-indigo-700">ATS Checklist</p>
             <p className="mt-1 text-xs text-slate-700">
               Templates are ATS-safe with standard fonts (Arial/Calibri), clear section headings, bullet lists,
@@ -710,16 +726,87 @@ function CreatePageContent() {
             </p>
           </div>
 
+          {featuredRecommendedTemplate && (
+            <div className="mb-6">
+              <div className="rounded-2xl border border-slate-200 bg-white shadow-[0_16px_45px_-32px_rgba(15,23,42,0.38)] overflow-hidden">
+                <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr]">
+                  <div className="border-l-4 border-l-indigo-500 bg-slate-50/55 p-4 sm:p-5">
+                    <p className="text-xs font-bold uppercase tracking-[0.14em] text-indigo-700">Recommended for You</p>
+                    <p className="mt-1 text-xs text-slate-500">Based on your target role and experience</p>
+                    <div className="mt-3 rounded-xl border border-slate-200 bg-white p-2.5">
+                      <TemplatePreviewCard template={featuredRecommendedTemplate} />
+                    </div>
+                  </div>
+
+                  <div className="p-4 sm:p-5">
+                    <div className="flex flex-wrap items-center gap-2">
+                      {featuredRecommendedTemplate.isPremium && (
+                        <span className="crp-premium-badge">{featuredRecommendedTemplate.premiumBadgeType ?? "Premium"}</span>
+                      )}
+                      {featuredRecommendedTemplate.atsScore != null && (
+                        <span className="crp-ats-badge">ATS Optimized {featuredRecommendedTemplate.atsScore}</span>
+                      )}
+                    </div>
+
+                    <h3 className="mt-3 text-[30px] leading-tight font-bold tracking-tight text-slate-900">{featuredRecommendedTemplate.name}</h3>
+                    <p className="mt-1 text-sm text-slate-600">{featuredRecommendedTemplate.description}</p>
+
+                    {!!featuredRecommendedTemplate.recommendedFor?.length && (
+                      <div className="mt-3 flex flex-wrap gap-1.5">
+                        {featuredRecommendedTemplate.recommendedFor.slice(0, 3).map((role: string) => (
+                          <span key={role} className="rounded-full border border-indigo-100 bg-indigo-50 px-2 py-0.5 text-[11px] font-medium text-indigo-700">
+                            {role}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    <p className="mt-3 text-sm text-emerald-700 font-medium">Best match for your profile</p>
+                    <p className="mt-1 text-sm text-slate-600">Emphasizes your most relevant strengths while keeping ATS readability high.</p>
+
+                    <div className="mt-5 flex flex-wrap items-center gap-2">
+                      <button
+                        type="button"
+                        className="crp-btn-secondary min-w-[96px] px-4 py-2 text-sm"
+                        onClick={() => {
+                          setPreviewTemplate(featuredRecommendedTemplate);
+                          trackEvent("template_preview", {
+                            templateId: featuredRecommendedTemplate.id,
+                            isPremium: featuredRecommendedTemplate.isPremium,
+                            priceModel: featuredRecommendedTemplate.priceModel,
+                          });
+                        }}
+                      >
+                        Preview
+                      </button>
+                      <button
+                        type="button"
+                        className="crp-btn-primary min-w-[116px] px-4 py-2 text-sm"
+                        onClick={() => askStartPath(featuredRecommendedTemplate.id)}
+                      >
+                        Use Template
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="mb-3 mt-2 flex items-center justify-between gap-3">
+            <h3 className="text-xl font-bold tracking-tight text-slate-900">All Templates</h3>
+            <span className="text-xs font-medium text-slate-500">All previews shown in full</span>
+          </div>
+
           {!!freeTemplates.length && (
             <div>
-              <h3 className="mb-3 text-sm font-bold text-slate-800">Free Templates</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+              <h3 className="mb-3 text-sm font-bold uppercase tracking-[0.1em] text-slate-700">Free Templates</h3>
+              <div className="grid grid-cols-1 gap-y-5 gap-x-6 md:grid-cols-2 xl:grid-cols-3">
                 {freeTemplates.map((t) => (
                   <div key={t.id} className="relative">
                     {recommendedTemplateIds.includes(t.id) && (
-                      <div className="mb-2 rounded-xl border border-cyan-200 bg-cyan-50 px-3 py-2 text-xs text-cyan-900">
+                      <div className="mb-1.5 rounded-lg border border-cyan-200/80 bg-cyan-50/85 px-2.5 py-1 text-[11px] text-cyan-900 shadow-[0_8px_20px_-16px_rgba(6,182,212,0.45)]">
                         <p className="font-semibold">Recommended for You</p>
-                        <p>Matches your target role</p>
                       </div>
                     )}
                     <TemplateGalleryCard
@@ -747,8 +834,8 @@ function CreatePageContent() {
 
           {premiumEnabled && (
             <div className="mt-8">
-              <h3 className="mb-3 text-sm font-bold text-slate-800">Premium Templates</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+              <h3 className="mb-3 text-sm font-bold uppercase tracking-[0.1em] text-slate-700">Premium Templates</h3>
+              <div className="grid grid-cols-1 gap-y-5 gap-x-6 md:grid-cols-2 xl:grid-cols-3">
                 {premiumTemplates.map((t) => (
                   <TemplateGalleryCard
                     key={t.id}
@@ -781,6 +868,13 @@ function CreatePageContent() {
             </div>
           )}
 
+          {!!visibleTemplates.length && (
+            <div className="mt-6 rounded-xl border border-indigo-100 bg-gradient-to-r from-indigo-50/70 to-cyan-50/65 px-4 py-3 text-sm text-slate-700">
+              <p className="font-semibold text-indigo-700">All templates are ATS-optimized and recruiter-approved.</p>
+              <p className="mt-0.5 text-xs text-slate-600">You can change your template anytime. Your content remains safe.</p>
+            </div>
+          )}
+
           {uploading && (
             <div className="fixed inset-0 z-30 bg-slate-900/30 backdrop-blur-sm flex items-center justify-center px-4">
               <div className="bg-white rounded-xl shadow-xl border border-slate-200 px-6 py-5 flex flex-col items-center gap-3 min-w-[220px]">
@@ -796,7 +890,7 @@ function CreatePageContent() {
 
           {showStartChoice && (
             <div className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center px-4">
-              <div className="w-full max-w-md bg-white rounded-2xl border border-slate-200 shadow-2xl p-5">
+              <div className="w-full max-w-md bg-white rounded-2xl border border-slate-200 shadow-2xl p-5 crp-module-accent crp-soft-radial">
                 <h3 className="text-lg font-bold text-slate-900 mb-1">Template selected</h3>
                 <p className="text-sm text-slate-600 mb-4">
                   Great choice. Do you want to import an existing resume or start fresh with this template?
@@ -845,28 +939,40 @@ function CreatePageContent() {
           {previewTemplate && (
             <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center px-4 py-6">
               <div className="w-full max-w-5xl max-h-full overflow-auto rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl">
-                <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1.4fr_1fr]">
-                  <div>
+                <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1.45fr_1fr]">
+                  <div className="rounded-2xl border border-slate-200 bg-white p-2">
                     <TemplatePreviewCard template={previewTemplate} />
                   </div>
-                  <div className="crp-card-soft p-4">
+                  <div className="crp-card-soft crp-glass crp-module-accent p-4">
                     <div className="flex items-center justify-between gap-3">
-                      <h3 className="text-lg font-bold text-slate-900">{previewTemplate.name}</h3>
+                      <h3 className="text-xl font-bold tracking-tight text-slate-900">{previewTemplate.name}</h3>
                       {previewTemplate.isPremium && <span className="crp-premium-badge">Premium</span>}
                     </div>
                     <p className="mt-1 text-sm text-slate-600">{previewTemplate.description}</p>
 
                     {previewTemplate.atsScore != null ? (
-                      <p className="mt-3 text-sm font-semibold text-emerald-700">ATS Score: {previewTemplate.atsScore}</p>
+                      <div className="mt-3 crp-score-card p-3">
+                        <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Template ATS Confidence</p>
+                        <div className="mt-1.5 flex items-center justify-between">
+                          <p className="text-sm font-semibold text-slate-700">ATS Score</p>
+                          <span className="text-lg font-bold text-emerald-700">{previewTemplate.atsScore}</span>
+                        </div>
+                        <div className="mt-2 crp-score-meter">
+                          <div
+                            className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500"
+                            style={{ width: `${Math.min(100, Math.max(0, previewTemplate.atsScore))}%` }}
+                          />
+                        </div>
+                      </div>
                     ) : (
-                      <p className="mt-3 text-sm text-slate-500">No template selected. Please choose one to preview.</p>
+                      <p className="mt-3 text-sm text-slate-500">No template selected. Please choose one.</p>
                     )}
 
                     <div className="mt-3">
                       <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Strengths</p>
                       <div className="mt-1 flex flex-wrap gap-1">
                         {previewTemplate.tags.map((tag: string) => (
-                          <span key={tag} className="rounded-full bg-white px-2 py-0.5 text-xs text-slate-700 border border-slate-200">
+                          <span key={tag} className="rounded-full bg-white/90 px-2 py-0.5 text-xs text-slate-700 border border-slate-200">
                             {tag}
                           </span>
                         ))}
@@ -917,7 +1023,7 @@ function CreatePageContent() {
       <FlowStrip activeStep={currentStep === "preview" ? 2 : 1} />
 
       <div className="mx-auto w-full max-w-7xl px-6 pt-2">
-        <div className="crp-card p-6">
+        <div className="crp-card crp-module-accent crp-soft-radial p-6">
           <span className="crp-badge">Resume Tailoring</span>
           <h1 className="crp-section-title mt-3">Resume Tailoring</h1>
           <p className="crp-section-copy mt-2 max-w-3xl">
@@ -927,7 +1033,7 @@ function CreatePageContent() {
       </div>
 
       <div className="mx-auto w-full max-w-7xl px-6 pt-6">
-        <div className="crp-card-soft flex items-center justify-between gap-4 px-4 py-3">
+        <div className="crp-card-soft crp-glass crp-module-accent flex items-center justify-between gap-4 px-4 py-3">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-600">Builder workspace</p>
             <p className="text-sm text-slate-600 mt-0.5">Keep editing, or reset and return to template selection.</p>

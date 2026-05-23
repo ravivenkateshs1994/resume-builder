@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -84,13 +84,13 @@ const typeBadgeClasses: Record<ResourceType, string> = {
   Documentation: "bg-slate-100 text-slate-700 border-slate-200",
   Tutorial: "bg-cyan-100 text-cyan-700 border-cyan-200",
   Course: "bg-indigo-100 text-indigo-700 border-indigo-200",
-  Article: "bg-violet-100 text-violet-700 border-violet-200",
+  Article: "bg-blue-100 text-blue-700 border-blue-200",
   Video: "bg-amber-100 text-amber-700 border-amber-200",
 };
 
 function AppHeader() {
   return (
-    <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-slate-100">
+    <header className="sticky top-0 z-30 bg-white/85 backdrop-blur-md border-b border-slate-200/80">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
         <Link href="/" className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-cyan-500 flex items-center justify-center text-white font-bold text-[11px]">
@@ -99,11 +99,11 @@ function AppHeader() {
           <span className="font-bold text-slate-900 text-lg tracking-tight">Career Readiness Platform</span>
         </Link>
         <nav className="hidden sm:flex items-center gap-6 text-sm text-slate-600 font-medium">
-          <Link href="/" className="hover:text-slate-900 transition-colors">Home</Link>
-          <Link href="/create" className="hover:text-slate-900 transition-colors">Resume Tailoring</Link>
-          <Link href="/gap-analysis" className="hover:text-slate-900 transition-colors">Gap Analysis</Link>
-          <Link href="/learning-resources" className="hover:text-slate-900 transition-colors">Learning Resources</Link>
-          <a href="#roadmap" className="hover:text-slate-900 transition-colors">Roadmap</a>
+          <Link href="/" className="crp-nav-link">Home</Link>
+          <Link href="/create" className="crp-nav-link">Resume Tailoring</Link>
+          <Link href="/gap-analysis" className="crp-nav-link">Gap Analysis</Link>
+          <Link href="/learning-resources" className="crp-nav-link crp-nav-link-active">Learning Resources</Link>
+          <a href="#roadmap" className="crp-nav-link">Roadmap</a>
         </nav>
       </div>
     </header>
@@ -130,7 +130,7 @@ export default function LearningResourcesPage() {
       <AppHeader />
 
       <section className="max-w-6xl mx-auto px-6 pt-10 pb-6">
-        <div className="crp-card p-6 sm:p-7">
+        <div className="crp-card crp-module-accent crp-soft-radial p-6 sm:p-7">
           <span className="crp-badge">Learning Roadmap</span>
           <h1 className="crp-section-title mt-3">Learning Roadmap</h1>
           <p className="crp-section-copy mt-2 max-w-3xl">
@@ -145,12 +145,12 @@ export default function LearningResourcesPage() {
       </section>
 
       <section className="max-w-6xl mx-auto px-6 pb-6">
-        <div className="crp-card-soft p-5">
+        <div className="crp-card-soft crp-glass crp-module-accent p-5">
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <p className="text-sm font-semibold text-slate-800">Progress</p>
             <span className="text-xs font-semibold text-slate-600">{completedCount}/{resources.length} completed</span>
           </div>
-          <div className="mt-3 h-2.5 rounded-full bg-slate-200 overflow-hidden">
+          <div className="mt-3 crp-score-meter h-2.5">
             <div
               className="h-full rounded-full bg-gradient-to-r from-indigo-600 to-cyan-500"
               style={{ width: `${(completedCount / resources.length) * 100}%` }}
@@ -161,7 +161,7 @@ export default function LearningResourcesPage() {
 
       <section className="max-w-6xl mx-auto px-6 pb-16 space-y-6">
         {(Object.keys(grouped) as ResourceGroup[]).map((groupName) => (
-          <div key={groupName} className="crp-card p-5 sm:p-6">
+          <div key={groupName} className="crp-card crp-module-accent p-5 sm:p-6">
             <div className="flex items-center justify-between gap-3 mb-4">
               <h2 className="text-xl font-bold text-slate-900">{groupName}</h2>
               <span className="crp-badge">{grouped[groupName].length} resources</span>
@@ -169,7 +169,7 @@ export default function LearningResourcesPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {grouped[groupName].map((resource) => (
-                <article key={resource.id} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <article key={resource.id} className="crp-score-card p-4">
                   <div className="flex items-center justify-between gap-2 mb-2">
                     <p className="text-sm font-semibold text-slate-900">{resource.skill}</p>
                     <span className={`text-[10px] font-semibold border rounded-full px-2 py-0.5 ${typeBadgeClasses[resource.type]}`}>
@@ -197,7 +197,7 @@ export default function LearningResourcesPage() {
                       rel="noreferrer"
                       className="crp-btn-primary text-xs px-3 py-2"
                     >
-                      Open Resource ↗
+                      Open Resource
                     </a>
                     <button
                       type="button"
@@ -215,7 +215,7 @@ export default function LearningResourcesPage() {
       </section>
 
       <section id="roadmap" className="max-w-6xl mx-auto px-6 pb-16">
-        <div className="crp-card-soft p-5 sm:p-6">
+        <div className="crp-card-soft crp-glass crp-module-accent p-5 sm:p-6">
           <div className="flex items-center justify-between gap-3 mb-4">
             <h2 className="text-lg font-bold text-slate-900">Coming Soon</h2>
             <span className="crp-badge">Roadmap</span>
@@ -238,3 +238,4 @@ export default function LearningResourcesPage() {
     </main>
   );
 }
+

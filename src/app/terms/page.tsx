@@ -102,7 +102,7 @@ export default function TermsPage() {
       <header className="sticky top-0 z-30 border-b border-slate-100 bg-white/80 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 text-sm font-bold text-white">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 to-cyan-500 text-sm font-bold text-white">
               R
             </div>
             <span className="text-lg font-bold tracking-tight text-slate-900">ResumeAI</span>
@@ -124,7 +124,7 @@ export default function TermsPage() {
       <section className="relative overflow-hidden">
         <div aria-hidden className="pointer-events-none absolute inset-0">
           <div className="absolute -top-32 -left-32 h-[560px] w-[560px] rounded-full bg-indigo-100/70 blur-3xl" />
-          <div className="absolute top-20 right-0 h-[360px] w-[360px] rounded-full bg-violet-100/70 blur-3xl" />
+          <div className="absolute top-20 right-0 h-[360px] w-[360px] rounded-full bg-cyan-100/70 blur-3xl" />
         </div>
         <div className="relative mx-auto max-w-5xl px-6 pb-14 pt-20 sm:pt-24">
           <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white px-4 py-1.5 text-xs font-semibold text-indigo-700 shadow-sm">

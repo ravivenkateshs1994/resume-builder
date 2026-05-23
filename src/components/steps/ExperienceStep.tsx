@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useResumeStore } from "@/store/resumeStore";
 import { useEditor, EditorContent } from "@tiptap/react";
@@ -49,7 +49,7 @@ function MonthYearSelect({
   }
 
   const selectClass =
-    "flex-1 border border-slate-200 rounded-lg px-2 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 bg-white disabled:bg-gray-50 disabled:text-gray-400";
+    "flex-1 border border-slate-200 rounded-lg px-2 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white disabled:bg-gray-50 disabled:text-gray-400";
 
   return (
     <div className="flex gap-2">
@@ -84,7 +84,7 @@ function ToolbarBtn({
       onMouseDown={(e) => { e.preventDefault(); onClick(e); }}
       className={`p-1.5 rounded-md transition-all duration-100 ${
         active
-          ? "bg-violet-600 text-white shadow-sm"
+          ? "bg-blue-600 text-white shadow-sm"
           : "text-gray-500 hover:text-gray-900 hover:bg-gray-100"
       }`}
     >
@@ -203,7 +203,7 @@ function DescriptionEditor({
   }
 
   return (
-    <div className="border border-slate-200 rounded-xl overflow-hidden shadow-sm focus-within:shadow-md focus-within:border-violet-400 transition-all duration-200 bg-white">
+    <div className="border border-slate-200 rounded-xl overflow-hidden shadow-sm focus-within:shadow-md focus-within:border-blue-400 transition-all duration-200 bg-white">
       {/* Toolbar */}
       <div className="flex items-center gap-0.5 px-2.5 py-2 bg-slate-50 border-b border-slate-200 flex-wrap">
         {/* Text formatting */}
@@ -247,7 +247,7 @@ function DescriptionEditor({
           <Redo2 size={14} />
         </ToolbarBtn>
 
-        {/* Character count � right aligned */}
+        {/* Character count ï¿½ right aligned */}
         <div className="ml-auto text-[10px] text-gray-400 font-mono tabular-nums pr-1">
           {charCount} chars
         </div>
@@ -264,12 +264,12 @@ function DescriptionEditor({
           type="button"
           onClick={handleOptimizeClick}
           disabled={isOptimizing || !editor?.getText().trim()}
-          className="flex items-center gap-1.5 text-xs font-medium text-white bg-violet-600 hover:bg-violet-700 disabled:opacity-40 disabled:cursor-not-allowed px-4 py-1.5 rounded-lg transition-colors"
+          className="flex items-center gap-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed px-4 py-1.5 rounded-lg transition-colors"
         >
           {isOptimizing ? (
-            <><span className="animate-spin inline-block">⟳</span> Optimizing...</>
+            <><span className="animate-spin inline-block">âŸ³</span> Optimizing...</>
           ) : (
-            <>✨ {hasSelection ? "Optimize Selection" : "Optimize Content"}</>
+            <>âœ¨ {hasSelection ? "Optimize Selection" : "Optimize Content"}</>
           )}
         </button>
         <span className="text-[11px] text-gray-500">
@@ -355,17 +355,17 @@ export default function ExperienceStep() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Job Title <span className="text-red-500">*</span></label>
-                    <input value={w.title} onChange={(e) => updateWorkExperience(w.id, { title: e.target.value })} placeholder="e.g. Senior Software Engineer" className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" />
+                    <input value={w.title} onChange={(e) => updateWorkExperience(w.id, { title: e.target.value })} placeholder="e.g. Senior Software Engineer" className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                   </div>
                   <div>
                     <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Company <span className="text-red-500">*</span></label>
-                    <input value={w.company} onChange={(e) => updateWorkExperience(w.id, { company: e.target.value })} placeholder="e.g. Acme Corp" className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" />
+                    <input value={w.company} onChange={(e) => updateWorkExperience(w.id, { company: e.target.value })} placeholder="e.g. Acme Corp" className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Location</label>
-                  <input value={w.location || ""} onChange={(e) => updateWorkExperience(w.id, { location: e.target.value })} placeholder="e.g. New York, NY (or Remote)" className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" />
+                  <input value={w.location || ""} onChange={(e) => updateWorkExperience(w.id, { location: e.target.value })} placeholder="e.g. New York, NY (or Remote)" className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -377,13 +377,13 @@ export default function ExperienceStep() {
                     <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">End Date</label>
                     <MonthYearSelect value={isCurrent ? "" : w.endDate} onChange={(v) => updateWorkExperience(w.id, { endDate: v })} disabled={isCurrent} />
                     <label className="inline-flex items-center gap-2 mt-2 cursor-pointer select-none">
-                      <input type="checkbox" checked={isCurrent} onChange={(e) => updateWorkExperience(w.id, { endDate: e.target.checked ? "Present" : "" })} className="rounded border-gray-300 text-violet-600 focus:ring-violet-500" />
+                      <input type="checkbox" checked={isCurrent} onChange={(e) => updateWorkExperience(w.id, { endDate: e.target.checked ? "Present" : "" })} className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
                       <span className="text-xs text-slate-600">Currently working here</span>
                     </label>
                   </div>
                 </div>
 
-                {/* Description � rich text editor */}
+                {/* Description ï¿½ rich text editor */}
                 <div>
                   <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Description</label>
                   <DescriptionEditor
@@ -401,7 +401,7 @@ export default function ExperienceStep() {
 
       <button
         onClick={addWorkExperience}
-        className="mt-4 w-full border-2 border-dashed border-slate-200 hover:border-violet-400 text-gray-500 hover:text-violet-600 rounded-xl py-3 text-sm font-medium transition-colors"
+        className="mt-4 w-full border-2 border-dashed border-slate-200 hover:border-blue-400 text-gray-500 hover:text-blue-600 rounded-xl py-3 text-sm font-medium transition-colors"
       >
         + Add Position
       </button>
@@ -411,15 +411,16 @@ export default function ExperienceStep() {
           onClick={prevStep}
           className="border border-slate-200 text-slate-600 px-5 py-2.5 rounded-lg font-medium hover:bg-slate-50 transition-colors"
         >
-          ← Back
+          â† Back
         </button>
         <button
           onClick={nextStep}
-          className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
+          className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
         >
-          Next: Education →
+          Next: Education â†’
         </button>
       </div>
     </div>
   );
 }
+

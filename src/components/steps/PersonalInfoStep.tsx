@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import HeadshotAvatar from "@/components/HeadshotAvatar";
 import { useResumeStore } from "@/store/resumeStore";
@@ -109,8 +109,8 @@ export default function PersonalInfoStep() {
               headshotUrl={form.headshotUrl}
               initials={initials}
               alt={`${form.fullName || "Candidate"} headshot`}
-              className="h-32 w-32 shrink-0 overflow-hidden rounded-3xl border-2 border-violet-200 bg-violet-100"
-              fallbackClassName="h-full w-full flex items-center justify-center text-violet-600 font-bold text-4xl"
+              className="h-32 w-32 shrink-0 overflow-hidden rounded-3xl border-2 border-blue-200 bg-blue-100"
+              fallbackClassName="h-full w-full flex items-center justify-center text-blue-600 font-bold text-4xl"
             />
             <div className="min-w-0">
               <p className="text-sm font-semibold text-gray-800 truncate">{form.fullName || "Your Name"}</p>
@@ -123,7 +123,7 @@ export default function PersonalInfoStep() {
             <button
               type="button"
               onClick={() => headshotInputRef.current?.click()}
-              className="rounded-lg border border-violet-200 bg-white px-3 py-2 text-xs font-semibold text-violet-700 transition-colors hover:border-violet-300 hover:bg-violet-50"
+              className="rounded-lg border border-blue-200 bg-white px-3 py-2 text-xs font-semibold text-blue-700 transition-colors hover:border-blue-300 hover:bg-blue-50"
             >
               {form.headshotUrl ? "Replace headshot" : "Add headshot"}
             </button>
@@ -165,7 +165,7 @@ export default function PersonalInfoStep() {
             value={form.fullName}
             onChange={(e) => setForm({ ...form, fullName: e.target.value })}
             placeholder="e.g. Jane Smith"
-            className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 ${errors.fullName ? "border-red-400" : "border-slate-200"}`}
+            className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.fullName ? "border-red-400" : "border-slate-200"}`}
           />
           {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
         </div>
@@ -178,7 +178,7 @@ export default function PersonalInfoStep() {
             value={form.jobTitle || ""}
             onChange={(e) => setForm({ ...form, jobTitle: e.target.value })}
             placeholder="e.g. Senior Software Engineer"
-            className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+            className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -191,7 +191,7 @@ export default function PersonalInfoStep() {
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
             placeholder="jane@example.com"
-            className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 ${errors.email ? "border-red-400" : "border-slate-200"}`}
+            className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.email ? "border-red-400" : "border-slate-200"}`}
           />
           {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
         </div>
@@ -205,7 +205,7 @@ export default function PersonalInfoStep() {
             value={form.phone}
             onChange={(e) => setForm({ ...form, phone: e.target.value })}
             placeholder="+1 (555) 000-0000"
-            className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 ${errors.phone ? "border-red-400" : "border-slate-200"}`}
+            className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.phone ? "border-red-400" : "border-slate-200"}`}
           />
           {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
         </div>
@@ -218,7 +218,7 @@ export default function PersonalInfoStep() {
             value={form.location}
             onChange={(e) => setForm({ ...form, location: e.target.value })}
             placeholder="e.g. New York, NY"
-            className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 ${errors.location ? "border-red-400" : "border-slate-200"}`}
+            className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.location ? "border-red-400" : "border-slate-200"}`}
           />
           {errors.location && <p className="text-red-500 text-xs mt-1">{errors.location}</p>}
         </div>
@@ -231,7 +231,7 @@ export default function PersonalInfoStep() {
             value={form.linkedin || ""}
             onChange={(e) => setForm({ ...form, linkedin: e.target.value })}
             placeholder="linkedin.com/in/janesmith"
-            className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+            className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -243,7 +243,7 @@ export default function PersonalInfoStep() {
             value={form.website || ""}
             onChange={(e) => setForm({ ...form, website: e.target.value })}
             placeholder="e.g. janesmith.dev"
-            className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+            className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
       </div>
@@ -251,11 +251,12 @@ export default function PersonalInfoStep() {
       <div className="flex justify-end mt-8">
         <button
           onClick={handleNext}
-          className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
+          className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
         >
-          Next: Experience →
+          Next: Experience â†’
         </button>
       </div>
     </div>
   );
 }
+

@@ -72,7 +72,7 @@ export const TEMPLATE_CATALOG: TemplateCatalogItem[] = [
     thumbnailUrl: `${BASE_THUMBNAIL}/creative.jpg`,
     description: "Bold sidebar layout for standout portfolios.",
     style: "Bold sidebar layout for standout portfolios.",
-    previewColor: "bg-violet-700",
+    previewColor: "bg-indigo-700",
     category: "modern",
     tags: ["Design", "Portfolio"],
     atsScore: 86,

@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import {
   BookOpenCheck,
   Bot,
@@ -79,8 +79,8 @@ const roadmapFeatures = [
 
 export default function LandingPage() {
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
-      <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/85 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/75">
+    <main className="min-h-screen bg-slate-50 text-slate-900">
+      <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/85 backdrop-blur-md">
         <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-6">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-cyan-500 text-sm font-bold text-white shadow-sm shadow-indigo-300/40">
@@ -89,33 +89,33 @@ export default function LandingPage() {
             <span className="text-sm font-bold tracking-wide sm:text-base">Career Readiness Platform</span>
           </div>
 
-          <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 dark:text-slate-300 md:flex">
-            <a href="#home" className="transition-colors hover:text-slate-900 dark:hover:text-white">Home</a>
-            <Link href="/create" className="transition-colors hover:text-slate-900 dark:hover:text-white">Resume Tailoring</Link>
-            <Link href="/gap-analysis" className="transition-colors hover:text-slate-900 dark:hover:text-white">Gap Analysis</Link>
-            <Link href="/learning-resources" className="transition-colors hover:text-slate-900 dark:hover:text-white">Learning Resources</Link>
-            <a href="#roadmap" className="transition-colors hover:text-slate-900 dark:hover:text-white">Roadmap</a>
+          <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 md:flex">
+            <a href="#home" className="crp-nav-link crp-nav-link-active">Home</a>
+            <Link href="/create" className="crp-nav-link">Resume Tailoring</Link>
+            <Link href="/gap-analysis" className="crp-nav-link">Gap Analysis</Link>
+            <Link href="/learning-resources" className="crp-nav-link">Learning Resources</Link>
+            <a href="#roadmap" className="crp-nav-link">Roadmap</a>
           </nav>
         </div>
       </header>
 
       <section id="home" className="relative overflow-hidden">
         <div aria-hidden className="pointer-events-none absolute inset-0">
-          <div className="absolute -left-24 top-0 h-72 w-72 rounded-full bg-cyan-200/40 blur-3xl dark:bg-cyan-500/20" />
-          <div className="absolute right-0 top-8 h-80 w-80 rounded-full bg-indigo-200/45 blur-3xl dark:bg-indigo-500/25" />
+          <div className="absolute -left-24 top-0 h-72 w-72 rounded-full bg-cyan-200/40 blur-3xl" />
+          <div className="absolute right-0 top-8 h-80 w-80 rounded-full bg-indigo-200/45 blur-3xl" />
         </div>
 
         <div className="relative mx-auto w-full max-w-6xl px-6 pb-20 pt-20 text-center sm:pt-28">
-          <span className="inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-white px-4 py-1.5 text-xs font-semibold text-indigo-700 shadow-sm dark:border-indigo-800 dark:bg-slate-900 dark:text-indigo-300">
+          <span className="inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-white px-4 py-1.5 text-xs font-semibold text-indigo-700 shadow-sm">
             <Sparkles className="h-3.5 w-3.5" />
             AI-Powered Career Intelligence
           </span>
 
-          <h1 className="mx-auto mt-7 max-w-4xl text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl dark:text-white">
+          <h1 className="mx-auto mt-7 max-w-4xl text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
             Become Job-Ready for Any Role
           </h1>
 
-          <p className="mx-auto mt-6 max-w-3xl text-base leading-relaxed text-slate-600 sm:text-lg dark:text-slate-300">
+          <p className="mx-auto mt-6 max-w-3xl text-base leading-relaxed text-slate-600 sm:text-lg">
             Upload your resume, paste a job description, and receive personalized resume improvements, skill-gap analysis, and a learning roadmap.
           </p>
 
@@ -128,7 +128,7 @@ export default function LandingPage() {
             </Link>
             <a
               href="#mvp-features"
-              className="rounded-xl border border-slate-300 bg-white px-7 py-3 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-slate-600"
+              className="rounded-xl border border-slate-300 bg-white px-7 py-3 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-400"
             >
               Explore Features
             </a>
@@ -139,7 +139,7 @@ export default function LandingPage() {
       <section id="mvp-features" className="mx-auto w-full max-w-7xl px-6 pb-16">
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-300">Current Platform Capabilities</p>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-600">Current Platform Capabilities</p>
             <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">MVP Features</h2>
           </div>
         </div>
@@ -150,13 +150,13 @@ export default function LandingPage() {
             return (
               <article
                 key={feature.title}
-                className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_18px_45px_-28px_rgba(15,23,42,0.35)] transition-all hover:-translate-y-0.5 hover:border-indigo-300 hover:shadow-[0_24px_55px_-30px_rgba(79,70,229,0.35)] dark:border-slate-800 dark:bg-slate-900 dark:hover:border-indigo-700"
+                className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_18px_45px_-28px_rgba(15,23,42,0.35)] transition-all hover:-translate-y-0.5 hover:border-indigo-300 hover:shadow-[0_24px_55px_-30px_rgba(79,70,229,0.35)]"
               >
                 <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-cyan-500 text-white">
                   <Icon className="h-5 w-5" />
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white">{feature.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{feature.description}</p>
+                <h3 className="text-lg font-bold text-slate-900">{feature.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">{feature.description}</p>
               </article>
             );
           })}
@@ -164,10 +164,10 @@ export default function LandingPage() {
       </section>
 
       <section id="learning-resources" className="mx-auto w-full max-w-7xl px-6 pb-16">
-        <div className="rounded-3xl border border-slate-200 bg-gradient-to-r from-white to-indigo-50 p-8 shadow-[0_20px_60px_-36px_rgba(30,41,59,0.45)] dark:border-slate-800 dark:from-slate-900 dark:to-indigo-950/40">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-300">Learning Resources</p>
+        <div className="rounded-3xl border border-slate-200 bg-gradient-to-r from-white to-indigo-50 p-8 shadow-[0_20px_60px_-36px_rgba(30,41,59,0.45)]">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-600">Learning Resources</p>
           <h3 className="mt-2 text-2xl font-bold tracking-tight">From gaps to growth, faster</h3>
-          <p className="mt-3 max-w-3xl text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+          <p className="mt-3 max-w-3xl text-sm leading-relaxed text-slate-600">
             The platform maps missing capabilities to practical resources so users can build a focused plan and become interview-ready for their target role.
           </p>
         </div>
@@ -175,8 +175,8 @@ export default function LandingPage() {
 
       <section id="roadmap" className="mx-auto w-full max-w-7xl px-6 pb-24">
         <div className="mb-8">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Future Roadmap</p>
-          <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">What’s Coming Next</h2>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Future Roadmap</p>
+          <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">What&apos;s Coming Next</h2>
         </div>
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
@@ -185,18 +185,18 @@ export default function LandingPage() {
             return (
               <article
                 key={feature.title}
-                className="rounded-2xl border border-dashed border-slate-300 bg-white/80 p-6 shadow-[0_14px_35px_-26px_rgba(15,23,42,0.45)] dark:border-slate-700 dark:bg-slate-900/75"
+                className="rounded-2xl border border-dashed border-slate-300 bg-white/80 p-6 shadow-[0_14px_35px_-26px_rgba(15,23,42,0.45)]"
               >
                 <div className="mb-4 flex items-center justify-between">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
                     <Icon className="h-5 w-5" />
                   </div>
-                  <span className="rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-700 dark:border-amber-700/60 dark:bg-amber-900/30 dark:text-amber-200">
+                  <span className="rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-700">
                     Coming Soon
                   </span>
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white">{feature.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{feature.description}</p>
+                <h3 className="text-lg font-bold text-slate-900">{feature.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">{feature.description}</p>
               </article>
             );
           })}
@@ -205,3 +205,4 @@ export default function LandingPage() {
     </main>
   );
 }
+

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useRef, useState } from "react";
 import { parseResumeFile } from "@/lib/resumeFileParser";
@@ -6,7 +6,7 @@ import { useResumeStore } from "@/store/resumeStore";
 import type { ResumeData } from "@/types/resume";
 import Link from "next/link";
 
-// ── Types ──────────────────────────────────────────────────────────────────────
+// â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface LearningResource {
   title: string;
@@ -53,7 +53,7 @@ interface UploadedResume {
 
 const SAMPLE_JD = `We are hiring a Senior Frontend Engineer with strong React, TypeScript, and Next.js experience. Candidates should be comfortable building responsive UI systems, collaborating with product/design, improving performance, and writing maintainable component architecture. Experience with testing, accessibility, and API integration is preferred.`;
 
-// ── Helpers ────────────────────────────────────────────────────────────────────
+// â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function platformUrl(resource: LearningResource): string {
   const q = encodeURIComponent(resource.searchQuery);
@@ -75,11 +75,11 @@ function platformUrl(resource: LearningResource): string {
 }
 
 const resourceIcon: Record<string, string> = {
-  course: "🎓",
-  video: "▶️",
-  docs: "📖",
-  book: "📚",
-  practice: "💻",
+  course: "ðŸŽ“",
+  video: "â–¶ï¸",
+  docs: "ðŸ“–",
+  book: "ðŸ“š",
+  practice: "ðŸ’»",
 };
 
 const importanceColor: Record<string, string> = {
@@ -89,12 +89,12 @@ const importanceColor: Record<string, string> = {
 };
 
 const categoryIcon: Record<string, string> = {
-  "Technical Skill": "⚙️",
-  "Soft Skill": "🤝",
-  "Tool/Platform": "🛠️",
-  Certification: "🏆",
-  "Domain Knowledge": "🧠",
-  Experience: "💼",
+  "Technical Skill": "âš™ï¸",
+  "Soft Skill": "ðŸ¤",
+  "Tool/Platform": "ðŸ› ï¸",
+  Certification: "ðŸ†",
+  "Domain Knowledge": "ðŸ§ ",
+  Experience: "ðŸ’¼",
 };
 
 const quickStats = [
@@ -109,7 +109,7 @@ const workflowSteps = [
     num: "01",
     label: "Bring your resume",
     desc: "Upload a PDF or DOCX resume, or keep using the resume you built in the app.",
-    color: "from-violet-500 to-indigo-600",
+    color: "from-blue-500 to-indigo-600",
   },
   {
     num: "02",
@@ -146,7 +146,7 @@ function hasResumeContent(data?: Partial<ResumeData> | null): boolean {
   );
 }
 
-// ── Component ──────────────────────────────────────────────────────────────────
+// â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export default function GapAnalysisPage() {
   const { resumeData } = useResumeStore();
@@ -253,7 +253,7 @@ export default function GapAnalysisPage() {
   const recruiterAppealScore = result ? result.recruiterAppealScore ?? result.qualityScore : 0;
   const scoreCards = result
     ? [
-        { label: "Overall Score", score: overallScore, color: "from-violet-500 to-indigo-500", note: "Deterministic blend" },
+        { label: "Overall Score", score: overallScore, color: "from-blue-500 to-indigo-500", note: "Deterministic blend" },
         { label: "ATS Compatibility", score: atsCompatibilityScore, color: "from-sky-500 to-cyan-500", note: "Structure + quality" },
         { label: "Job Match", score: jobMatchScore, color: "from-emerald-500 to-teal-500", note: "Skill alignment" },
         { label: "Recruiter Appeal", score: recruiterAppealScore, color: "from-amber-500 to-orange-500", note: "Impact + readability" },
@@ -261,7 +261,7 @@ export default function GapAnalysisPage() {
     : [];
   const atsDetailCards = result
     ? [
-        { label: "Keywords", score: result.keywordScore, color: "from-violet-500 to-indigo-500" },
+        { label: "Keywords", score: result.keywordScore, color: "from-blue-500 to-indigo-500" },
         { label: "Sections", score: result.sectionScore, color: "from-sky-500 to-cyan-500" },
         { label: "Experience", score: result.experienceScore, color: "from-emerald-500 to-teal-500" },
         { label: "Quality", score: result.qualityScore, color: "from-amber-500 to-orange-500" },
@@ -278,7 +278,7 @@ export default function GapAnalysisPage() {
 
   return (
     <main className="min-h-screen crp-shell">
-      <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-slate-100">
+      <header className="sticky top-0 z-30 bg-white/85 backdrop-blur-md border-b border-slate-200/80">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-cyan-500 flex items-center justify-center text-white font-bold text-[11px]">
@@ -288,19 +288,19 @@ export default function GapAnalysisPage() {
           </Link>
 
           <nav className="hidden sm:flex items-center gap-6 text-sm text-slate-600 font-medium">
-            <Link href="/" className="hover:text-slate-900 transition-colors">
+            <Link href="/" className="crp-nav-link">
               Home
             </Link>
-            <Link href="/create" className="hover:text-slate-900 transition-colors">
+            <Link href="/create" className="crp-nav-link">
               Resume Tailoring
             </Link>
-            <Link href="/gap-analysis" className="hover:text-slate-900 transition-colors">
+            <Link href="/gap-analysis" className="crp-nav-link crp-nav-link-active">
               Gap Analysis
             </Link>
-            <Link href="/learning-resources" className="hover:text-slate-900 transition-colors">
+            <Link href="/learning-resources" className="crp-nav-link">
               Learning Resources
             </Link>
-            <a href="#roadmap" className="hover:text-slate-900 transition-colors">
+            <a href="#roadmap" className="crp-nav-link">
               Roadmap
             </a>
           </nav>
@@ -316,13 +316,13 @@ export default function GapAnalysisPage() {
 
       <section className="relative overflow-hidden">
         <div aria-hidden className="pointer-events-none absolute inset-0">
-          <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full bg-violet-100/60 blur-3xl" />
+          <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full bg-blue-100/60 blur-3xl" />
           <div className="absolute top-20 right-0 w-[400px] h-[400px] rounded-full bg-sky-100/60 blur-3xl" />
         </div>
 
         <div className="relative max-w-5xl mx-auto px-6 pt-20 pb-16 text-center">
-          <span className="inline-flex items-center gap-2 bg-white border border-violet-100 text-violet-700 text-xs font-semibold px-4 py-1.5 rounded-full shadow-sm mb-8">
-            <span className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse" />
+          <span className="inline-flex items-center gap-2 bg-white border border-blue-100 text-blue-700 text-xs font-semibold px-4 py-1.5 rounded-full shadow-sm mb-8">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
             Career Intelligence
           </span>
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-slate-900 leading-[1.08] tracking-tight">
@@ -338,7 +338,7 @@ export default function GapAnalysisPage() {
               disabled={resumeUploading}
               className="crp-btn-primary disabled:opacity-50 px-8 py-4 rounded-2xl text-lg font-semibold"
             >
-              {resumeUploading ? "Parsing Resume..." : usingUploadedResume ? "Replace Uploaded Resume →" : "Upload Existing Resume →"}
+              {resumeUploading ? "Parsing Resume..." : usingUploadedResume ? "Replace Uploaded Resume â†’" : "Upload Existing Resume â†’"}
             </button>
             <Link
               href="/create"
@@ -348,7 +348,7 @@ export default function GapAnalysisPage() {
             </Link>
           </div>
           <p className="text-xs text-slate-400 mt-5">
-            PDF and DOCX supported · no sign-up required · import your own resume or keep the in-app draft
+            PDF and DOCX supported Â· no sign-up required Â· import your own resume or keep the in-app draft
           </p>
         </div>
       </section>
@@ -367,7 +367,7 @@ export default function GapAnalysisPage() {
       <section className="py-20 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-14">
-            <p className="text-xs font-bold uppercase tracking-widest text-violet-600 mb-3">Simple process</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-blue-600 mb-3">Simple process</p>
             <h2 className="text-4xl font-extrabold text-slate-900">Three moves, one clear outcome</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -387,7 +387,7 @@ export default function GapAnalysisPage() {
       <div ref={analysisWorkspaceRef} className="max-w-6xl mx-auto px-6 pb-20">
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-violet-600 mb-2">Analysis Workspace</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-blue-600 mb-2">Analysis Workspace</p>
             <h2 className="text-3xl font-extrabold text-slate-900">Upload a resume, paste a job description, and inspect the gaps.</h2>
             <p className="text-sm text-slate-500 mt-2 max-w-2xl">
               Use an existing PDF or DOCX, or the resume you are already building in the app. The analyzer works the same either way.
@@ -401,10 +401,10 @@ export default function GapAnalysisPage() {
         </div>
 
         {/* Input panel */}
-        <div className="app-panel rounded-[2rem] p-6 sm:p-8 mb-6">
+        <div className="app-panel crp-module-accent crp-soft-radial rounded-[2rem] p-6 sm:p-8 mb-6">
           {!hasBuilderResume && !usingUploadedResume && (
             <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800 flex items-center gap-2">
-              ⚠️ Your resume is empty. Upload an existing PDF or DOCX, or{" "}
+              âš ï¸ Your resume is empty. Upload an existing PDF or DOCX, or{" "}
               <Link href="/create" className="underline font-medium">
                 build your resume first
               </Link>{" "}
@@ -412,7 +412,7 @@ export default function GapAnalysisPage() {
             </div>
           )}
 
-          <div className="mb-4 rounded-xl border border-slate-200 bg-white/80 p-4">
+          <div className="mb-4 rounded-xl border border-slate-200 bg-white/80 p-4 crp-glass">
             <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
               <div className="min-w-0">
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Resume Source</p>
@@ -430,7 +430,7 @@ export default function GapAnalysisPage() {
                   type="button"
                   onClick={openResumePicker}
                   disabled={resumeUploading}
-                  className="inline-flex items-center gap-2 rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-violet-700 disabled:opacity-50"
+                  className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
                 >
                   {resumeUploading ? "Parsing resume..." : usingUploadedResume ? "Replace resume" : "Upload existing resume"}
                 </button>
@@ -484,7 +484,7 @@ export default function GapAnalysisPage() {
               value={jobDescription}
               onChange={(e) => setJobDescription(e.target.value)}
               rows={8}
-              placeholder="Paste the full job description here — the more detail, the better the analysis."
+              placeholder="Paste the full job description here â€” the more detail, the better the analysis."
               className="crp-textarea resize-none"
             />
             <div className="mt-2 flex items-center justify-between gap-3">
@@ -506,14 +506,14 @@ export default function GapAnalysisPage() {
           >
             {analyzing ? (
               <>
-                <span className="animate-spin inline-block">⟳</span> Analyzing Gaps...
+                <span className="animate-spin inline-block">âŸ³</span> Analyzing Gaps...
               </>
             ) : resumeUploading ? (
-              <>⏳ Parsing Resume...</>
+              <>â³ Parsing Resume...</>
             ) : usingUploadedResume ? (
-              <>🔍 Analyze Uploaded Resume</>
+              <>ðŸ” Analyze Uploaded Resume</>
             ) : (
-              <>🔍 Analyze Gaps</>
+              <>ðŸ” Analyze Gaps</>
             )}
           </button>
 
@@ -525,7 +525,7 @@ export default function GapAnalysisPage() {
         </div>
 
         {analyzing && (
-          <div className="crp-card-soft p-5 mb-6">
+            <div className="crp-card-soft crp-glass crp-module-accent p-5 mb-6">
             <p className="text-sm font-semibold text-slate-800 mb-3">Analysis in progress</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-2.5">
               {[
@@ -552,7 +552,7 @@ export default function GapAnalysisPage() {
 
         {!result && !analyzing && !error && (
           <div className="crp-card-soft p-8 mb-6 text-center">
-            <div className="text-4xl mb-3">🧭</div>
+            <div className="text-4xl mb-3">ðŸ§­</div>
             <p className="text-lg font-semibold text-slate-800">No analysis available yet.</p>
             <p className="text-sm text-slate-500 mt-1">
               Upload your resume and provide a job description to get started.
@@ -564,23 +564,23 @@ export default function GapAnalysisPage() {
         {result && (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-6">
-              <div className="crp-card p-4">
+              <div className="crp-card crp-score-card p-4">
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Overall Match Score</p>
                 <p className="text-3xl font-extrabold text-slate-900 mt-1">{overallScore}%</p>
               </div>
-              <div className="crp-card p-4">
+              <div className="crp-card crp-score-card p-4">
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Matching Skills</p>
-                <p className="text-sm text-slate-700 mt-1.5">{matchingSkills.slice(0, 5).join(" · ") || "No strong matches detected yet."}</p>
+                <p className="text-sm text-slate-700 mt-1.5">{matchingSkills.slice(0, 5).join(" Â· ") || "No strong matches detected yet."}</p>
               </div>
-              <div className="crp-card p-4">
+              <div className="crp-card crp-score-card p-4">
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Missing Skills</p>
-                <p className="text-sm text-slate-700 mt-1.5">{missingSkills.slice(0, 5).join(" · ") || "No major keyword gaps detected."}</p>
+                <p className="text-sm text-slate-700 mt-1.5">{missingSkills.slice(0, 5).join(" Â· ") || "No major keyword gaps detected."}</p>
               </div>
-              <div className="crp-card p-4">
+              <div className="crp-card crp-score-card p-4">
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Priority Areas</p>
-                <p className="text-sm text-slate-700 mt-1.5">High: {highGaps.length} · Medium: {mediumGaps.length} · Low: {lowGaps.length}</p>
+                <p className="text-sm text-slate-700 mt-1.5">High: {highGaps.length} Â· Medium: {mediumGaps.length} Â· Low: {lowGaps.length}</p>
               </div>
-              <div className="crp-card p-4 md:col-span-2 xl:col-span-2">
+              <div className="crp-card crp-score-card p-4 md:col-span-2 xl:col-span-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Career Readiness Assessment</p>
                 <p className="text-sm text-slate-700 mt-1.5">
                   Current readiness: <span className="font-semibold">{overallScore}%</span>. Estimated readiness after implementing priority actions: <span className="font-semibold">{readinessEstimate}%</span>.
@@ -589,7 +589,7 @@ export default function GapAnalysisPage() {
             </div>
 
             {/* Score bar */}
-            <div className="app-panel rounded-2xl p-6 mb-6">
+            <div className="app-panel crp-module-accent crp-soft-radial rounded-2xl p-6 mb-6">
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <p className="text-sm font-semibold text-slate-700">Overall Intelligence Score</p>
@@ -607,7 +607,7 @@ export default function GapAnalysisPage() {
                   {overallScore}%
                 </span>
               </div>
-              <div className="w-full bg-slate-100 rounded-full h-3">
+              <div className="crp-score-meter h-3">
                 <div
                   className={`h-3 rounded-full transition-all ${
                     overallScore >= 70
@@ -623,7 +623,7 @@ export default function GapAnalysisPage() {
               {scoreCards.length > 0 && (
                 <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
                   {scoreCards.map((card) => (
-                    <div key={card.label} className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+                    <div key={card.label} className="crp-score-card p-3">
                       <div className="flex items-start justify-between gap-2 mb-1.5">
                         <div>
                           <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{card.label}</p>
@@ -633,7 +633,7 @@ export default function GapAnalysisPage() {
                           {card.score}%
                         </span>
                       </div>
-                      <div className="w-full bg-slate-100 rounded-full h-2">
+                      <div className="crp-score-meter h-2">
                         <div className={`h-2 rounded-full bg-gradient-to-r ${card.color}`} style={{ width: `${card.score}%` }} />
                       </div>
                     </div>
@@ -644,14 +644,14 @@ export default function GapAnalysisPage() {
               {atsDetailCards.length > 0 && (
                 <div className="mt-5 grid grid-cols-2 md:grid-cols-4 gap-3">
                   {atsDetailCards.map((card) => (
-                    <div key={card.label} className="rounded-xl border border-slate-200 bg-white p-3">
+                    <div key={card.label} className="crp-score-card p-3">
                       <div className="flex items-center justify-between gap-2 mb-2">
                         <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{card.label}</p>
                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full bg-gradient-to-r ${card.color} text-white`}>
                           {card.score}%
                         </span>
                       </div>
-                      <div className="w-full bg-slate-100 rounded-full h-2">
+                      <div className="crp-score-meter h-2">
                         <div className={`h-2 rounded-full bg-gradient-to-r ${card.color}`} style={{ width: `${card.score}%` }} />
                       </div>
                     </div>
@@ -662,12 +662,12 @@ export default function GapAnalysisPage() {
               {(recommendations.length > 0 || issues.length > 0) && (
                 <div className="mt-5 grid gap-4 md:grid-cols-2">
                   {recommendations.length > 0 && (
-                    <div className="rounded-xl border border-violet-200 bg-violet-50 p-4">
-                      <p className="text-sm font-semibold text-violet-800 mb-2">Recommendations</p>
+                    <div className="rounded-xl border border-blue-200 bg-blue-50 p-4">
+                      <p className="text-sm font-semibold text-blue-800 mb-2">Recommendations</p>
                       <ul className="space-y-2 text-xs text-slate-700">
                         {recommendations.slice(0, 6).map((item) => (
                           <li key={item} className="flex gap-2">
-                            <span className="text-violet-500 mt-0.5">•</span>
+                            <span className="text-blue-500 mt-0.5">â€¢</span>
                             <span>{item}</span>
                           </li>
                         ))}
@@ -681,7 +681,7 @@ export default function GapAnalysisPage() {
                       <ul className="space-y-2 text-xs text-slate-600">
                         {issues.slice(0, 6).map((item) => (
                           <li key={item} className="flex gap-2">
-                            <span className="text-amber-500 mt-0.5">•</span>
+                            <span className="text-amber-500 mt-0.5">â€¢</span>
                             <span>{item}</span>
                           </li>
                         ))}
@@ -699,12 +699,12 @@ export default function GapAnalysisPage() {
                   </span>
                   {knownCount > 0 && (
                     <span className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full">
-                      ✓ {knownCount} you already know
+                      âœ“ {knownCount} you already know
                     </span>
                   )}
                   {learningCount > 0 && (
                     <span className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
-                      📚 {learningCount} to learn
+                      ðŸ“š {learningCount} to learn
                     </span>
                   )}
                 </div>
@@ -714,7 +714,7 @@ export default function GapAnalysisPage() {
             {/* No gaps found */}
             {result.gaps.length === 0 && (
               <div className="app-panel rounded-2xl p-8 text-center">
-                <div className="text-4xl mb-3">🎉</div>
+                <div className="text-4xl mb-3">ðŸŽ‰</div>
                 <p className="text-lg font-semibold text-slate-800">Excellent match!</p>
                 <p className="text-sm text-slate-500 mt-1">
                   Your resume covers all the key requirements in this job description.
@@ -760,7 +760,7 @@ export default function GapAnalysisPage() {
           {knownCount > 0 && (
             <div className="app-panel rounded-2xl p-5 border border-green-100 bg-green-50/80">
               <p className="text-sm font-semibold text-green-800 mb-1">
-                ✅ Ready to update your resume?
+                âœ… Ready to update your resume?
               </p>
               <p className="text-xs text-green-700 mb-3">
                 You marked {knownCount} gap{knownCount > 1 ? "s" : ""} as skills you already have. Add them to your resume to improve your match score.
@@ -770,13 +770,13 @@ export default function GapAnalysisPage() {
                   href="/create?step=skills"
                   className="inline-flex items-center gap-1.5 bg-green-700 hover:bg-green-800 text-white text-sm px-4 py-2 rounded-lg font-medium transition-colors"
                 >
-                  ✨ Add to Skills →
+                  âœ¨ Add to Skills â†’
                 </Link>
                 <Link
                   href="/create?step=experience"
                   className="inline-flex items-center gap-1.5 border border-green-700 text-green-800 hover:bg-green-100 text-sm px-4 py-2 rounded-lg font-medium transition-colors"
                 >
-                  💼 Add to Experience →
+                  ðŸ’¼ Add to Experience â†’
                 </Link>
               </div>
             </div>
@@ -810,7 +810,7 @@ export default function GapAnalysisPage() {
   );
 }
 
-// ── Gap Card ───────────────────────────────────────────────────────────────────
+// â”€â”€ Gap Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function GapCard({
   gap,
@@ -837,7 +837,7 @@ function GapCard({
     >
       {/* Header row */}
       <div className="flex items-start gap-3">
-        <span className="text-xl mt-0.5">{categoryIcon[gap.category] || "📌"}</span>
+        <span className="text-xl mt-0.5">{categoryIcon[gap.category] || "ðŸ“Œ"}</span>
         <div className="flex-1 min-w-0">
           <div className="flex items-center flex-wrap gap-2 mb-1">
             <span className="font-semibold text-slate-800">{gap.item}</span>
@@ -865,23 +865,23 @@ function GapCard({
               onClick={() => onSetStatus("known")}
               className="flex-1 text-xs font-medium py-1.5 rounded-lg border border-green-300 text-green-700 hover:bg-green-50 transition-colors"
             >
-              ✓ Yes, I know this
+              âœ“ Yes, I know this
             </button>
             <button
               onClick={() => onSetStatus("learning")}
               className="flex-1 text-xs font-medium py-1.5 rounded-lg border border-blue-300 text-blue-700 hover:bg-blue-50 transition-colors"
             >
-              📚 No, show me how to learn
+              ðŸ“š No, show me how to learn
             </button>
           </div>
         </div>
       )}
 
-      {/* Known — prompt to add to resume */}
+      {/* Known â€” prompt to add to resume */}
       {status === "known" && (
         <div className="mt-3 pt-3 border-t border-green-200 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-green-600 text-sm">✓</span>
+            <span className="text-green-600 text-sm">âœ“</span>
             <p className="text-xs text-green-700 font-medium">Great! Add it to your resume to boost your score.</p>
           </div>
           <div className="flex items-center gap-2">
@@ -889,7 +889,7 @@ function GapCard({
                   href="/create?step=skills"
                   className="text-xs font-semibold text-green-800 underline hover:text-green-900"
                 >
-                  Update Resume →
+                  Update Resume â†’
                 </Link>
             <button
               onClick={() => onSetStatus("unknown")}
@@ -906,7 +906,7 @@ function GapCard({
         <div className="mt-3 pt-3 border-t border-blue-200">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <span className="text-blue-600 text-sm">📚</span>
+              <span className="text-blue-600 text-sm">ðŸ“š</span>
               <p className="text-xs text-blue-700 font-medium">Here are resources to help you learn:</p>
             </div>
             <div className="flex items-center gap-2">
@@ -914,7 +914,7 @@ function GapCard({
                 onClick={onToggleResources}
                 className="text-[10px] text-blue-500 hover:text-blue-700 font-medium"
               >
-                {resourcesExpanded ? "Collapse ▲" : "Expand ▼"}
+                {resourcesExpanded ? "Collapse â–²" : "Expand â–¼"}
               </button>
               <button
                 onClick={() => onSetStatus("unknown")}
@@ -935,14 +935,14 @@ function GapCard({
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 p-2.5 bg-white border border-blue-100 rounded-lg hover:border-blue-300 hover:shadow-sm transition-all group"
                 >
-                  <span className="text-base">{resourceIcon[r.type] || "🔗"}</span>
+                  <span className="text-base">{resourceIcon[r.type] || "ðŸ”—"}</span>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-semibold text-slate-700 group-hover:text-blue-700 truncate">
                       {r.title}
                     </p>
                     <p className="text-[10px] text-slate-400">{r.platform}</p>
                   </div>
-                  <span className="text-xs text-slate-300 group-hover:text-blue-400">↗</span>
+                  <span className="text-xs text-slate-300 group-hover:text-blue-400">â†—</span>
                 </a>
               ))}
             </div>
@@ -952,3 +952,4 @@ function GapCard({
     </div>
   );
 }
+
