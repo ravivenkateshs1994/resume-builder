@@ -10,9 +10,9 @@ export default function CreativeTemplate({ data, accentColor }: Props) {
   const theme = createTemplateTheme(accentColor ?? getDefaultTemplateAccent("creative"));
 
   return (
-    <div className="font-sans text-[12.5px] leading-relaxed max-w-[780px] mx-auto bg-white flex min-h-[900px]">
+    <div className="font-sans text-[12.5px] leading-relaxed max-w-[780px] mx-auto bg-white grid min-h-[900px] grid-cols-[30%_70%]">
       {/* Sidebar */}
-      <div className="w-72 px-6 py-8 flex-shrink-0" style={{ backgroundColor: theme.accentDeep, color: theme.contrastDeep }}>
+      <div className="px-4 py-8" style={{ backgroundColor: theme.accentDeep, color: theme.contrastDeep }}>
         <div className="mb-6">
           <HeadshotAvatar
             headshotUrl={personalInfo.headshotUrl}
@@ -86,7 +86,7 @@ export default function CreativeTemplate({ data, accentColor }: Props) {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 px-7 py-8 text-gray-800">
+      <div className="min-w-0 px-7 py-8 text-gray-800">
         {/* Summary */}
         {summary && (
           <div className="mb-6">

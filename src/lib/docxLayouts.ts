@@ -236,6 +236,7 @@ function makeSingleCellBand(children: DocxBlock[], fill: string, options: any = 
           new TableCell({
             children: children.length ? children : [blank(0)],
             shading: { type: ShadingType.SOLID, color: "auto", fill: docxColor(fill) },
+            margins: options.margins ?? { top: 200, bottom: 200, left: 220, right: 220 },
             verticalAlign: VerticalAlignTable.CENTER,
             width: { size: 100, type: WidthType.PERCENTAGE },
           }),
@@ -456,30 +457,26 @@ function makeExperienceSection(workExperience: ResumeData["workExperience"], the
 }
 
 function makeTimelineExperienceItem(w: ResumeData["workExperience"][number], theme: Theme, options: any = {}): Table {
-  const dateWidth = options.dateWidth ?? 1350;
-  const contentWidth = options.contentWidth ?? 7150;
+  const railWidth = options.railWidth ?? 320;
+  const contentWidth = options.contentWidth ?? 8180;
+  const dateLabel = [w.startDate, w.endDate].filter(Boolean).join(" - ");
 
   return new Table({
     rows: [
       new TableRow({
         children: [
           new TableCell({
-            width: { size: dateWidth, type: WidthType.DXA },
+            width: { size: railWidth, type: WidthType.DXA },
             verticalAlign: VerticalAlignTable.TOP,
-            shading: { type: ShadingType.SOLID, color: "auto", fill: docxColor(options.dateFill ?? theme.accentSoft) },
-            margins: { top: 120, bottom: 120, left: 120, right: 120 },
+            borders: {
+              right: { style: BorderStyle.SINGLE, size: options.borderSize ?? 4, color: docxColor(options.borderColor ?? theme.accentBorder) },
+            },
+            margins: { top: 100, bottom: 80, left: 0, right: 0 },
             children: [
-              lineParagraph(w.startDate, {
+              lineParagraph("●", {
                 font: options.font ?? STANDARD_FONT,
-                size: options.dateSize ?? 17,
-                color: options.dateColor ?? theme.accent,
-                align: AlignmentType.CENTER,
-                spacing: { after: 20 },
-              }),
-              lineParagraph(w.endDate, {
-                font: options.font ?? STANDARD_FONT,
-                size: options.dateSize ?? 17,
-                color: options.dateColor ?? theme.accent,
+                size: options.dotSize ?? 16,
+                color: options.dotColor ?? theme.accent,
                 align: AlignmentType.CENTER,
                 spacing: { after: 0 },
               }),
@@ -488,17 +485,23 @@ function makeTimelineExperienceItem(w: ResumeData["workExperience"][number], the
           new TableCell({
             width: { size: contentWidth, type: WidthType.DXA },
             verticalAlign: VerticalAlignTable.TOP,
-            borders: {
-              left: { style: BorderStyle.SINGLE, size: options.borderSize ?? 6, color: docxColor(options.borderColor ?? theme.accent) },
-            },
-            margins: { top: 120, bottom: 120, left: 180, right: 0 },
+            margins: { top: 90, bottom: 110, left: 180, right: 0 },
             children: [
+              ...(dateLabel
+                ? [lineParagraph(dateLabel, {
+                    font: options.font ?? STANDARD_FONT,
+                    size: options.dateSize ?? 15,
+                    color: options.dateColor ?? "6b7280",
+                    bold: true,
+                    spacing: { after: 18 },
+                  })]
+                : []),
               lineParagraph(w.title, {
                 font: options.font ?? STANDARD_FONT,
                 size: options.titleSize ?? 18,
                 color: options.titleColor ?? "111827",
                 bold: true,
-                spacing: { after: 10 },
+                spacing: { after: 8 },
               }),
               ...(w.company
                 ? [lineParagraph([w.company, w.location].filter(Boolean).join(" | "), {
@@ -506,14 +509,14 @@ function makeTimelineExperienceItem(w: ResumeData["workExperience"][number], the
                     size: options.bodySize ?? 17,
                     color: options.accentColor ?? theme.accent,
                     bold: true,
-                    spacing: { after: 20 },
+                    spacing: { after: 18 },
                   })]
                 : []),
               ...paragraphsFromRichHtml(w.description, {
                 font: options.font ?? STANDARD_FONT,
                 size: options.bodySize ?? 18,
                 color: options.bodyColor ?? "374151",
-                after: options.descriptionSpacing ?? 50,
+                after: options.descriptionSpacing ?? 42,
               }),
             ],
           }),
@@ -523,7 +526,82 @@ function makeTimelineExperienceItem(w: ResumeData["workExperience"][number], the
     width: { size: 100, type: WidthType.PERCENTAGE },
     layout: TableLayoutType.FIXED,
     borders: TableBorders.NONE,
-    columnWidths: [dateWidth, contentWidth],
+    columnWidths: [railWidth, contentWidth],
+  });
+}
+
+function makeTimelineEducationItem(e: ResumeData["education"][number], theme: Theme, options: any = {}): Table {
+  const railWidth = options.railWidth ?? 320;
+  const contentWidth = options.contentWidth ?? 8180;
+  const dateLabel = [e.startDate, e.endDate].filter(Boolean).join(" - ");
+
+  return new Table({
+    rows: [
+      new TableRow({
+        children: [
+          new TableCell({
+            width: { size: railWidth, type: WidthType.DXA },
+            verticalAlign: VerticalAlignTable.TOP,
+            borders: {
+              right: { style: BorderStyle.SINGLE, size: options.borderSize ?? 4, color: docxColor(options.borderColor ?? theme.accentBorder) },
+            },
+            margins: { top: 100, bottom: 80, left: 0, right: 0 },
+            children: [
+              lineParagraph("●", {
+                font: options.font ?? STANDARD_FONT,
+                size: options.dotSize ?? 15,
+                color: options.dotColor ?? theme.accentSoft,
+                align: AlignmentType.CENTER,
+                spacing: { after: 0 },
+              }),
+            ],
+          }),
+          new TableCell({
+            width: { size: contentWidth, type: WidthType.DXA },
+            verticalAlign: VerticalAlignTable.TOP,
+            margins: { top: 90, bottom: 100, left: 180, right: 0 },
+            children: [
+              ...(dateLabel
+                ? [lineParagraph(dateLabel, {
+                    font: options.font ?? STANDARD_FONT,
+                    size: options.dateSize ?? 15,
+                    color: options.dateColor ?? "6b7280",
+                    bold: true,
+                    spacing: { after: 18 },
+                  })]
+                : []),
+              lineParagraph(`${e.degree}${e.field ? ` in ${e.field}` : ""}`, {
+                font: options.font ?? STANDARD_FONT,
+                size: options.titleSize ?? 18,
+                color: options.titleColor ?? "111827",
+                bold: true,
+                spacing: { after: 8 },
+              }),
+              ...(e.institution
+                ? [lineParagraph(e.institution, {
+                    font: options.font ?? STANDARD_FONT,
+                    size: options.bodySize ?? 17,
+                    color: options.accentColor ?? theme.accent,
+                    spacing: { after: e.gpa || e.honors ? 12 : 0 },
+                  })]
+                : []),
+              ...(e.gpa || e.honors
+                ? [lineParagraph([e.honors, e.gpa ? `GPA: ${e.gpa}` : ""].filter(Boolean).join(" | "), {
+                    font: options.font ?? STANDARD_FONT,
+                    size: options.bodySize ?? 16,
+                    color: options.mutedColor ?? "6b7280",
+                    spacing: { after: 0 },
+                  })]
+                : []),
+            ],
+          }),
+        ],
+      }),
+    ],
+    width: { size: 100, type: WidthType.PERCENTAGE },
+    layout: TableLayoutType.FIXED,
+    borders: TableBorders.NONE,
+    columnWidths: [railWidth, contentWidth],
   });
 }
 
@@ -1321,26 +1399,38 @@ function buildChronosLayout(data: ResumeData, theme: Theme): DocxBlock[] {
       font: STANDARD_FONT,
       heading: { font: STANDARD_FONT, size: 17, color: theme.accent, borderColor: theme.accentBorder },
       timeline: true,
-      dateWidth: 1350,
-      contentWidth: 7150,
-      dateFill: theme.accentSoft,
-      borderColor: theme.accent,
+      railWidth: 320,
+      contentWidth: 8180,
+      borderColor: theme.accentBorder,
+      dotColor: theme.accent,
       dateColor: "6b7280",
       dateSize: 15,
       bodyColor: "374151",
       mutedColor: "6b7280",
       titleColor: "111827",
       accentColor: theme.accent,
+      descriptionSpacing: 42,
+      after: 70,
     }),
-    ...makeEducationSection(education, theme, {
-      title: "Education",
-      font: STANDARD_FONT,
-      heading: { font: STANDARD_FONT, size: 17, color: theme.accent, borderColor: theme.accentBorder },
-      titleColor: "111827",
-      accentColor: theme.accent,
-      bodyColor: "374151",
-      mutedColor: "6b7280",
-    }),
+    ...(education.length
+      ? [
+          sectionHeading("Education", theme, { font: STANDARD_FONT, size: 17, color: theme.accent, borderColor: theme.accentBorder }),
+          ...education.flatMap((e) => [
+            makeTimelineEducationItem(e, theme, {
+              font: STANDARD_FONT,
+              railWidth: 320,
+              contentWidth: 8180,
+              borderColor: theme.accentBorder,
+              dotColor: theme.accentSoft,
+              dateColor: "6b7280",
+              titleColor: "111827",
+              accentColor: theme.accent,
+              mutedColor: "6b7280",
+            }),
+            blank(70),
+          ]),
+        ]
+      : []),
   ];
 
   const right = [

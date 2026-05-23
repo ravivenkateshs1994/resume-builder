@@ -4,6 +4,11 @@ import HeadshotAvatar from "@/components/HeadshotAvatar";
 
 interface Props { data: ResumeData; accentColor?: string }
 
+function formatDateRange(startDate?: string, endDate?: string) {
+  const parts = [startDate, endDate].filter(Boolean);
+  return parts.join(" - ");
+}
+
 // ─── Chronos Template — timeline-style, vertical date rail, teal accents ──────
 export default function ChronosTemplate({ data, accentColor }: Props) {
   const { personalInfo, summary, workExperience, education, skills, certifications } = data;
@@ -65,33 +70,34 @@ export default function ChronosTemplate({ data, accentColor }: Props) {
               <SectionHeading theme={theme}>Experience</SectionHeading>
               <div className="relative">
                 {/* Vertical rail */}
-                <div className="absolute left-[72px] top-0 bottom-0 w-px" style={{ backgroundColor: theme.accentBorder }} />
-                <div className="space-y-6">
+                <div className="absolute left-[6px] top-1 bottom-1 w-px" style={{ backgroundColor: theme.accentBorder }} />
+                <div className="space-y-4">
                   {workExperience.map((w) => (
-                    <div key={w.id} className="flex gap-4">
-                      {/* Date column */}
-                      <div className="w-16 flex-shrink-0 text-right">
-                        <span className="text-[10px] text-gray-400 leading-tight block">
-                          {w.startDate}
-                        </span>
-                        <span className="text-[10px] text-gray-400 leading-tight block">
-                          {w.endDate}
-                        </span>
-                      </div>
+                    <div key={w.id} className="flex gap-3">
                       {/* Dot */}
                       <div className="flex-shrink-0 w-3 flex flex-col items-center">
                         <div className="w-3 h-3 rounded-full border-2 border-white mt-0.5 z-10" style={{ backgroundColor: theme.accent, boxShadow: `0 0 0 2px ${theme.accentBorder}` }} />
                       </div>
                       {/* Content */}
-                      <div className="flex-1 pb-2">
-                        <div className="font-bold text-gray-900">{w.title}</div>
-                        <div className="text-xs font-medium" style={{ color: theme.accent }}>
+                      <div className="flex-1 min-w-0 pb-1">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="font-bold text-gray-900 leading-snug">{w.title}</div>
+                          {formatDateRange(w.startDate, w.endDate) && (
+                            <div
+                              className="rounded-full border px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-gray-500"
+                              style={{ borderColor: theme.accentBorder, backgroundColor: "#ffffff" }}
+                            >
+                              {formatDateRange(w.startDate, w.endDate)}
+                            </div>
+                          )}
+                        </div>
+                        <div className="mt-0.5 text-[11px] font-semibold" style={{ color: theme.accent }}>
                           {w.company}
                           {w.location ? ` · ${w.location}` : ""}
                         </div>
                         {w.description && (
                           <div
-                            className="mt-1.5 text-gray-600 resume-desc"
+                            className="mt-1 text-gray-600 resume-desc"
                             dangerouslySetInnerHTML={{ __html: w.description }}
                           />
                         )}
@@ -108,22 +114,28 @@ export default function ChronosTemplate({ data, accentColor }: Props) {
             <div>
               <SectionHeading theme={theme}>Education</SectionHeading>
               <div className="relative">
-                <div className="absolute left-[72px] top-0 bottom-0 w-px" style={{ backgroundColor: theme.accentBorder }} />
-                <div className="space-y-4">
+                <div className="absolute left-[6px] top-1 bottom-1 w-px" style={{ backgroundColor: theme.accentBorder }} />
+                <div className="space-y-3.5">
                   {education.map((e) => (
-                    <div key={e.id} className="flex gap-4">
-                      <div className="w-16 flex-shrink-0 text-right">
-                        <span className="text-[10px] text-gray-400 block">{e.startDate}</span>
-                        <span className="text-[10px] text-gray-400 block">{e.endDate}</span>
-                      </div>
+                    <div key={e.id} className="flex gap-3">
                       <div className="flex-shrink-0 w-3 flex flex-col items-center">
                         <div className="w-3 h-3 rounded-full border-2 border-white mt-0.5 z-10" style={{ backgroundColor: theme.accentSoft, boxShadow: `0 0 0 2px ${theme.accentBorder}` }} />
                       </div>
-                      <div className="flex-1">
-                        <div className="font-bold text-gray-900">
-                          {e.degree}{e.field ? ` in ${e.field}` : ""}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="font-bold text-gray-900 leading-snug">
+                            {e.degree}{e.field ? ` in ${e.field}` : ""}
+                          </div>
+                          {formatDateRange(e.startDate, e.endDate) && (
+                            <div
+                              className="rounded-full border px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-gray-500"
+                              style={{ borderColor: theme.accentBorder, backgroundColor: "#ffffff" }}
+                            >
+                              {formatDateRange(e.startDate, e.endDate)}
+                            </div>
+                          )}
                         </div>
-                        <div className="text-xs" style={{ color: theme.accent }}>{e.institution}</div>
+                        <div className="mt-0.5 text-[11px] font-medium" style={{ color: theme.accent }}>{e.institution}</div>
                         {(e.gpa || e.honors) && (
                           <div className="text-gray-500 text-[11px] mt-0.5">
                             {[e.honors, e.gpa ? `GPA: ${e.gpa}` : ""].filter(Boolean).join(" · ")}

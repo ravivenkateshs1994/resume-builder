@@ -3,6 +3,7 @@ import { createExportSession, deleteExportSession } from "@/lib/exportSessions";
 import type { ResumeData, TemplateId } from "@/types/resume";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 function buildPdfFileName(fullName: string): string {
   const baseName = fullName
