@@ -151,7 +151,7 @@ export default function EducationStep() {
                   <MonthYearSelect value={c.validFrom ?? c.date} onChange={(v) => updateCertification(c.id, { validFrom: v, date: v })} />
                 </div>
               </div>
-              {/* Row 3 â€” expiry */}
+              {/* Row 3 - expiry */}
               <div className="flex items-end gap-4">
                 <div className="flex-1">
                   <label className={`block text-xs font-semibold uppercase tracking-wide mb-1.5 ${c.neverExpires ? "text-gray-300" : "text-gray-600"}`}>Expiry Date</label>
@@ -179,10 +179,10 @@ export default function EducationStep() {
 
       <div className="flex justify-between mt-8">
         <button onClick={prevStep} className="border border-slate-200 text-slate-600 px-5 py-2.5 rounded-lg font-medium hover:bg-slate-50 transition-colors">
-          â† Back
+          Back
         </button>
         <button onClick={nextStep} className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors">
-          Next: Skills â†’
+          Next: Skills
         </button>
       </div>
     </div>

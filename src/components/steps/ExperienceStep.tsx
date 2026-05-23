@@ -247,7 +247,7 @@ function DescriptionEditor({
           <Redo2 size={14} />
         </ToolbarBtn>
 
-        {/* Character count ï¿½ right aligned */}
+        {/* Character count - right aligned */}
         <div className="ml-auto text-[10px] text-gray-400 font-mono tabular-nums pr-1">
           {charCount} chars
         </div>
@@ -267,9 +267,9 @@ function DescriptionEditor({
           className="flex items-center gap-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed px-4 py-1.5 rounded-lg transition-colors"
         >
           {isOptimizing ? (
-            <><span className="animate-spin inline-block">âŸ³</span> Optimizing...</>
+            <><span className="animate-spin inline-block">...</span> Optimizing...</>
           ) : (
-            <>âœ¨ {hasSelection ? "Optimize Selection" : "Optimize Content"}</>
+            <>Optimize {hasSelection ? "Selection" : "Content"}</>
           )}
         </button>
         <span className="text-[11px] text-gray-500">
@@ -383,7 +383,7 @@ export default function ExperienceStep() {
                   </div>
                 </div>
 
-                {/* Description ï¿½ rich text editor */}
+                {/* Description - rich text editor */}
                 <div>
                   <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Description</label>
                   <DescriptionEditor
@@ -411,13 +411,13 @@ export default function ExperienceStep() {
           onClick={prevStep}
           className="border border-slate-200 text-slate-600 px-5 py-2.5 rounded-lg font-medium hover:bg-slate-50 transition-colors"
         >
-          â† Back
+          Back
         </button>
         <button
           onClick={nextStep}
           className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
         >
-          Next: Education â†’
+          Next: Education
         </button>
       </div>
     </div>

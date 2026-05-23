@@ -56,7 +56,7 @@ export default function TargetRoleStep() {
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">
             Job Description{" "}
-            <span className="text-gray-400 font-normal">(optional â€” enables ATS tailoring)</span>
+            <span className="text-gray-400 font-normal">(optional - enables ATS tailoring)</span>
           </label>
           <textarea
             value={jd}
@@ -66,7 +66,7 @@ export default function TargetRoleStep() {
             className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
           />
           <p className="text-xs text-slate-400 mt-1">
-            {jd.length} characters â€” AI uses the first ~2,000 for optimization
+            {jd.length} characters - AI uses the first ~2,000 for optimization
           </p>
         </div>
       </div>
@@ -76,13 +76,13 @@ export default function TargetRoleStep() {
           onClick={prevStep}
           className="border border-slate-200 text-slate-600 px-5 py-2.5 rounded-lg font-medium hover:bg-slate-50 transition-colors"
         >
-          â† Back
+          Back
         </button>
         <button
           onClick={handleNext}
           className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
         >
-          Next: Experience â†’
+          Next: Experience
         </button>
       </div>
     </div>

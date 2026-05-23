@@ -113,7 +113,7 @@ export default function SkillsStep() {
             onClick={suggestSkills}
             className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs px-4 py-1.5 rounded-lg font-medium transition-colors"
           >
-            âœ¨ Suggest skills for role
+            Suggest skills for role
           </button>
         </div>
         <div className="flex gap-2 mb-3">
@@ -135,7 +135,7 @@ export default function SkillsStep() {
         {skillSuggestions.length > 0 && (
           <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-xl">
             <p className="text-[11px] font-semibold text-blue-600 uppercase tracking-wide mb-2">
-              Suggested â€” click to add
+              Suggested - click to add
             </p>
             <div className="flex flex-wrap gap-2">
               {skillSuggestions.map((s) => (
@@ -162,7 +162,7 @@ export default function SkillsStep() {
                 onClick={() => removeSkill(skill)}
                 className="text-blue-400 hover:text-blue-600 leading-none"
               >
-                âœ•
+                x
               </button>
             </span>
           ))}
@@ -182,9 +182,9 @@ export default function SkillsStep() {
             className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs px-4 py-1.5 rounded-lg font-medium transition-colors"
           >
             {generatingSummary ? (
-              <><span className="animate-spin">âŸ³</span> Generating...</>
+              <><span className="animate-spin">...</span> Generating...</>
             ) : (
-              <>âœ¨ Generate with AI</>
+              <>Generate with AI</>
             )}
           </button>
         </div>
@@ -206,13 +206,13 @@ export default function SkillsStep() {
           onClick={prevStep}
           className="border border-slate-200 text-slate-600 px-5 py-2.5 rounded-lg font-medium hover:bg-slate-50 transition-colors"
         >
-          â† Back
+          Back
         </button>
         <button
           onClick={nextStep}
           className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
         >
-          Next: Preview & Export â†’
+          Next: Preview & Export
         </button>
       </div>
     </div>

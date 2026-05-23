@@ -13,11 +13,9 @@ interface HeadshotAvatarProps {
 
 export default function HeadshotAvatar({
   headshotUrl,
-  initials: _initials,
   alt,
   className,
   imageClassName = "h-full w-full object-cover",
-  fallbackClassName: _fallbackClassName = "h-full w-full flex items-center justify-center",
   style,
 }: HeadshotAvatarProps) {
   const normalizedHeadshotUrl = headshotUrl?.trim();
