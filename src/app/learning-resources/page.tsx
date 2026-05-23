@@ -102,8 +102,6 @@ function AppHeader() {
           <Link href="/" className="crp-nav-link">Home</Link>
           <Link href="/create" className="crp-nav-link">Resume Tailoring</Link>
           <Link href="/gap-analysis" className="crp-nav-link">Gap Analysis</Link>
-          <Link href="/learning-resources" className="crp-nav-link crp-nav-link-active">Learning Resources</Link>
-          <a href="#roadmap" className="crp-nav-link">Roadmap</a>
         </nav>
       </div>
     </header>
