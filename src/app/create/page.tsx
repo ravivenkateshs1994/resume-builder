@@ -593,9 +593,99 @@ function CreatePageContent() {
                   Select a professional ATS-friendly design for your tailored resume.
                 </p>
               </div>
-              <div className="rounded-xl border border-indigo-100 bg-white/85 px-3 py-2 text-xs text-slate-600 shadow-sm min-w-[220px]">
-                <p className="font-semibold text-slate-700">All templates are ATS-optimized</p>
-                <p className="mt-0.5 text-[11px] text-slate-500">Designed to pass ATS scanners and impress recruiters.</p>
+            </div>
+
+            <div className="mt-5 border-t border-slate-200/80 pt-5">
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-indigo-600">Template Studio</p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                {[
+                  { key: "recommended", label: "Recommended" },
+                  { key: "all", label: "All" },
+                  { key: "free", label: "Free" },
+                  ...(premiumEnabled ? [{ key: "premium", label: "Premium" }] : []),
+                ].map((f) => (
+                  <button
+                    key={f.key}
+                    type="button"
+                    onClick={() => setActiveTierFilter(f.key as TemplateTierFilter)}
+                    className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
+                      activeTierFilter === f.key
+                        ? "border-indigo-300 bg-indigo-50 text-indigo-700"
+                        : "border-slate-200 bg-white text-slate-600 hover:text-slate-800"
+                    }`}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+
+              <div className="mt-3 flex flex-wrap items-center gap-4">
+                <div className="flex flex-wrap items-center gap-2">
+                  {[
+                    { key: "all", label: "All Templates" },
+                    { key: "simple", label: "Simple" },
+                    { key: "modern", label: "Modern" },
+                    { key: "one-column", label: "One column" },
+                    { key: "with-photo", label: "With photo" },
+                    { key: "professional", label: "Professional" },
+                    { key: "ats", label: "ATS" },
+                  ].map((f) => (
+                    <button
+                      key={f.key}
+                      type="button"
+                      onClick={() =>
+                        setActiveFilter(
+                          f.key as
+                            | "all"
+                            | "simple"
+                            | "modern"
+                            | "one-column"
+                            | "with-photo"
+                            | "professional"
+                            | "ats"
+                        )
+                      }
+                      className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
+                        activeFilter === f.key
+                          ? "bg-slate-900 text-white"
+                          : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                      }`}
+                    >
+                      {f.label}
+                    </button>
+                  ))}
+                </div>
+
+                <select
+                  value={activeRoleCategory}
+                  onChange={(event) => setActiveRoleCategory(event.target.value as RoleCategory)}
+                  className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700"
+                  aria-label="Filter by role category"
+                >
+                  <option value="all">All role categories</option>
+                  <option value="software">Software</option>
+                  <option value="design">Design</option>
+                  <option value="product">Product</option>
+                  <option value="operations">Operations</option>
+                  <option value="leadership">Leadership</option>
+                </select>
+
+                <select
+                  value={activeLevelCategory}
+                  onChange={(event) => setActiveLevelCategory(event.target.value as CareerLevel)}
+                  className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700"
+                  aria-label="Filter by level category"
+                >
+                  <option value="all">All levels</option>
+                  <option value="entry">Entry</option>
+                  <option value="mid">Mid</option>
+                  <option value="senior">Senior</option>
+                </select>
               </div>
             </div>
           </div>
@@ -614,113 +704,9 @@ function CreatePageContent() {
         </div>
 
         <div className="mx-auto w-full max-w-7xl px-6 py-4">
-          <div className="crp-card-soft crp-glass crp-module-accent p-4 mb-6">
-            <div className="mb-3 flex items-center justify-between gap-3">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-indigo-600">Template Studio</p>
-                <p className="mt-1 text-sm text-slate-600">Choose the format that best matches your target role.</p>
-              </div>
-              <span className="crp-badge">ATS Ready</span>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2">
-              {[
-                { key: "recommended", label: "Recommended" },
-                { key: "all", label: "All" },
-                { key: "free", label: "Free" },
-                ...(premiumEnabled ? [{ key: "premium", label: "Premium" }] : []),
-              ].map((f) => (
-                <button
-                  key={f.key}
-                  type="button"
-                  onClick={() => setActiveTierFilter(f.key as TemplateTierFilter)}
-                  className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
-                    activeTierFilter === f.key
-                      ? "border-indigo-300 bg-indigo-50 text-indigo-700"
-                      : "border-slate-200 bg-white text-slate-600 hover:text-slate-800"
-                  }`}
-                >
-                  {f.label}
-                </button>
-              ))}
-            </div>
-
-            <div className="mt-3 flex flex-wrap items-center gap-4">
-              <div className="flex flex-wrap items-center gap-2">
-                {[
-                  { key: "all", label: "All Templates" },
-                  { key: "simple", label: "Simple" },
-                  { key: "modern", label: "Modern" },
-                  { key: "one-column", label: "One column" },
-                  { key: "with-photo", label: "With photo" },
-                  { key: "professional", label: "Professional" },
-                  { key: "ats", label: "ATS" },
-                ].map((f) => (
-                  <button
-                    key={f.key}
-                    type="button"
-                    onClick={() =>
-                      setActiveFilter(
-                        f.key as
-                          | "all"
-                          | "simple"
-                          | "modern"
-                          | "one-column"
-                          | "with-photo"
-                          | "professional"
-                          | "ats"
-                      )
-                    }
-                    className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
-                      activeFilter === f.key
-                        ? "bg-slate-900 text-white"
-                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                    }`}
-                  >
-                    {f.label}
-                  </button>
-                ))}
-              </div>
-
-              <select
-                value={activeRoleCategory}
-                onChange={(event) => setActiveRoleCategory(event.target.value as RoleCategory)}
-                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700"
-                aria-label="Filter by role category"
-              >
-                <option value="all">All role categories</option>
-                <option value="software">Software</option>
-                <option value="design">Design</option>
-                <option value="product">Product</option>
-                <option value="operations">Operations</option>
-                <option value="leadership">Leadership</option>
-              </select>
-
-              <select
-                value={activeLevelCategory}
-                onChange={(event) => setActiveLevelCategory(event.target.value as CareerLevel)}
-                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700"
-                aria-label="Filter by level category"
-              >
-                <option value="all">All levels</option>
-                <option value="entry">Entry</option>
-                <option value="mid">Mid</option>
-                <option value="senior">Senior</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="mb-4 app-panel crp-module-accent px-4 py-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-indigo-700">ATS Checklist</p>
-            <p className="mt-1 text-xs text-slate-700">
-              Templates are ATS-safe with standard fonts (Arial/Calibri), clear section headings, bullet lists,
-              and screen-reader friendly reading order. Avoid image-based headings and table-heavy structures.
-            </p>
-          </div>
 
           <div className="mb-3 mt-2 flex items-center justify-between gap-3">
             <h3 className="text-xl font-bold tracking-tight text-slate-900">All Templates</h3>
-            <span className="text-xs font-medium text-slate-500">All previews shown in full</span>
           </div>
 
           {!!freeTemplates.length && (

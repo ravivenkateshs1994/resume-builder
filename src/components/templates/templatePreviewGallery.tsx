@@ -518,14 +518,69 @@ const TEMPLATE_RESUMES: Record<TemplateId, ResumeData> = {
   }),
 };
 
-function PreviewViewport({ compact, children }: { compact: boolean; children: ReactNode }) {
-  const scale = compact ? 0.285 : 0.66;
+const FULL_FIT_TEMPLATE_IDS = new Set<TemplateId>([
+  "executive",
+  "slate",
+  "nova",
+  "prism",
+  "apex",
+  "tech",
+  "terra",
+  "chronos",
+  "modern",
+  "classic",
+  "minimal",
+]);
+
+const STRICT_FULL_FIT_TEMPLATE_IDS = new Set<TemplateId>([
+  "chronos",
+  "terra",
+  "apex",
+  "nova",
+]);
+
+function PreviewViewport({
+  compact,
+  templateId,
+  children,
+}: {
+  compact: boolean;
+  templateId: TemplateId;
+  children: ReactNode;
+}) {
+  const isFullFitTemplate = FULL_FIT_TEMPLATE_IDS.has(templateId);
+  const requiresStrictFit = STRICT_FULL_FIT_TEMPLATE_IDS.has(templateId);
+  const baseScale = compact
+    ? isFullFitTemplate
+      ? 0.255
+      : 0.285
+    : isFullFitTemplate
+    ? 0.6
+    : 0.66;
+  const scale = requiresStrictFit
+    ? compact
+      ? 0.235
+      : 0.54
+    : baseScale;
+  const renderedWidthPercent = requiresStrictFit
+    ? compact
+      ? 82
+      : 90
+    : compact
+    ? 86
+    : 94;
+  const horizontalOffset = (100 - renderedWidthPercent) / 2;
 
   return (
-    <div className="relative aspect-[1/1.414] overflow-hidden rounded-[18px] border border-slate-200 bg-white crp-preview-focal">
+    <div className="relative aspect-[1/1.414] overflow-hidden rounded-[18px] bg-white crp-preview-focal">
       <div
         className="absolute inset-0"
-        style={{ width: `${100 / scale}%`, transform: `scale(${scale})`, transformOrigin: "top left" }}
+        style={{
+          left: `${horizontalOffset}%`,
+          width: `${renderedWidthPercent / scale}%`,
+          transform: `scale(${scale})`,
+          transformOrigin: "top left",
+        }}
       >
         {children}
       </div>
@@ -545,8 +600,8 @@ export function TemplatePreviewCard({
   const resumeData = TEMPLATE_RESUMES[template.id];
 
   return (
-    <div className={compact ? "rounded-lg border border-slate-200 bg-white p-2 shadow-sm" : "rounded-xl border border-slate-200 bg-white p-2.5 shadow-sm"}>
-      <PreviewViewport compact={compact}>
+    <div className={compact ? "rounded-lg bg-white p-2 shadow-sm" : "rounded-xl bg-white p-2 shadow-sm"}>
+      <PreviewViewport compact={compact} templateId={template.id}>
         <ResumeRenderer data={resumeData} templateId={template.id} accentColor={accentColor} />
       </PreviewViewport>
     </div>
@@ -605,14 +660,14 @@ export function TemplateGalleryCard({
         onClick={onSelect}
         onKeyDown={handleCardKeyDown}
         tabIndex={0}
-        className={`crp-template-card border-2 rounded-xl p-2.5 cursor-pointer transition-all flex h-full flex-col ${
+        className={`crp-template-card rounded-xl p-2.5 cursor-pointer transition-all flex h-full flex-col ${
           premium ? "crp-premium-card" : ""
         } ${
           selectedState
-            ? "border-indigo-600 shadow-md shadow-indigo-100"
+            ? "ring-2 ring-indigo-500 shadow-md shadow-indigo-100"
             : recommended
-            ? "border-violet-400 shadow-[0_18px_38px_-24px_rgba(99,102,241,0.55)] scale-[1.01] hover:border-violet-500"
-            : "border-slate-200 hover:border-slate-300"
+            ? "ring-1 ring-violet-300 shadow-[0_18px_38px_-24px_rgba(99,102,241,0.55)] scale-[1.01]"
+            : "ring-0"
         }`}
         role="button"
         aria-label={recommended ? `AI recommended template ${template.name}, ${recommendationScore}% match` : `Select ${template.name} template`}
@@ -680,14 +735,14 @@ export function TemplateGalleryCard({
       onClick={onSelect}
       onKeyDown={handleCardKeyDown}
       tabIndex={0}
-      className={`crp-template-card flex h-full cursor-pointer flex-col rounded-xl border-2 p-3 text-left transition-all ${
+      className={`crp-template-card flex h-full cursor-pointer flex-col rounded-xl p-3 text-left transition-all ${
         premium ? "crp-premium-card" : ""
       } ${
         selectedState
-          ? "border-indigo-600 shadow-md shadow-indigo-100"
+          ? "ring-2 ring-indigo-500 shadow-md shadow-indigo-100"
           : recommended
-          ? "border-violet-400 shadow-[0_20px_42px_-22px_rgba(99,102,241,0.58)] scale-[1.02] hover:border-violet-500"
-          : "border-slate-200 hover:border-slate-300"
+          ? "ring-1 ring-violet-300 shadow-[0_20px_42px_-22px_rgba(99,102,241,0.58)] scale-[1.02]"
+          : "ring-0"
       }`}
       role="button"
       aria-label={recommended ? `AI recommended template ${template.name}, ${recommendationScore}% match` : `Select ${template.name} template`}
