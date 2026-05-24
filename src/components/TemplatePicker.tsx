@@ -13,7 +13,7 @@ export default function TemplatePicker({ variant = "grid" }: { variant?: "grid" 
 
   if (variant === "sidebar") {
     return (
-      <div className="flex flex-col gap-1.5">
+      <div className="flex max-w-full flex-col gap-1.5 overflow-x-hidden">
         {freeTemplates.map((template) => (
           <TemplateGalleryCard
             key={template.id}
@@ -49,7 +49,7 @@ export default function TemplatePicker({ variant = "grid" }: { variant?: "grid" 
   return (
     <div className="mb-6">
       <h3 className="mb-3 text-sm font-semibold text-gray-700">Choose a Template</h3>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
         {freeTemplates.map((template) => (
           <TemplateGalleryCard
             key={template.id}

@@ -600,7 +600,7 @@ export function TemplatePreviewCard({
   const resumeData = TEMPLATE_RESUMES[template.id];
 
   return (
-    <div className={compact ? "rounded-lg bg-white p-2 shadow-sm" : "rounded-xl bg-white p-2 shadow-sm"}>
+    <div className={compact ? "max-w-full overflow-hidden rounded-lg bg-white p-2 shadow-sm" : "max-w-full overflow-hidden rounded-xl bg-white p-2 shadow-sm"}>
       <PreviewViewport compact={compact} templateId={template.id}>
         <ResumeRenderer data={resumeData} templateId={template.id} accentColor={accentColor} />
       </PreviewViewport>
@@ -660,7 +660,7 @@ export function TemplateGalleryCard({
         onClick={onSelect}
         onKeyDown={handleCardKeyDown}
         tabIndex={0}
-        className={`crp-template-card rounded-xl p-2.5 cursor-pointer transition-all flex h-full flex-col ${
+        className={`crp-template-card flex h-full max-w-full cursor-pointer flex-col overflow-hidden rounded-xl p-2.5 transition-all ${
           premium ? "crp-premium-card" : ""
         } ${
           selectedState
@@ -691,8 +691,8 @@ export function TemplateGalleryCard({
           )}
           {score > 0 && <span className="crp-ats-badge">ATS Optimized {score}</span>}
         </div>
-        <p className="mt-2 text-sm font-semibold tracking-tight text-slate-900">{template.name}</p>
-        <p className="mt-0.5 text-xs leading-relaxed text-slate-600">{template.style}</p>
+        <p className="mt-2 break-words text-sm font-semibold tracking-tight text-slate-900">{template.name}</p>
+        <p className="mt-0.5 break-words text-xs leading-relaxed text-slate-600">{template.style}</p>
         <div className="mt-1.5 flex flex-wrap gap-1" aria-label="Template strengths">
           {template.tags.map((tag) => (
             <span key={tag} className="rounded-full border border-slate-200 bg-white/85 px-1.5 py-0.5 text-[10px] text-slate-600">
@@ -717,7 +717,7 @@ export function TemplateGalleryCard({
               event.stopPropagation();
               onPreview();
             }}
-            className="mt-2 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+            className="mt-2 min-h-[44px] w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
           >
             Preview
           </button>
@@ -735,7 +735,7 @@ export function TemplateGalleryCard({
       onClick={onSelect}
       onKeyDown={handleCardKeyDown}
       tabIndex={0}
-      className={`crp-template-card flex h-full cursor-pointer flex-col rounded-xl p-3 text-left transition-all ${
+      className={`crp-template-card flex h-full max-w-full cursor-pointer flex-col overflow-hidden rounded-xl p-3 text-left transition-all ${
         premium ? "crp-premium-card" : ""
       } ${
         selectedState
@@ -769,8 +769,8 @@ export function TemplateGalleryCard({
         </div>
       </div>
       <TemplatePreviewCard template={template} />
-      <p className="text-sm font-semibold tracking-tight text-slate-900">{template.name}</p>
-      <p className="mt-0.5 text-xs leading-relaxed text-slate-600">{template.description}</p>
+      <p className="break-words text-sm font-semibold tracking-tight text-slate-900">{template.name}</p>
+      <p className="mt-0.5 break-words text-xs leading-relaxed text-slate-600">{template.description}</p>
       {!!roles.length && (
         <div className="mt-2 flex flex-wrap gap-1">
           {roles.slice(0, 3).map((role) => (
@@ -795,7 +795,7 @@ export function TemplateGalleryCard({
             event.stopPropagation();
             onPreview();
           }}
-          className={`mt-2 rounded-lg border bg-white px-2.5 py-1.5 text-xs font-semibold transition-colors ${
+          className={`mt-2 min-h-[44px] w-full rounded-lg border bg-white px-2.5 py-1.5 text-xs font-semibold transition-colors ${
             premium ? "border-amber-200 text-amber-700 hover:bg-amber-50" : "border-slate-200 text-slate-700 hover:bg-slate-50"
           }`}
         >

@@ -100,33 +100,33 @@ export default function SkillsStep() {
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-slate-800 mb-1">Skills & Summary</h2>
-      <p className="text-sm text-slate-500 mb-6">
+      <h2 className="mb-1 text-[22px] font-bold text-slate-800 md:text-[30px]">Skills & Summary</h2>
+      <p className="mb-6 break-words text-sm text-slate-500 md:text-base">
         Add your skills and let AI write your professional summary.
       </p>
 
       {/* Skills */}
       <div className="mb-6">
-        <div className="flex items-center justify-between mb-2">
+        <div className="mb-2 flex flex-col items-start justify-between gap-2 md:flex-row md:items-center">
           <label className="block text-sm font-medium text-slate-700">Skills</label>
           <button
             onClick={suggestSkills}
-            className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs px-4 py-1.5 rounded-lg font-medium transition-colors"
+            className="flex min-h-[44px] w-full items-center justify-center gap-1.5 rounded-lg bg-blue-600 px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-blue-700 md:w-auto"
           >
             Suggest skills for role
           </button>
         </div>
-        <div className="flex gap-2 mb-3">
+        <div className="mb-3 flex flex-col gap-2 md:flex-row">
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && addSkill()}
             placeholder="Type a skill and press Enter"
-            className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
             onClick={() => addSkill()}
-            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-4 rounded-lg text-sm font-medium transition-colors"
+            className="min-h-[44px] w-full rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-4 text-sm font-medium text-white transition-colors hover:from-blue-700 hover:to-indigo-700 md:w-auto"
           >
             Add
           </button>
@@ -142,7 +142,7 @@ export default function SkillsStep() {
                 <button
                   key={s}
                   onClick={() => addSuggestedSkill(s)}
-                  className="inline-flex items-center gap-1 bg-white border border-blue-300 text-blue-700 hover:bg-blue-100 rounded-full px-3 py-1 text-xs font-medium transition-colors"
+                  className="inline-flex min-h-[44px] items-center gap-1 rounded-full border border-blue-300 bg-white px-3 py-1 text-xs font-medium text-blue-700 transition-colors hover:bg-blue-100 md:min-h-0"
                 >
                   + {s}
                 </button>
@@ -160,7 +160,7 @@ export default function SkillsStep() {
               {skill}
               <button
                 onClick={() => removeSkill(skill)}
-                className="text-blue-400 hover:text-blue-600 leading-none"
+                className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center leading-none text-blue-400 hover:text-blue-600 md:min-h-0 md:min-w-0"
               >
                 x
               </button>
@@ -174,12 +174,12 @@ export default function SkillsStep() {
 
       {/* Professional Summary */}
       <div>
-        <div className="flex items-center justify-between mb-2">
+        <div className="mb-2 flex flex-col items-start justify-between gap-2 md:flex-row md:items-center">
           <label className="block text-sm font-medium text-slate-700">Professional Summary</label>
           <button
             onClick={generateSummary}
             disabled={generatingSummary}
-            className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs px-4 py-1.5 rounded-lg font-medium transition-colors"
+            className="flex min-h-[44px] w-full items-center justify-center gap-1.5 rounded-lg bg-blue-600 px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50 md:w-auto"
           >
             {generatingSummary ? (
               <><span className="animate-spin">...</span> Generating...</>
@@ -201,16 +201,16 @@ export default function SkillsStep() {
         <p className="text-xs text-slate-400 mt-1">{resumeData.summary.length} characters</p>
       </div>
 
-      <div className="flex justify-between mt-8">
+      <div className="mt-8 flex flex-col gap-3 md:flex-row md:justify-between">
         <button
           onClick={prevStep}
-          className="border border-slate-200 text-slate-600 px-5 py-2.5 rounded-lg font-medium hover:bg-slate-50 transition-colors"
+          className="min-h-[44px] w-full rounded-lg border border-slate-200 px-5 py-2.5 font-medium text-slate-600 transition-colors hover:bg-slate-50 md:w-auto"
         >
           Back
         </button>
         <button
           onClick={nextStep}
-          className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
+          className="min-h-[44px] w-full rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-2.5 font-medium text-white transition-colors hover:from-blue-700 hover:to-indigo-700 md:w-auto"
         >
           Next: Preview & Export
         </button>

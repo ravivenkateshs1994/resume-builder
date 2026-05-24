@@ -63,8 +63,8 @@ export default function StepIndicator({ variant = "horizontal" }: { variant?: "h
   }
 
   return (
-    <div className="w-full mb-8">
-      <div className="flex items-center justify-between relative">
+    <div className="mb-6 w-full max-w-full overflow-x-hidden md:mb-8">
+      <div className="relative grid grid-cols-5 gap-2">
         {/* Progress line */}
         <div className="absolute top-4 left-0 right-0 h-0.5 bg-gray-200 z-0" />
         <div
@@ -81,7 +81,7 @@ export default function StepIndicator({ variant = "horizontal" }: { variant?: "h
               key={step.id}
               type="button"
               onClick={() => goToStep(step.id)}
-              className="flex flex-col items-center z-10 group"
+              className="group z-10 flex min-w-0 flex-col items-center"
               aria-current={active ? "step" : undefined}
               aria-label={`Go to step ${i + 1}: ${step.label}`}
             >
@@ -97,7 +97,7 @@ export default function StepIndicator({ variant = "horizontal" }: { variant?: "h
                 {done ? "✓" : i + 1}
               </div>
               <span
-                className={`mt-1 text-xs font-medium hidden sm:block ${
+                className={`mt-1 break-words text-center text-[10px] font-medium leading-tight sm:text-xs ${
                   active
                     ? "text-indigo-600"
                     : done

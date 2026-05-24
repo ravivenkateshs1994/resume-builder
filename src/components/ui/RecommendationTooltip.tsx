@@ -15,7 +15,7 @@ export default function RecommendationTooltip({ id, reason, className = "" }: Re
         type="button"
         aria-label="Why this template is recommended"
         aria-describedby={id}
-        className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-violet-200/70 bg-white/85 text-[11px] font-semibold text-violet-700 shadow-sm transition-colors hover:bg-violet-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 dark:border-violet-400/40 dark:bg-slate-900 dark:text-violet-200"
+        className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-violet-200/70 bg-white/85 text-[11px] font-semibold text-violet-700 shadow-sm transition-colors hover:bg-violet-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 md:h-5 md:w-5 md:min-h-0 md:min-w-0 dark:border-violet-400/40 dark:bg-slate-900 dark:text-violet-200"
       >
         i
       </button>

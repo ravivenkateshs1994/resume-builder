@@ -18,7 +18,7 @@ import { isPremiumTemplatesEnabledClient } from "@/lib/featureFlags";
 import type { CareerLevel, RoleCategory, TemplateTierFilter } from "@/lib/templateCatalog";
 
 const StepShell = ({ title }: { title: string }) => (
-  <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+  <div className="max-w-full rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-6">
     <div className="animate-pulse space-y-4">
       <div>
         <div className="h-3 w-28 rounded-full bg-slate-200" />
@@ -79,11 +79,11 @@ function AppHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/85 backdrop-blur-md">
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
-        <Link href="/" className="flex items-center gap-2.5">
+        <Link href="/" className="flex min-w-0 items-center gap-2.5">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-cyan-500 text-sm font-bold text-white shadow-sm shadow-indigo-300/40">
             CR
           </div>
-          <span className="text-sm font-bold tracking-wide sm:text-base text-slate-900">Career Readiness Platform</span>
+          <span className="truncate text-sm font-bold tracking-wide text-slate-900 sm:text-base">Career Readiness Platform</span>
         </Link>
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
           <Link href="/" className="crp-nav-link">
@@ -110,8 +110,8 @@ const flowStages = [
 function FlowStrip({ activeStep }: { activeStep: number }) {
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6">
-      <div className="rounded-full border border-slate-200/90 bg-white/90 px-3 py-2 shadow-[0_14px_35px_-24px_rgba(15,23,42,0.35)] backdrop-blur">
-        <div className="flex items-center justify-center gap-2 overflow-x-auto whitespace-nowrap">
+      <div className="rounded-2xl border border-slate-200/90 bg-white/90 px-3 py-2 shadow-[0_14px_35px_-24px_rgba(15,23,42,0.35)] backdrop-blur">
+        <div className="flex flex-wrap items-center justify-start gap-2 sm:justify-center">
           <span className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.22em] text-indigo-600">
             Template flow
           </span>
@@ -571,19 +571,19 @@ function CreatePageContent() {
   // ── Gate screen ──────────────────────────────────────────────────────────────
   if (mode === "gate") {
     return (
-      <div className="min-h-screen crp-shell flex flex-col">
+      <div className="crp-shell flex min-h-screen max-w-full flex-col overflow-x-hidden text-sm md:text-base">
         <AppHeader />
 
         <FlowStrip activeStep={0} />
 
         <div className="mx-auto w-full max-w-7xl px-4 pt-4 sm:px-6">
-          <div className="crp-card crp-module-accent crp-soft-radial p-6 relative overflow-hidden">
+          <div className="crp-card crp-module-accent crp-soft-radial relative max-w-full overflow-hidden p-4 md:p-6">
             <div className="pointer-events-none absolute -right-10 -top-14 h-32 w-32 rounded-full bg-indigo-100/70 blur-2xl" />
             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
               <div>
                 <span className="crp-badge">Template Selection</span>
-                <h1 className="crp-section-title mt-3">Choose Your Resume Template</h1>
-                <p className="crp-section-copy mt-2 max-w-3xl">
+                <h1 className="crp-section-title mt-3 text-[28px] leading-tight md:text-[36px]">Choose Your Resume Template</h1>
+                <p className="crp-section-copy mt-2 max-w-3xl break-words text-sm leading-relaxed md:text-base">
                   Select a professional ATS-friendly design for your tailored resume.
                 </p>
               </div>
@@ -618,7 +618,7 @@ function CreatePageContent() {
                 ))}
               </div>
 
-              <div className="mt-3 flex flex-wrap items-center gap-4">
+              <div className="mt-3 flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center md:gap-4">
                 <div className="flex flex-wrap items-center gap-2">
                   {[
                     { key: "all", label: "All Templates" },
@@ -658,7 +658,7 @@ function CreatePageContent() {
                 <select
                   value={activeRoleCategory}
                   onChange={(event) => setActiveRoleCategory(event.target.value as RoleCategory)}
-                  className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 md:w-auto"
                   aria-label="Filter by role category"
                 >
                   <option value="all">All role categories</option>
@@ -672,7 +672,7 @@ function CreatePageContent() {
                 <select
                   value={activeLevelCategory}
                   onChange={(event) => setActiveLevelCategory(event.target.value as CareerLevel)}
-                  className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 md:w-auto"
                   aria-label="Filter by level category"
                 >
                   <option value="all">All levels</option>
@@ -690,7 +690,7 @@ function CreatePageContent() {
             <button
               type="button"
               onClick={() => setMode("form")}
-              className="crp-btn-secondary px-5 py-2 text-sm shadow-sm"
+              className="crp-btn-secondary min-h-[44px] w-full px-5 py-2 text-sm shadow-sm sm:w-auto"
             >
               Choose Later
             </button>
@@ -700,7 +700,7 @@ function CreatePageContent() {
         <div className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6">
 
           <div className="mb-3 mt-2 flex items-center justify-between gap-3">
-            <h3 className="text-xl font-bold tracking-tight text-slate-900">All Templates</h3>
+            <h3 className="text-[22px] font-bold tracking-tight text-slate-900 md:text-[30px]">All Templates</h3>
           </div>
 
           {!!freeTemplates.length && (
@@ -790,8 +790,8 @@ function CreatePageContent() {
           )}
 
           {uploading && (
-            <div className="fixed inset-0 z-30 bg-slate-900/30 backdrop-blur-sm flex items-center justify-center px-4">
-              <div className="bg-white rounded-xl shadow-xl border border-slate-200 px-6 py-5 flex flex-col items-center gap-3 min-w-[220px]">
+            <div className="fixed inset-0 z-30 flex items-center justify-center bg-slate-900/30 px-4 backdrop-blur-sm">
+              <div className="flex w-[calc(100vw-32px)] max-w-sm flex-col items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-5 shadow-xl md:px-6">
                 <span className="text-2xl animate-spin inline-block">⟳</span>
                 <p className="text-sm font-medium text-slate-700 text-center transition-all">
                   {UPLOAD_MESSAGES[uploadMsgIdx]}
@@ -803,8 +803,8 @@ function CreatePageContent() {
           {uploadError && <p className="mt-4 text-sm text-red-500">{uploadError}</p>}
 
           {showStartChoice && (
-            <div className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center px-4">
-              <div className="w-full max-w-md bg-white rounded-2xl border border-slate-200 shadow-2xl p-5 crp-module-accent crp-soft-radial">
+            <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/40 px-4 backdrop-blur-sm">
+              <div className="crp-module-accent crp-soft-radial w-[calc(100vw-32px)] max-w-md rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl md:p-5">
                 <h3 className="text-lg font-bold text-slate-900 mb-1">Template selected</h3>
                 <p className="text-sm text-slate-600 mb-4">
                   Great choice. Do you want to import an existing resume or start fresh with this template?
@@ -819,7 +819,7 @@ function CreatePageContent() {
                       setShowStartChoice(false);
                       fileRef.current?.click();
                     }}
-                    className="w-full crp-btn-secondary text-sm px-4 py-2.5"
+                    className="crp-btn-secondary min-h-[44px] w-full px-4 py-2.5 text-sm"
                   >
                     Import Resume
                   </button>
@@ -831,7 +831,7 @@ function CreatePageContent() {
                       setShowStartChoice(false);
                       setMode("form");
                     }}
-                    className="w-full crp-btn-primary text-sm px-4 py-2.5"
+                    className="crp-btn-primary min-h-[44px] w-full px-4 py-2.5 text-sm"
                   >
                     Start Afresh
                   </button>
@@ -841,7 +841,7 @@ function CreatePageContent() {
                       setShowStartChoice(false);
                       setPendingTemplate(null);
                     }}
-                    className="w-full text-slate-500 hover:text-slate-700 text-sm px-4 py-2"
+                    className="min-h-[44px] w-full px-4 py-2 text-sm text-slate-500 hover:text-slate-700"
                   >
                     Cancel
                   </button>
@@ -851,18 +851,18 @@ function CreatePageContent() {
           )}
 
           {previewTemplate && (
-            <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center px-4 py-6">
-              <div className="w-full max-w-5xl max-h-full overflow-auto rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl">
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4 py-6 backdrop-blur-sm">
+              <div className="max-h-full w-[calc(100vw-32px)] max-w-5xl overflow-y-auto overflow-x-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl md:p-5">
                 <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1.45fr_1fr]">
                   <div className="rounded-2xl border border-slate-200 bg-white p-2">
                     <TemplatePreviewCard template={previewTemplate} />
                   </div>
                   <div className="crp-card-soft crp-glass crp-module-accent p-4">
-                    <div className="flex items-center justify-between gap-3">
-                      <h3 className="text-xl font-bold tracking-tight text-slate-900">{previewTemplate.name}</h3>
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <h3 className="text-[22px] font-bold tracking-tight text-slate-900 md:text-[30px]">{previewTemplate.name}</h3>
                       {previewTemplate.isPremium && <span className="crp-premium-badge">Premium</span>}
                     </div>
-                    <p className="mt-1 text-sm text-slate-600">{previewTemplate.description}</p>
+                    <p className="mt-1 break-words text-sm text-slate-600 md:text-base">{previewTemplate.description}</p>
 
                     {previewTemplate.atsScore != null ? (
                       <div className="mt-3 crp-score-card p-3">
@@ -898,10 +898,10 @@ function CreatePageContent() {
                       <p className="mt-1 text-sm text-slate-700">{previewTemplate.recommendedIndustries.join(", ")}</p>
                     </div>
 
-                    <div className="mt-4 flex gap-2">
+                    <div className="mt-4 flex flex-col gap-2 md:flex-row">
                       <button
                         type="button"
-                        className="crp-btn-primary px-4 py-2 text-sm"
+                        className="crp-btn-primary min-h-[44px] w-full px-4 py-2 text-sm md:w-auto"
                         onClick={() => {
                           askStartPath(previewTemplate.id);
                           setPreviewTemplate(null);
@@ -911,7 +911,7 @@ function CreatePageContent() {
                       </button>
                       <button
                         type="button"
-                        className="crp-btn-secondary px-4 py-2 text-sm"
+                        className="crp-btn-secondary min-h-[44px] w-full px-4 py-2 text-sm md:w-auto"
                         onClick={() => setPreviewTemplate(null)}
                       >
                         Close
@@ -931,23 +931,23 @@ function CreatePageContent() {
 
   // ── Form screen ──────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen crp-shell">
+    <div className="crp-shell min-h-screen max-w-full overflow-x-hidden text-sm md:text-base">
       <AppHeader />
 
       <FlowStrip activeStep={currentStep === "preview" ? 2 : 1} />
 
       <div className="mx-auto w-full max-w-7xl px-4 pt-2 sm:px-6">
-        <div className="crp-card crp-module-accent crp-soft-radial p-6">
+        <div className="crp-card crp-module-accent crp-soft-radial p-4 md:p-6">
           <span className="crp-badge">Resume Tailoring</span>
-          <h1 className="crp-section-title mt-3">Resume Tailoring</h1>
-          <p className="crp-section-copy mt-2 max-w-3xl">
+          <h1 className="crp-section-title mt-3 text-[28px] leading-tight md:text-[36px]">Resume Tailoring</h1>
+          <p className="crp-section-copy mt-2 max-w-3xl break-words text-sm leading-relaxed md:text-base">
             Upload your resume and paste a job description to receive targeted improvements.
           </p>
         </div>
       </div>
 
       <div className="mx-auto w-full max-w-7xl px-4 pt-6 sm:px-6">
-        <div className="crp-card-soft crp-glass crp-module-accent flex flex-col items-start justify-between gap-4 px-4 py-3 sm:flex-row sm:items-center">
+        <div className="crp-card-soft crp-glass crp-module-accent flex flex-col items-start justify-between gap-4 px-4 py-3 md:flex-row md:items-center">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-600">Builder workspace</p>
             <p className="text-sm text-slate-600 mt-0.5">Keep editing, or reset and return to template selection.</p>
@@ -957,7 +957,7 @@ function CreatePageContent() {
               startFreshFlow();
               setMode("gate");
             }}
-            className="crp-btn-secondary px-5 py-2 text-sm whitespace-nowrap"
+            className="crp-btn-secondary min-h-[44px] w-full whitespace-nowrap px-5 py-2 text-sm md:w-auto"
           >
             Start over
           </button>
@@ -982,24 +982,24 @@ function CreatePageContent() {
         <div className="flex-1 min-w-0">
           {/* ── Prefill banner (shown only after upload) ── */}
           {prefilled && (
-            <div className="mb-6 flex flex-col items-start justify-between gap-3 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm sm:flex-row sm:items-center">
+            <div className="mb-6 flex flex-col items-start justify-between gap-3 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm md:flex-row md:items-center">
               <div className="flex items-center gap-2 text-green-700">
                 <span>✓</span>
-                <span>Resume imported — fields pre-filled. Review and edit below.</span>
+                <span className="break-words">Resume imported — fields pre-filled. Review and edit below.</span>
               </div>
-              <div className="flex w-full items-center gap-3 sm:w-auto">
+              <div className="flex w-full flex-col items-stretch gap-3 md:w-auto md:flex-row md:items-center">
                 <button
                   onClick={() => {
                     startFreshFlow();
                     fileRef.current?.click();
                   }}
-                  className="text-green-700 underline underline-offset-2 hover:text-green-900 whitespace-nowrap"
+                  className="min-h-[44px] w-full whitespace-nowrap text-left text-green-700 underline underline-offset-2 hover:text-green-900 md:w-auto"
                 >
                   Upload different file
                 </button>
                 <button
                   onClick={() => setPrefilled(false)}
-                  className="text-green-500 hover:text-green-700"
+                  className="min-h-[44px] w-full text-left text-green-500 hover:text-green-700 md:w-auto"
                   aria-label="Dismiss"
                 >
                   ✕
@@ -1010,16 +1010,16 @@ function CreatePageContent() {
 
           {fileInput}
 
-          <div key={uploadKey} className={currentStep === "preview" ? "" : "app-panel rounded-2xl p-6 sm:p-8"}>
+          <div key={uploadKey} className={currentStep === "preview" ? "max-w-full overflow-x-hidden" : "app-panel max-w-full overflow-x-hidden rounded-2xl p-4 md:p-6 lg:p-8"}>
             {renderStep()}
           </div>
         </div>
       </div>
 
       <section id="roadmap" className="mx-auto max-w-7xl px-4 pb-14">
-        <div className="crp-card-soft p-5 sm:p-6">
+        <div className="crp-card-soft max-w-full overflow-x-hidden p-4 md:p-6">
           <div className="flex items-center justify-between gap-3 mb-4">
-            <h2 className="text-lg font-bold text-slate-900">Coming Soon</h2>
+            <h2 className="text-[22px] font-bold text-slate-900 md:text-[30px]">Coming Soon</h2>
             <span className="crp-badge">Roadmap</span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">

@@ -52,7 +52,7 @@ function MonthYearSelect({
     "flex-1 border border-slate-200 rounded-lg px-2 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white disabled:bg-gray-50 disabled:text-gray-400";
 
   return (
-    <div className="flex gap-2">
+    <div className="flex flex-col gap-2 md:flex-row">
       <select value={month} onChange={(e) => update(e.target.value, year)} disabled={disabled} className={selectClass}>
         <option value="">Month</option>
         {MONTHS.map((m) => <option key={m} value={m}>{m}</option>)}
@@ -82,7 +82,7 @@ function ToolbarBtn({
       type="button"
       title={title}
       onMouseDown={(e) => { e.preventDefault(); onClick(e); }}
-      className={`p-1.5 rounded-md transition-all duration-100 ${
+      className={`min-h-[44px] min-w-[44px] rounded-md p-2 transition-all duration-100 md:min-h-0 md:min-w-0 md:p-1.5 ${
         active
           ? "bg-blue-600 text-white shadow-sm"
           : "text-gray-500 hover:text-gray-900 hover:bg-gray-100"
@@ -259,12 +259,12 @@ function DescriptionEditor({
         className="tiptap-editor px-4 py-3 text-sm min-h-[140px] text-gray-800"
       />
 
-      <div className="px-3 pb-3 pt-1 flex items-center justify-between gap-2">
+      <div className="flex flex-col items-start justify-between gap-2 px-3 pb-3 pt-1 md:flex-row md:items-center">
         <button
           type="button"
           onClick={handleOptimizeClick}
           disabled={isOptimizing || !editor?.getText().trim()}
-          className="flex items-center gap-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed px-4 py-1.5 rounded-lg transition-colors"
+          className="flex min-h-[44px] w-full items-center justify-center gap-1.5 rounded-lg bg-blue-600 px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-40 md:w-auto"
         >
           {isOptimizing ? (
             <><span className="animate-spin inline-block">...</span> Optimizing...</>
@@ -272,7 +272,7 @@ function DescriptionEditor({
             <>Optimize {hasSelection ? "Selection" : "Content"}</>
           )}
         </button>
-        <span className="text-[11px] text-gray-500">
+        <span className="break-words text-[11px] text-gray-500">
           {hasSelection ? "Selected text will be optimized only." : "Tip: select a line to optimize only that part."}
         </span>
       </div>
@@ -338,43 +338,43 @@ export default function ExperienceStep() {
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-slate-800 mb-1">Work Experience</h2>
-      <p className="text-sm text-slate-500 mb-6">Add your roles. You can optimize the full description or just a selected line.</p>
+      <h2 className="mb-1 text-[22px] font-bold text-slate-800 md:text-[30px]">Work Experience</h2>
+      <p className="mb-6 break-words text-sm text-slate-500 md:text-base">Add your roles. You can optimize the full description or just a selected line.</p>
 
       <div className="space-y-6">
         {resumeData.workExperience.map((w, idx) => {
           const isCurrent = w.endDate === "Present";
           return (
-            <div key={w.id} className="border border-slate-200 rounded-xl overflow-hidden">
-              <div className="flex items-center justify-between px-4 py-3 bg-slate-50 border-b border-slate-200">
+            <div key={w.id} className="max-w-full overflow-hidden rounded-xl border border-slate-200">
+              <div className="flex items-center justify-between gap-2 border-b border-slate-200 bg-slate-50 px-4 py-3">
                 <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Position {idx + 1}</span>
-                <button onClick={() => removeWorkExperience(w.id)} className="text-red-400 hover:text-red-600 text-xs font-medium">Remove</button>
+                <button onClick={() => removeWorkExperience(w.id)} className="min-h-[44px] px-2 text-xs font-medium text-red-400 hover:text-red-600 md:min-h-0 md:px-0">Remove</button>
               </div>
 
-              <div className="p-4 space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-4 p-4 md:p-6">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Job Title <span className="text-red-500">*</span></label>
+                    <label className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">Job Title <span className="text-red-500">*</span></label>
                     <input value={w.title} onChange={(e) => updateWorkExperience(w.id, { title: e.target.value })} placeholder="e.g. Senior Software Engineer" className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Company <span className="text-red-500">*</span></label>
+                    <label className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">Company <span className="text-red-500">*</span></label>
                     <input value={w.company} onChange={(e) => updateWorkExperience(w.id, { company: e.target.value })} placeholder="e.g. Acme Corp" className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Location</label>
+                  <label className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">Location</label>
                   <input value={w.location || ""} onChange={(e) => updateWorkExperience(w.id, { location: e.target.value })} placeholder="e.g. New York, NY (or Remote)" className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Start Date</label>
+                    <label className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">Start Date</label>
                     <MonthYearSelect value={w.startDate} onChange={(v) => updateWorkExperience(w.id, { startDate: v })} />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">End Date</label>
+                    <label className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">End Date</label>
                     <MonthYearSelect value={isCurrent ? "" : w.endDate} onChange={(v) => updateWorkExperience(w.id, { endDate: v })} disabled={isCurrent} />
                     <label className="inline-flex items-center gap-2 mt-2 cursor-pointer select-none">
                       <input type="checkbox" checked={isCurrent} onChange={(e) => updateWorkExperience(w.id, { endDate: e.target.checked ? "Present" : "" })} className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
@@ -385,7 +385,7 @@ export default function ExperienceStep() {
 
                 {/* Description - rich text editor */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Description</label>
+                  <label className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">Description</label>
                   <DescriptionEditor
                     value={w.description}
                     onChange={(html) => updateWorkExperience(w.id, { description: html })}
@@ -401,21 +401,21 @@ export default function ExperienceStep() {
 
       <button
         onClick={addWorkExperience}
-        className="mt-4 w-full border-2 border-dashed border-slate-200 hover:border-blue-400 text-gray-500 hover:text-blue-600 rounded-xl py-3 text-sm font-medium transition-colors"
+        className="mt-4 min-h-[44px] w-full rounded-xl border-2 border-dashed border-slate-200 py-3 text-sm font-medium text-gray-500 transition-colors hover:border-blue-400 hover:text-blue-600"
       >
         + Add Position
       </button>
 
-      <div className="flex justify-between mt-8">
+      <div className="mt-8 flex flex-col gap-3 md:flex-row md:justify-between">
         <button
           onClick={prevStep}
-          className="border border-slate-200 text-slate-600 px-5 py-2.5 rounded-lg font-medium hover:bg-slate-50 transition-colors"
+          className="min-h-[44px] w-full rounded-lg border border-slate-200 px-5 py-2.5 font-medium text-slate-600 transition-colors hover:bg-slate-50 md:w-auto"
         >
           Back
         </button>
         <button
           onClick={nextStep}
-          className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
+          className="min-h-[44px] w-full rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-2.5 font-medium text-white transition-colors hover:from-blue-700 hover:to-indigo-700 md:w-auto"
         >
           Next: Education
         </button>

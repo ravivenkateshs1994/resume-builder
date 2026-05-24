@@ -138,10 +138,10 @@ export default function PreviewStep() {
   }
 
   return (
-    <div className="flex min-h-0 flex-col gap-6 lg:flex-row">
+    <div className="flex min-h-0 max-w-full flex-col gap-6 overflow-x-hidden lg:flex-row">
       {/* Left sidebar: template picker */}
       <div className="w-full lg:w-52 lg:flex-shrink-0">
-        <h3 className="text-sm font-semibold text-slate-700 mb-3">Templates</h3>
+        <h3 className="mb-3 text-sm font-semibold text-slate-700">Templates</h3>
         <div className="max-h-[40vh] overflow-y-auto pr-0.5 lg:max-h-[calc(100vh-220px)]">
           <TemplatePicker variant="sidebar" />
         </div>
@@ -149,20 +149,20 @@ export default function PreviewStep() {
 
       {/* Right: controls + preview */}
       <div className="flex-1 min-w-0">
-      <h2 className="text-xl font-bold text-slate-800 mb-1">Preview & Export</h2>
-      <p className="text-sm text-gray-500 mb-4">
+      <h2 className="mb-1 text-[22px] font-bold text-slate-800 md:text-[30px]">Preview & Export</h2>
+      <p className="mb-4 break-words text-sm text-gray-500 md:text-base">
         Review your resume and export it in your preferred format.
       </p>
 
       {/* Resume Preview */}
-      <div className="border border-slate-200 rounded-xl overflow-hidden shadow-sm mb-6">
-        <div className="bg-gray-100 px-4 py-2 border-b border-gray-200 text-xs text-gray-500 flex items-center justify-between">
+      <div className="mb-6 max-w-full overflow-hidden rounded-xl border border-slate-200 shadow-sm">
+        <div className="flex flex-col items-start justify-between gap-1 border-b border-gray-200 bg-gray-100 px-4 py-2 text-xs text-gray-500 md:flex-row md:items-center">
           <span>Resume Preview</span>
-          <span className="text-gray-400 capitalize">{selectedTemplate} template</span>
+          <span className="break-words text-gray-400 capitalize">{selectedTemplate} template</span>
         </div>
         <div
           ref={previewRef}
-          className="overflow-auto max-h-[900px] bg-white"
+          className="max-h-[900px] overflow-y-auto overflow-x-hidden bg-white"
           style={{ zoom: previewScale }}
         >
           <ResumeRenderer data={resumeData} templateId={selectedTemplate} accentColor={templateAccentColor} />
@@ -170,7 +170,7 @@ export default function PreviewStep() {
       </div>
 
       {/* Gap Analyzer CTA */}
-      <div className="app-panel mb-6 flex flex-col items-start justify-between gap-4 rounded-xl border border-blue-100 p-4 sm:flex-row sm:items-center">
+      <div className="app-panel mb-6 flex flex-col items-start justify-between gap-4 rounded-xl border border-blue-100 p-4 md:flex-row md:items-center">
         <div>
           <p className="text-sm font-semibold text-slate-800">Analyze skill gaps for a specific role</p>
           <p className="text-xs text-slate-500 mt-0.5">
@@ -179,25 +179,25 @@ export default function PreviewStep() {
         </div>
         <a
           href="/gap-analysis"
-          className="flex-shrink-0 bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap"
+          className="min-h-[44px] w-full rounded-lg bg-blue-600 px-4 py-2 text-center text-sm font-medium text-white transition-colors hover:bg-blue-700 md:w-auto"
         >
           Open Gap Analyzer
         </a>
       </div>
 
       {/* Export Buttons */}
-      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+      <div className="mb-6 flex flex-col gap-3 md:flex-row md:flex-wrap">
         <button
           onClick={exportPdf}
           disabled={exportingPdf}
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-red-600 px-5 py-2.5 font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50 sm:w-auto"
+          className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-lg bg-red-600 px-5 py-2.5 font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50 md:w-auto"
         >
           PDF {exportingPdf ? "Preparing PDF..." : "Download PDF"}
         </button>
         <button
           onClick={exportDocx}
           disabled={exportingDocx}
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-700 px-5 py-2.5 font-medium text-white transition-colors hover:bg-blue-800 disabled:opacity-50 sm:w-auto"
+          className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-lg bg-blue-700 px-5 py-2.5 font-medium text-white transition-colors hover:bg-blue-800 disabled:opacity-50 md:w-auto"
         >
           DOCX {exportingDocx ? "Exporting..." : "Download DOCX"}
         </button>
@@ -206,7 +206,7 @@ export default function PreviewStep() {
       <div className="mt-8 flex justify-start">
         <button
           onClick={prevStep}
-          className="w-full rounded-lg border border-slate-200 px-5 py-2.5 font-medium text-slate-600 transition-colors hover:bg-slate-50 sm:w-auto"
+          className="min-h-[44px] w-full rounded-lg border border-slate-200 px-5 py-2.5 font-medium text-slate-600 transition-colors hover:bg-slate-50 md:w-auto"
         >
           Back
         </button>

@@ -4,6 +4,11 @@
   box-sizing: border-box;
 }
 
+img {
+  max-width: 100%;
+  height: auto;
+}
+
 :root {
   --bg-0: #f5f7fb;
   --bg-1: #f8fafc;
