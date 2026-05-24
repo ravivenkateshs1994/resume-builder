@@ -1,6 +1,8 @@
 import fs from "fs";
 import path from "path";
 
+const PROJECT_PUPPETEER_CACHE_DIR = path.join(process.cwd(), ".cache", "puppeteer");
+
 const WINDOWS_CANDIDATES = [
   process.env.CHROME_PATH,
   process.env.CHROMIUM_PATH,
@@ -37,7 +39,26 @@ function findLocalExecutablePath(): string | null {
   return null;
 }
 
+function ensurePuppeteerCacheDir() {
+  if (!process.env.PUPPETEER_CACHE_DIR) {
+    process.env.PUPPETEER_CACHE_DIR = PROJECT_PUPPETEER_CACHE_DIR;
+  }
+}
+
+function resolveManagedExecutablePath(getExecutablePath: () => string): string | null {
+  try {
+    const managedPath = getExecutablePath();
+    if (managedPath && fs.existsSync(managedPath)) {
+      return managedPath;
+    }
+  } catch {
+    // No managed browser available yet.
+  }
+  return null;
+}
+
 export async function launchPdfBrowser() {
+  ensurePuppeteerCacheDir();
   const { default: puppeteer } = await import("puppeteer");
 
   const launchArgs = [
@@ -67,6 +88,11 @@ export async function launchPdfBrowser() {
     }
   }
 
+  const managedExecutablePath = resolveManagedExecutablePath(() => puppeteer.executablePath());
+  if (managedExecutablePath) {
+    return launchWithPath(managedExecutablePath);
+  }
+
   // Fallback: use Puppeteer's managed browser from cache.
   try {
     return await puppeteer.launch({ headless: true, args: launchArgs });
@@ -74,7 +100,7 @@ export async function launchPdfBrowser() {
     const message = error instanceof Error ? error.message : String(error);
     if (message.includes("Could not find Chrome")) {
       throw new Error(
-        "Chrome was not found for Puppeteer. Ensure your build runs: npx puppeteer browsers install chrome, or set CHROME_PATH / CHROMIUM_PATH / PUPPETEER_EXECUTABLE_PATH to a valid browser binary."
+        `Chrome was not found for Puppeteer. Ensure your build runs: npx puppeteer browsers install chrome. Current cache dir: ${process.env.PUPPETEER_CACHE_DIR ?? PROJECT_PUPPETEER_CACHE_DIR}. You can also set CHROME_PATH / CHROMIUM_PATH / PUPPETEER_EXECUTABLE_PATH to a valid browser binary.`
       );
     }
     throw error;

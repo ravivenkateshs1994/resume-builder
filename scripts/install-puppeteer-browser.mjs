@@ -1,4 +1,8 @@
 import { execSync } from "node:child_process";
+import path from "node:path";
+
+const cacheDir = path.join(process.cwd(), ".cache", "puppeteer");
+process.env.PUPPETEER_CACHE_DIR = process.env.PUPPETEER_CACHE_DIR || cacheDir;
 
 const shouldSkip =
   process.env.PUPPETEER_SKIP_DOWNLOAD === "true" ||
@@ -20,7 +24,7 @@ if (!shouldInstall) {
 }
 
 try {
-  console.log("[postinstall] Installing Puppeteer managed Chrome...");
+  console.log(`[postinstall] Installing Puppeteer managed Chrome into ${process.env.PUPPETEER_CACHE_DIR} ...`);
   execSync("npx puppeteer browsers install chrome", { stdio: "inherit" });
   console.log("[postinstall] Puppeteer Chrome install complete.");
 } catch (error) {
