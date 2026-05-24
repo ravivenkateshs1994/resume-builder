@@ -91,17 +91,24 @@ const typeBadgeClasses: Record<ResourceType, string> = {
 function AppHeader() {
   return (
     <header className="sticky top-0 z-30 bg-white/85 backdrop-blur-md border-b border-slate-200/80">
-      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
-        <Link href="/" className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-cyan-500 flex items-center justify-center text-white font-bold text-[11px]">
-            CR
-          </div>
-          <span className="font-bold text-slate-900 text-lg tracking-tight">Career Readiness Platform</span>
-        </Link>
-        <nav className="hidden sm:flex items-center gap-6 text-sm text-slate-600 font-medium">
-          <Link href="/" className="crp-nav-link">Home</Link>
-          <Link href="/create" className="crp-nav-link">Resume Tailoring</Link>
-          <Link href="/gap-analysis" className="crp-nav-link">Gap Analysis</Link>
+      <div className="max-w-6xl mx-auto px-6">
+        <div className="h-16 flex items-center justify-between gap-4">
+          <Link href="/" className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-cyan-500 flex items-center justify-center text-white font-bold text-[11px]">
+              CR
+            </div>
+            <span className="font-bold text-slate-900 text-lg tracking-tight">Career Readiness Platform</span>
+          </Link>
+          <nav className="hidden sm:flex items-center gap-6 text-sm text-slate-600 font-medium">
+            <Link href="/" className="crp-nav-link">Home</Link>
+            <Link href="/create" className="crp-nav-link">Resume Tailoring</Link>
+            <Link href="/gap-analysis" className="crp-nav-link">Gap Analysis</Link>
+          </nav>
+        </div>
+        <nav className="flex items-center gap-2 overflow-x-auto pb-3 text-sm font-medium text-slate-700 sm:hidden">
+          <Link href="/" className="shrink-0 rounded-full border border-slate-200 bg-white px-3 py-1.5">Home</Link>
+          <Link href="/create" className="shrink-0 rounded-full border border-slate-200 bg-white px-3 py-1.5">Resume Tailoring</Link>
+          <Link href="/gap-analysis" className="shrink-0 rounded-full border border-slate-200 bg-white px-3 py-1.5">Gap Analysis</Link>
         </nav>
       </div>
     </header>

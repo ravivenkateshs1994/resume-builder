@@ -552,34 +552,25 @@ function PreviewViewport({
   const requiresStrictFit = STRICT_FULL_FIT_TEMPLATE_IDS.has(templateId);
   const baseScale = compact
     ? isFullFitTemplate
-      ? 0.255
-      : 0.285
+      ? 0.33
+      : 0.35
     : isFullFitTemplate
-    ? 0.6
-    : 0.66;
+      ? 0.6
+      : 0.66;
   const scale = requiresStrictFit
     ? compact
-      ? 0.235
+      ? 0.31
       : 0.54
     : baseScale;
-  const renderedWidthPercent = requiresStrictFit
-    ? compact
-      ? 82
-      : 90
-    : compact
-    ? 86
-    : 94;
-  const horizontalOffset = (100 - renderedWidthPercent) / 2;
 
   return (
     <div className="relative aspect-[1/1.414] overflow-hidden rounded-[18px] bg-white crp-preview-focal">
       <div
-        className="absolute inset-0"
+        className="absolute left-1/2 top-0 crp-preview-canvas"
         style={{
-          left: `${horizontalOffset}%`,
-          width: `${renderedWidthPercent / scale}%`,
-          transform: `scale(${scale})`,
-          transformOrigin: "top left",
+          width: `${100 / scale}%`,
+          transform: `translateX(-50%) scale(${scale})`,
+          transformOrigin: "top center",
         }}
       >
         {children}
@@ -602,7 +593,12 @@ export function TemplatePreviewCard({
   return (
     <div className={compact ? "max-w-full overflow-hidden rounded-lg bg-white p-2 shadow-sm" : "max-w-full overflow-hidden rounded-xl bg-white p-2 shadow-sm"}>
       <PreviewViewport compact={compact} templateId={template.id}>
-        <ResumeRenderer data={resumeData} templateId={template.id} accentColor={accentColor} />
+        <ResumeRenderer
+          key={`${template.id}-${accentColor}-${compact ? "compact" : "full"}`}
+          data={resumeData}
+          templateId={template.id}
+          accentColor={accentColor}
+        />
       </PreviewViewport>
     </div>
   );

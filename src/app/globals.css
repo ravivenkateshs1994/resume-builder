@@ -332,6 +332,12 @@ select:focus {
     0 16px 32px -26px rgb(37 99 235 / 0.42);
 }
 
+.crp-preview-canvas {
+  will-change: transform;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
 .crp-score-card {
   border: 1px solid #d8e2ef;
   border-radius: 0.9rem;

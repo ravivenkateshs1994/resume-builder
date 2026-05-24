@@ -192,14 +192,14 @@ export default function PreviewStep() {
           disabled={exportingPdf}
           className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-lg bg-red-600 px-5 py-2.5 font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50 md:w-auto"
         >
-          PDF {exportingPdf ? "Preparing PDF..." : "Download PDF"}
+          {exportingPdf ? "Preparing PDF..." : "Download PDF"}
         </button>
         <button
           onClick={exportDocx}
           disabled={exportingDocx}
           className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-lg bg-blue-700 px-5 py-2.5 font-medium text-white transition-colors hover:bg-blue-800 disabled:opacity-50 md:w-auto"
         >
-          DOCX {exportingDocx ? "Exporting..." : "Download DOCX"}
+          {exportingDocx ? "Preparing DOCX..." : "Download DOCX"}
         </button>
       </div>
 

@@ -81,18 +81,25 @@ export default function LandingPage() {
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900">
       <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/85 backdrop-blur-md">
-        <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-cyan-500 text-sm font-bold text-white shadow-sm shadow-indigo-300/40">
-              CR
+        <div className="mx-auto w-full max-w-7xl px-6">
+          <div className="flex h-16 items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-cyan-500 text-sm font-bold text-white shadow-sm shadow-indigo-300/40">
+                CR
+              </div>
+              <span className="text-sm font-bold tracking-wide sm:text-base">Career Readiness Platform</span>
             </div>
-            <span className="text-sm font-bold tracking-wide sm:text-base">Career Readiness Platform</span>
-          </div>
 
-          <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 md:flex">
-            <a href="#home" className="crp-nav-link crp-nav-link-active">Home</a>
-            <Link href="/create" className="crp-nav-link">Resume Tailoring</Link>
-            <Link href="/gap-analysis" className="crp-nav-link">Gap Analysis</Link>
+            <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 md:flex">
+              <a href="#home" className="crp-nav-link crp-nav-link-active">Home</a>
+              <Link href="/create" className="crp-nav-link">Resume Tailoring</Link>
+              <Link href="/gap-analysis" className="crp-nav-link">Gap Analysis</Link>
+            </nav>
+          </div>
+          <nav className="flex items-center gap-2 overflow-x-auto pb-3 text-sm font-medium text-slate-700 md:hidden">
+            <a href="#home" className="shrink-0 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-slate-900">Home</a>
+            <Link href="/create" className="shrink-0 rounded-full border border-slate-200 bg-white px-3 py-1.5">Resume Tailoring</Link>
+            <Link href="/gap-analysis" className="shrink-0 rounded-full border border-slate-200 bg-white px-3 py-1.5">Gap Analysis</Link>
           </nav>
         </div>
       </header>
