@@ -45,9 +45,11 @@ function ensurePuppeteerCacheDir() {
   }
 }
 
-function resolveManagedExecutablePath(getExecutablePath: () => string): string | null {
+async function resolveManagedExecutablePath(
+  getExecutablePath: () => string | Promise<string>
+): Promise<string | null> {
   try {
-    const managedPath = getExecutablePath();
+    const managedPath = await getExecutablePath();
     if (managedPath && fs.existsSync(managedPath)) {
       return managedPath;
     }
@@ -88,7 +90,7 @@ export async function launchPdfBrowser() {
     }
   }
 
-  const managedExecutablePath = resolveManagedExecutablePath(() => puppeteer.executablePath());
+  const managedExecutablePath = await resolveManagedExecutablePath(() => puppeteer.executablePath());
   if (managedExecutablePath) {
     return launchWithPath(managedExecutablePath);
   }
