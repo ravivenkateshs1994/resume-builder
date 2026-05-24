@@ -5,6 +5,69 @@ import TemplatePicker from "@/components/TemplatePicker";
 import ResumeRenderer from "@/components/templates/ResumeRenderer";
 import { useRef, useState } from "react";
 
+type LegacyNavigator = Navigator & {
+  msSaveOrOpenBlob?: (blob: Blob, defaultName?: string) => boolean;
+};
+
+function isIOSLikeBrowser(): boolean {
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent;
+  return /iPad|iPhone|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+}
+
+function isSafariBrowser(): boolean {
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent;
+  return /Safari/i.test(ua) && !/Chrome|CriOS|Android|Edg|Firefox|FxiOS/i.test(ua);
+}
+
+async function downloadBlobAcrossBrowsers(blob: Blob, fileName: string, mimeType: string): Promise<void> {
+  const legacyNavigator = navigator as LegacyNavigator;
+
+  if (legacyNavigator.msSaveOrOpenBlob) {
+    legacyNavigator.msSaveOrOpenBlob(blob, fileName);
+    return;
+  }
+
+  const iOS = isIOSLikeBrowser();
+  const safari = isSafariBrowser();
+
+  // iOS Safari handles Files share/save more reliably than a[download].
+  if (iOS && navigator.canShare && navigator.share) {
+    try {
+      const file = new File([blob], fileName, { type: mimeType });
+      if (navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: fileName });
+        return;
+      }
+    } catch {
+      // If sharing is cancelled/unavailable, continue with URL fallback below.
+    }
+  }
+
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.rel = "noopener noreferrer";
+
+  if (!iOS && !safari) {
+    anchor.download = fileName;
+    anchor.style.display = "none";
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+    setTimeout(() => URL.revokeObjectURL(url), 30_000);
+    return;
+  }
+
+  // Safari fallback: open in a new tab so users can use native Save/Share actions.
+  const popup = window.open(url, "_blank", "noopener,noreferrer");
+  if (!popup) {
+    window.location.href = url;
+  }
+  setTimeout(() => URL.revokeObjectURL(url), 60_000);
+}
+
 export default function PreviewStep() {
   const {
     resumeData,
@@ -33,12 +96,11 @@ export default function PreviewStep() {
       }
 
       const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${resumeData.personalInfo.fullName.replace(/\s+/g, "_")}_Resume.docx`;
-      a.click();
-      URL.revokeObjectURL(url);
+      await downloadBlobAcrossBrowsers(
+        blob,
+        `${resumeData.personalInfo.fullName.replace(/\s+/g, "_")}_Resume.docx`,
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      );
     } catch (error) {
       console.error("DOCX export error:", error);
       alert(error instanceof Error ? error.message : "DOCX export failed. Please try again.");
@@ -62,12 +124,11 @@ export default function PreviewStep() {
       }
 
       const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${resumeData.personalInfo.fullName.replace(/\s+/g, "_")}_Resume.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
+      await downloadBlobAcrossBrowsers(
+        blob,
+        `${resumeData.personalInfo.fullName.replace(/\s+/g, "_")}_Resume.pdf`,
+        "application/pdf"
+      );
     } catch (error) {
       console.error("PDF export error:", error);
       alert(error instanceof Error ? error.message : "PDF export failed. Please try again.");
@@ -77,11 +138,11 @@ export default function PreviewStep() {
   }
 
   return (
-    <div className="flex gap-6 min-h-0">
+    <div className="flex min-h-0 flex-col gap-6 lg:flex-row">
       {/* Left sidebar: template picker */}
-      <div className="w-52 flex-shrink-0">
+      <div className="w-full lg:w-52 lg:flex-shrink-0">
         <h3 className="text-sm font-semibold text-slate-700 mb-3">Templates</h3>
-        <div className="overflow-y-auto max-h-[calc(100vh-220px)] pr-0.5">
+        <div className="max-h-[40vh] overflow-y-auto pr-0.5 lg:max-h-[calc(100vh-220px)]">
           <TemplatePicker variant="sidebar" />
         </div>
       </div>
@@ -109,7 +170,7 @@ export default function PreviewStep() {
       </div>
 
       {/* Gap Analyzer CTA */}
-      <div className="app-panel rounded-xl p-4 mb-6 flex items-center justify-between gap-4 flex-wrap border border-blue-100">
+      <div className="app-panel mb-6 flex flex-col items-start justify-between gap-4 rounded-xl border border-blue-100 p-4 sm:flex-row sm:items-center">
         <div>
           <p className="text-sm font-semibold text-slate-800">Analyze skill gaps for a specific role</p>
           <p className="text-xs text-slate-500 mt-0.5">
@@ -125,27 +186,27 @@ export default function PreviewStep() {
       </div>
 
       {/* Export Buttons */}
-      <div className="flex flex-wrap gap-3 mb-6">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
         <button
           onClick={exportPdf}
           disabled={exportingPdf}
-          className="flex items-center gap-2 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white px-5 py-2.5 rounded-lg font-medium transition-colors"
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-red-600 px-5 py-2.5 font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50 sm:w-auto"
         >
           PDF {exportingPdf ? "Preparing PDF..." : "Download PDF"}
         </button>
         <button
           onClick={exportDocx}
           disabled={exportingDocx}
-          className="flex items-center gap-2 bg-blue-700 hover:bg-blue-800 disabled:opacity-50 text-white px-5 py-2.5 rounded-lg font-medium transition-colors"
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-700 px-5 py-2.5 font-medium text-white transition-colors hover:bg-blue-800 disabled:opacity-50 sm:w-auto"
         >
           DOCX {exportingDocx ? "Exporting..." : "Download DOCX"}
         </button>
       </div>
 
-      <div className="flex justify-between mt-8">
+      <div className="mt-8 flex justify-start">
         <button
           onClick={prevStep}
-          className="border border-slate-200 text-slate-600 px-5 py-2.5 rounded-lg font-medium hover:bg-slate-50 transition-colors"
+          className="w-full rounded-lg border border-slate-200 px-5 py-2.5 font-medium text-slate-600 transition-colors hover:bg-slate-50 sm:w-auto"
         >
           Back
         </button>

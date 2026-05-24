@@ -78,7 +78,7 @@ const PreviewStep = dynamic(() => import("@/components/steps/PreviewStep"), {
 function AppHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/85 backdrop-blur-md">
-      <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-6 gap-4">
+      <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
         <Link href="/" className="flex items-center gap-2.5">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-cyan-500 text-sm font-bold text-white shadow-sm shadow-indigo-300/40">
             CR
@@ -109,7 +109,7 @@ const flowStages = [
 
 function FlowStrip({ activeStep }: { activeStep: number }) {
   return (
-    <div className="mx-auto w-full max-w-7xl px-6 py-4">
+    <div className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6">
       <div className="rounded-full border border-slate-200/90 bg-white/90 px-3 py-2 shadow-[0_14px_35px_-24px_rgba(15,23,42,0.35)] backdrop-blur">
         <div className="flex items-center justify-center gap-2 overflow-x-auto whitespace-nowrap">
           <span className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.22em] text-indigo-600">
@@ -576,7 +576,7 @@ function CreatePageContent() {
 
         <FlowStrip activeStep={0} />
 
-        <div className="mx-auto w-full max-w-7xl px-6 pt-4">
+        <div className="mx-auto w-full max-w-7xl px-4 pt-4 sm:px-6">
           <div className="crp-card crp-module-accent crp-soft-radial p-6 relative overflow-hidden">
             <div className="pointer-events-none absolute -right-10 -top-14 h-32 w-32 rounded-full bg-indigo-100/70 blur-2xl" />
             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
@@ -685,8 +685,8 @@ function CreatePageContent() {
           </div>
         </div>
 
-        <div className="mx-auto w-full max-w-7xl px-6 pt-6">
-          <div className="flex justify-end">
+        <div className="mx-auto w-full max-w-7xl px-4 pt-6 sm:px-6">
+          <div className="flex justify-start sm:justify-end">
             <button
               type="button"
               onClick={() => setMode("form")}
@@ -697,7 +697,7 @@ function CreatePageContent() {
           </div>
         </div>
 
-        <div className="mx-auto w-full max-w-7xl px-6 py-4">
+        <div className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6">
 
           <div className="mb-3 mt-2 flex items-center justify-between gap-3">
             <h3 className="text-xl font-bold tracking-tight text-slate-900">All Templates</h3>
@@ -936,7 +936,7 @@ function CreatePageContent() {
 
       <FlowStrip activeStep={currentStep === "preview" ? 2 : 1} />
 
-      <div className="mx-auto w-full max-w-7xl px-6 pt-2">
+      <div className="mx-auto w-full max-w-7xl px-4 pt-2 sm:px-6">
         <div className="crp-card crp-module-accent crp-soft-radial p-6">
           <span className="crp-badge">Resume Tailoring</span>
           <h1 className="crp-section-title mt-3">Resume Tailoring</h1>
@@ -946,8 +946,8 @@ function CreatePageContent() {
         </div>
       </div>
 
-      <div className="mx-auto w-full max-w-7xl px-6 pt-6">
-        <div className="crp-card-soft crp-glass crp-module-accent flex items-center justify-between gap-4 px-4 py-3">
+      <div className="mx-auto w-full max-w-7xl px-4 pt-6 sm:px-6">
+        <div className="crp-card-soft crp-glass crp-module-accent flex flex-col items-start justify-between gap-4 px-4 py-3 sm:flex-row sm:items-center">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-600">Builder workspace</p>
             <p className="text-sm text-slate-600 mt-0.5">Keep editing, or reset and return to template selection.</p>
@@ -965,24 +965,29 @@ function CreatePageContent() {
       </div>
 
       {/* Main form — always wide, left sidebar nav + right content */}
-      <div className="max-w-7xl mx-auto px-4 py-10 flex gap-8">
+      <div className="mx-auto flex max-w-7xl flex-col gap-5 px-4 py-6 sm:py-10 lg:flex-row lg:gap-8">
 
         {/* ── Left sidebar: vertical step navigator ── */}
-        <div className="w-44 flex-shrink-0 pt-1">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3 px-3">Steps</p>
-          <StepIndicator variant="vertical" />
+        <div className="lg:w-44 lg:flex-shrink-0 lg:pt-1">
+          <p className="mb-2 px-1 text-[10px] font-bold uppercase tracking-widest text-slate-400 lg:mb-3 lg:px-3">Steps</p>
+          <div className="lg:hidden">
+            <StepIndicator />
+          </div>
+          <div className="hidden lg:block">
+            <StepIndicator variant="vertical" />
+          </div>
         </div>
 
         {/* ── Right: form content ── */}
         <div className="flex-1 min-w-0">
           {/* ── Prefill banner (shown only after upload) ── */}
           {prefilled && (
-            <div className="mb-6 flex items-center justify-between gap-3 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm">
+            <div className="mb-6 flex flex-col items-start justify-between gap-3 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm sm:flex-row sm:items-center">
               <div className="flex items-center gap-2 text-green-700">
                 <span>✓</span>
                 <span>Resume imported — fields pre-filled. Review and edit below.</span>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex w-full items-center gap-3 sm:w-auto">
                 <button
                   onClick={() => {
                     startFreshFlow();
@@ -1011,7 +1016,7 @@ function CreatePageContent() {
         </div>
       </div>
 
-      <section id="roadmap" className="max-w-7xl mx-auto px-4 pb-14">
+      <section id="roadmap" className="mx-auto max-w-7xl px-4 pb-14">
         <div className="crp-card-soft p-5 sm:p-6">
           <div className="flex items-center justify-between gap-3 mb-4">
             <h2 className="text-lg font-bold text-slate-900">Coming Soon</h2>
