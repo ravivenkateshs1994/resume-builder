@@ -4,6 +4,7 @@ import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useResumeStore } from "@/store/resumeStore";
 import Link from "next/link";
+import MobileNav from "@/components/MobileNav";
 import { useSearchParams } from "next/navigation";
 import StepIndicator from "@/components/StepIndicator";
 import {
@@ -97,18 +98,8 @@ function AppHeader() {
               Gap Analysis
             </Link>
           </nav>
+          <MobileNav />
         </div>
-        <nav className="flex items-center gap-2 overflow-x-auto pb-3 text-sm font-medium text-slate-700 md:hidden">
-          <Link href="/" className="shrink-0 rounded-full border border-slate-200 bg-white px-3 py-1.5">
-            Home
-          </Link>
-          <Link href="/create" className="shrink-0 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-slate-900">
-            Resume Tailoring
-          </Link>
-          <Link href="/gap-analysis" className="shrink-0 rounded-full border border-slate-200 bg-white px-3 py-1.5">
-            Gap Analysis
-          </Link>
-        </nav>
       </div>
     </header>
   );

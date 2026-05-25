@@ -1,4 +1,5 @@
 ﻿import Link from "next/link";
+import MobileNav from "@/components/MobileNav";
 import {
   BookOpenCheck,
   Bot,
@@ -95,12 +96,9 @@ export default function LandingPage() {
               <Link href="/create" className="crp-nav-link">Resume Tailoring</Link>
               <Link href="/gap-analysis" className="crp-nav-link">Gap Analysis</Link>
             </nav>
+
+            <MobileNav />
           </div>
-          <nav className="flex items-center gap-2 overflow-x-auto pb-3 text-sm font-medium text-slate-700 md:hidden">
-            <a href="#home" className="shrink-0 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-slate-900">Home</a>
-            <Link href="/create" className="shrink-0 rounded-full border border-slate-200 bg-white px-3 py-1.5">Resume Tailoring</Link>
-            <Link href="/gap-analysis" className="shrink-0 rounded-full border border-slate-200 bg-white px-3 py-1.5">Gap Analysis</Link>
-          </nav>
         </div>
       </header>
 

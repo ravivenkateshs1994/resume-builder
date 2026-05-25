@@ -23,6 +23,7 @@ import { parseResumeFile } from "@/lib/resumeFileParser";
 import { useResumeStore } from "@/store/resumeStore";
 import type { ResumeData } from "@/types/resume";
 import Link from "next/link";
+import MobileNav from "@/components/MobileNav";
 
 // Types
 
@@ -317,18 +318,8 @@ export default function GapAnalysisPage() {
                 Gap Analysis
               </Link>
             </nav>
+            <MobileNav />
           </div>
-          <nav className="flex items-center gap-2 overflow-x-auto pb-3 text-sm font-medium text-slate-700 md:hidden">
-            <Link href="/" className="shrink-0 rounded-full border border-slate-200 bg-white px-3 py-1.5">
-              Home
-            </Link>
-            <Link href="/create" className="shrink-0 rounded-full border border-slate-200 bg-white px-3 py-1.5">
-              Resume Tailoring
-            </Link>
-            <Link href="/gap-analysis" className="shrink-0 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-slate-900">
-              Gap Analysis
-            </Link>
-          </nav>
         </div>
       </header>
 
