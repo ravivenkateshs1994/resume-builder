@@ -27,7 +27,7 @@ export interface TemplateCatalogItem {
 
 const BASE_THUMBNAIL = "/images/template-thumbnails";
 
-export const TEMPLATE_CATALOG: TemplateCatalogItem[] = [
+export const TEMPLATE_CATALOG: TemplateCatalogItem[] = ([
   {
     id: "modern",
     name: "Modern",
@@ -256,7 +256,7 @@ export const TEMPLATE_CATALOG: TemplateCatalogItem[] = [
     roleCategory: "software",
     levelCategory: "mid",
   },
-].sort((a, b) => (b.atsScore ?? 0) - (a.atsScore ?? 0));
+] as TemplateCatalogItem[]).sort((a, b) => (b.atsScore ?? 0) - (a.atsScore ?? 0));
 
 export type TemplateTierFilter = "all" | "recommended" | "free" | "premium";
 
