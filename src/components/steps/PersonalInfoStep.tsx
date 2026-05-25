@@ -107,10 +107,8 @@ export default function PersonalInfoStep() {
           <div className="flex min-w-0 items-center gap-4">
             <HeadshotAvatar
               headshotUrl={form.headshotUrl}
-              initials={initials}
               alt={`${form.fullName || "Candidate"} headshot`}
               className="h-32 w-32 shrink-0 overflow-hidden rounded-3xl border-2 border-blue-200 bg-blue-100"
-              fallbackClassName="h-full w-full flex items-center justify-center text-blue-600 font-bold text-4xl"
             />
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold text-gray-800 md:text-base">{form.fullName || "Your Name"}</p>

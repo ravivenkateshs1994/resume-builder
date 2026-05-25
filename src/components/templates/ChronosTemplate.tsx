@@ -18,14 +18,12 @@ export default function ChronosTemplate({ data, accentColor }: Props) {
     <div className="font-sans text-gray-800 text-[12.5px] leading-relaxed max-w-[780px] mx-auto bg-white">
       {/* ── Header ── */}
       <div className="px-10 pt-8 pb-6 border-b-2" style={{ borderColor: theme.accent }}>
-        <div className="flex justify-between items-end gap-6">
-          <div className="flex items-end gap-4 min-w-0">
+        <div className="flex justify-between items-center gap-6">
+          <div className="flex items-center gap-4 min-w-0">
             <HeadshotAvatar
               headshotUrl={personalInfo.headshotUrl}
-              initials={personalInfo.fullName ? personalInfo.fullName.charAt(0).toUpperCase() : "?"}
               alt={`${personalInfo.fullName || "Candidate"} headshot`}
-              className="w-32 h-32 rounded-3xl overflow-hidden shrink-0 border border-slate-200 bg-slate-100"
-              fallbackClassName="h-full w-full flex items-center justify-center text-3xl font-bold text-gray-700"
+              className="w-36 h-36 rounded-3xl overflow-hidden shrink-0 border border-slate-200 bg-slate-100"
             />
             <div className="min-w-0">
               <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">

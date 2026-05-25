@@ -33,11 +33,8 @@ export default function PrismTemplate({ data, accentColor }: Props) {
         {/* Avatar */}
         <HeadshotAvatar
           headshotUrl={personalInfo.headshotUrl}
-          initials={initials}
           alt={`${personalInfo.fullName || "Candidate"} headshot`}
-          className="w-32 h-32 rounded-3xl overflow-hidden mb-5 mx-auto"
-          fallbackClassName="h-full w-full flex items-center justify-center text-3xl font-bold select-none"
-          style={{ backgroundColor: theme.accent, color: theme.contrast }}
+          className="w-36 h-36 rounded-3xl overflow-hidden mb-5 mx-auto"
         />
 
         {/* Name (in sidebar for narrow layouts) */}

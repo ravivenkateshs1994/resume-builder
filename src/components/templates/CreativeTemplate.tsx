@@ -16,11 +16,8 @@ export default function CreativeTemplate({ data, accentColor }: Props) {
         <div className="mb-6">
           <HeadshotAvatar
             headshotUrl={personalInfo.headshotUrl}
-            initials={personalInfo.fullName?.charAt(0) || "?"}
             alt={`${personalInfo.fullName || "Candidate"} headshot`}
-            className="w-32 h-32 rounded-3xl overflow-hidden mb-4 border border-white/10 bg-white/10"
-            fallbackClassName="h-full w-full flex items-center justify-center text-4xl font-bold"
-            style={{ backgroundColor: theme.accent, color: theme.contrast }}
+            className="w-36 h-36 rounded-3xl overflow-hidden mb-4 border border-white/10 bg-white/10"
           />
           <h1 className="text-lg font-bold leading-tight">
             {personalInfo.fullName || "Your Name"}

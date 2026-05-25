@@ -24,11 +24,8 @@ export default function SlateTemplate({ data, accentColor }: Props) {
         <div className="px-6 pt-8 pb-6 border-b border-slate-700">
           <HeadshotAvatar
             headshotUrl={personalInfo.headshotUrl}
-            initials={initials || "?"}
             alt={`${personalInfo.fullName || "Candidate"} headshot`}
-            className="w-32 h-32 rounded-3xl overflow-hidden mb-5"
-            fallbackClassName="h-full w-full flex items-center justify-center text-3xl font-bold text-white"
-            style={{ backgroundColor: theme.accent, color: theme.contrast }}
+            className="w-36 h-36 rounded-3xl overflow-hidden mb-5"
           />
           <h1 className="text-base font-bold leading-tight text-white">
             {personalInfo.fullName || "Your Name"}

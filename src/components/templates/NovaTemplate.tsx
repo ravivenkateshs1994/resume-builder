@@ -54,11 +54,8 @@ export default function NovaTemplate({ data, accentColor }: Props) {
         {/* Avatar circle */}
         <HeadshotAvatar
           headshotUrl={personalInfo.headshotUrl}
-          initials={initials}
           alt={`${personalInfo.fullName || "Candidate"} headshot`}
-          className="w-32 h-32 rounded-3xl overflow-hidden flex-shrink-0 ring-2 ring-white/20"
-          fallbackClassName="h-full w-full flex items-center justify-center text-3xl font-bold select-none"
-          style={{ backgroundColor: theme.accentDeep, color: theme.contrastDeep }}
+          className="w-36 h-36 rounded-3xl overflow-hidden flex-shrink-0 ring-2 ring-white/20"
         />
 
         {/* Name + title + contacts */}

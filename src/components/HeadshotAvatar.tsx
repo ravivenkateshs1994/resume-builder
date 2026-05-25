@@ -3,11 +3,9 @@ import type { CSSProperties } from "react";
 
 interface HeadshotAvatarProps {
   headshotUrl?: string;
-  initials: string;
   alt: string;
   className: string;
   imageClassName?: string;
-  fallbackClassName?: string;
   style?: CSSProperties;
 }
 
@@ -19,8 +17,25 @@ export default function HeadshotAvatar({
   style,
 }: HeadshotAvatarProps) {
   const normalizedHeadshotUrl = headshotUrl?.trim();
+
   if (!normalizedHeadshotUrl) {
-    return null;
+    return (
+      <div
+        className={`relative overflow-hidden ${className} bg-gray-200 flex items-center justify-center`}
+        aria-label={alt}
+      >
+        <svg
+          viewBox="0 0 100 100"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-2/3 h-2/3 text-gray-400"
+          aria-hidden="true"
+        >
+          <circle cx="50" cy="35" r="20" fill="currentColor" opacity="0.55" />
+          <ellipse cx="50" cy="82" rx="32" ry="22" fill="currentColor" opacity="0.4" />
+        </svg>
+      </div>
+    );
   }
 
   return (
