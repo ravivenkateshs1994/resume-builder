@@ -260,10 +260,6 @@ export const TEMPLATE_CATALOG: TemplateCatalogItem[] = [
 
 export type TemplateTierFilter = "all" | "recommended" | "free" | "premium";
 
-export function normalizePriceModel(item: TemplateCatalogItem): TemplatePriceModel {
-  return item.priceModel ?? (item.isPremium ? "premium" : "free");
-}
-
 export function getTemplateById(id: string): TemplateCatalogItem | undefined {
   return TEMPLATE_CATALOG.find((template) => template.id === id);
 }

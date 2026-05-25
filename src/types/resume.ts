@@ -70,20 +70,6 @@ export type TemplateId =
   | "prism"
   | "apex";
 
-export interface TemplateOption {
-  id: TemplateId;
-  name: string;
-  thumbnailUrl?: string;
-  description: string;
-  previewColor: string;
-  tags: string[];
-  atsScore?: number | null;
-  recommendedRoles?: string[];
-  isPremium?: boolean;
-  premiumBadgeType?: string | null;
-  priceModel?: "free" | "premium" | "credit";
-}
-
 // ─── Multi-Step Form Types ────────────────────────────────────────────────────
 
 export type FormStep =
@@ -93,10 +79,4 @@ export type FormStep =
   | "skills"
   | "preview";
 
-export interface FormState {
-  currentStep: FormStep;
-  resumeData: ResumeData;
-  selectedTemplate: TemplateId;
-  isGenerating: boolean;
-  uploadedFile?: File;
-}
+

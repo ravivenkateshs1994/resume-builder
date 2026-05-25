@@ -22,10 +22,8 @@ export type { TemplateCatalogItem, TemplateCategory };
 
 const TemplatePreviewCardInner = ({
   template,
-  compact = false,
 }: {
   template: TemplateCatalogItem;
-  compact?: boolean;
 }) => {
   const { selectedTemplate, templateAccentColor } = useResumeStore();
   const accentColor =
@@ -34,17 +32,11 @@ const TemplatePreviewCardInner = ({
       : getDefaultTemplateAccent(template.id);
 
   return (
-    <div
-      className={
-        compact
-          ? "max-w-full overflow-hidden rounded-lg bg-white shadow-sm"
-          : "max-w-full overflow-hidden rounded-xl bg-white shadow-sm"
-      }
-    >
+    <div className="max-w-full overflow-hidden rounded-xl bg-white shadow-sm">
       <TemplateThumbnail
         templateId={template.id as TemplateId}
         accentColor={accentColor}
-        className={compact ? "rounded-lg" : "rounded-xl"}
+        className="rounded-xl"
       />
     </div>
   );
@@ -57,8 +49,7 @@ export const TemplatePreviewCard = memo(TemplatePreviewCardInner);
 
 export function TemplateGalleryCard({
   template,
-  selected = false,
-  isSelected,
+  isSelected = false,
   onSelect,
   onPreview,
   isPremium,
@@ -72,7 +63,6 @@ export function TemplateGalleryCard({
   variant = "grid",
 }: {
   template: TemplateCatalogItem;
-  selected?: boolean;
   isSelected?: boolean;
   onSelect: () => void;
   onPreview?: () => void;
@@ -89,7 +79,7 @@ export function TemplateGalleryCard({
   const premium = isPremium ?? template.isPremium;
   const score = atsScore ?? template.atsScore ?? 0;
   const roles = recommendedFor ?? template.recommendedFor;
-  const selectedState = isSelected ?? selected;
+  const selectedState = isSelected ?? false;
   const cardLocked = locked ?? false;
   const recommended = Boolean(isRecommended);
   const recommendationScore = matchScore ?? score;

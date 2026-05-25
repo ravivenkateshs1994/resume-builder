@@ -1,20 +1,15 @@
 import Image from "next/image";
-import type { CSSProperties } from "react";
 
 interface HeadshotAvatarProps {
   headshotUrl?: string;
   alt: string;
   className: string;
-  imageClassName?: string;
-  style?: CSSProperties;
 }
 
 export default function HeadshotAvatar({
   headshotUrl,
   alt,
   className,
-  imageClassName = "h-full w-full object-cover",
-  style,
 }: HeadshotAvatarProps) {
   const normalizedHeadshotUrl = headshotUrl?.trim();
 
@@ -39,8 +34,8 @@ export default function HeadshotAvatar({
   }
 
   return (
-    <div className={`relative overflow-hidden ${className}`} style={style}>
-      <Image src={normalizedHeadshotUrl} alt={alt} fill unoptimized sizes="100vw" className={imageClassName} />
+    <div className={`relative overflow-hidden ${className}`}>
+      <Image src={normalizedHeadshotUrl} alt={alt} fill unoptimized sizes="100vw" className="h-full w-full object-cover" />
     </div>
   );
 }

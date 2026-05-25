@@ -724,7 +724,6 @@ function CreatePageContent() {
                   <div key={t.id} className="relative">
                     <TemplateGalleryCard
                       template={t}
-                      selected={selectedTemplate === t.id}
                       isSelected={selectedTemplate === t.id}
                       onSelect={() => askStartPath(t.id)}
                       onPreview={() => {
@@ -760,7 +759,6 @@ function CreatePageContent() {
                   <TemplateGalleryCard
                     key={t.id}
                     template={t}
-                    selected={selectedTemplate === t.id}
                     isSelected={selectedTemplate === t.id}
                     onSelect={() => askStartPath(t.id)}
                     onPreview={() => {

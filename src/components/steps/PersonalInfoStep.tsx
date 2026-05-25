@@ -89,13 +89,6 @@ export default function PersonalInfoStep() {
     nextStep();
   }
 
-  const initials = form.fullName
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-
   return (
     <div>
       <h2 className="mb-1 text-[22px] font-bold text-slate-800 md:text-[30px]">Personal Details</h2>

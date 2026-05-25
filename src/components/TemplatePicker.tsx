@@ -19,7 +19,6 @@ export default function TemplatePicker({ variant = "grid" }: { variant?: "grid" 
             key={template.id}
             template={template}
             variant="sidebar"
-            selected={selectedTemplate === template.id}
             isSelected={selectedTemplate === template.id}
             onSelect={() => setSelectedTemplate(template.id)}
             isPremium={false}
@@ -33,7 +32,6 @@ export default function TemplatePicker({ variant = "grid" }: { variant?: "grid" 
                 key={template.id}
                 template={template}
                 variant="sidebar"
-                selected={selectedTemplate === template.id}
                 isSelected={selectedTemplate === template.id}
                 onSelect={() => setSelectedTemplate(template.id)}
                 isPremium
@@ -54,7 +52,6 @@ export default function TemplatePicker({ variant = "grid" }: { variant?: "grid" 
           <TemplateGalleryCard
             key={template.id}
             template={template}
-            selected={selectedTemplate === template.id}
             isSelected={selectedTemplate === template.id}
             onSelect={() => setSelectedTemplate(template.id)}
           />
@@ -63,7 +60,6 @@ export default function TemplatePicker({ variant = "grid" }: { variant?: "grid" 
           <TemplateGalleryCard
             key={template.id}
             template={template}
-            selected={selectedTemplate === template.id}
             isSelected={selectedTemplate === template.id}
             onSelect={() => setSelectedTemplate(template.id)}
             isPremium
