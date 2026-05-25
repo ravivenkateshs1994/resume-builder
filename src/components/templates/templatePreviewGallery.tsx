@@ -1,13 +1,12 @@
 "use client";
 
 import type { KeyboardEvent } from "react";
-import { memo, useMemo } from "react";
+import { memo } from "react";
 import { useResumeStore } from "@/store/resumeStore";
 import AccentColorPicker from "@/components/AccentColorPicker";
 import RecommendationTooltip from "@/components/ui/RecommendationTooltip";
 import { getDefaultTemplateAccent } from "@/lib/templateTheme";
 import { TemplateThumbnail } from "@/components/template-gallery/TemplateThumbnail";
-import { TEMPLATE_MOCK_DATA } from "@/data/templatePreviewMockData";
 import type { TemplateId } from "@/types/resume";
 import {
   TEMPLATE_CATALOG,
@@ -33,7 +32,6 @@ const TemplatePreviewCardInner = ({
     selectedTemplate === template.id
       ? templateAccentColor
       : getDefaultTemplateAccent(template.id);
-  const data = useMemo(() => TEMPLATE_MOCK_DATA[template.id as TemplateId], [template.id]);
 
   return (
     <div
@@ -45,7 +43,6 @@ const TemplatePreviewCardInner = ({
     >
       <TemplateThumbnail
         templateId={template.id as TemplateId}
-        data={data}
         accentColor={accentColor}
         className={compact ? "rounded-lg" : "rounded-xl"}
       />
@@ -103,8 +100,6 @@ export function TemplateGalleryCard({
       ? templateAccentColor
       : getDefaultTemplateAccent(template.id);
 
-  const mockData = useMemo(() => TEMPLATE_MOCK_DATA[template.id as TemplateId], [template.id]);
-
   function handleCardKeyDown(event: KeyboardEvent<HTMLDivElement>) {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
@@ -155,7 +150,6 @@ export function TemplateGalleryCard({
         <div className="min-h-0 flex-1">
           <TemplateThumbnail
             templateId={template.id as TemplateId}
-            data={mockData}
             accentColor={accentColor}
             className={[
               "rounded-lg",
@@ -281,7 +275,6 @@ export function TemplateGalleryCard({
       {/* Preview — A4 aspect ratio, fills card width */}
       <TemplateThumbnail
         templateId={template.id as TemplateId}
-        data={mockData}
         accentColor={accentColor}
         className={[
           "rounded-lg shadow-sm",

@@ -2,25 +2,21 @@
 /**
  * generate-thumbnails.mjs
  *
- * Renders each template with mock resume data and saves a PNG screenshot
- * into public/template-previews/.
+ * Renders each template (default color + all accent-color presets) with mock
+ * resume data and saves PNG screenshots into public/template-previews/.
+ *
+ * File naming:
+ *   public/template-previews/{id}.png           ← default color
+ *   public/template-previews/{id}-{hex}.png     ← preset color (no leading #)
  *
  * Requires the Next.js dev (or production) server to be running.
  *
  * Usage:
  *   DEV_URL=http://localhost:3000 node scripts/generate-thumbnails.mjs
- *
- * The script:
- *  1. Opens /thumbnail-capture/{id} in a headless browser (Puppeteer).
- *  2. Waits until the page signals it is fully hydrated and painted
- *     (html[data-ready="true"]).
- *  3. Screenshots the exact 794×1123 px template area.
- *  4. Saves the PNG to public/template-previews/{id}.png.
  */
 
 import fs from "fs";
 import path from "path";
-import { execSync } from "child_process";
 import puppeteer from "puppeteer";
 
 // ── Config ──────────────────────────────────────────────────────────────────
@@ -31,10 +27,37 @@ const DEV_URL = (process.env.DEV_URL ?? "http://localhost:3000").replace(/\/$/, 
 const A4_W = 794;
 const A4_H = 1123;
 
-const TEMPLATE_IDS = [
-  "modern", "classic", "creative", "minimal", "executive",
-  "slate", "chronos", "terra", "tech", "nova", "prism", "apex",
-];
+// Must match PER_TEMPLATE_PRESETS in src/lib/templateTheme.ts
+const TEMPLATE_PRESETS = {
+  modern:    ["#2563eb", "#475569", "#7c3aed", "#0f766e", "#0e7490"],
+  classic:   ["#475569", "#1e3a5f", "#374151", "#0f766e", "#be123c"],
+  creative:  ["#7c3aed", "#2563eb", "#be123c", "#0f766e", "#0e7490"],
+  minimal:   ["#4b5563", "#2563eb", "#7c3aed", "#0f766e", "#be123c"],
+  executive: ["#111827", "#1e3a5f", "#374151", "#2563eb", "#0f766e"],
+  slate:     [], // fixed palette — default only
+  chronos:   ["#0f766e", "#2563eb", "#7c3aed", "#0e7490", "#475569"],
+  terra:     ["#c2410c", "#0f766e", "#7c3aed", "#475569", "#be123c"],
+  tech:      [], // fixed palette — default only
+  nova:      ["#2563eb", "#7c3aed", "#be123c", "#0f766e", "#475569"],
+  prism:     ["#0f766e", "#2563eb", "#7c3aed", "#475569", "#c2410c"],
+  apex:      ["#475569", "#2563eb", "#0f766e", "#7c3aed", "#be123c"],
+};
+
+// Default accent per template (first preset, or fixed for slate/tech)
+const DEFAULT_ACCENTS = {
+  modern:    "#2563eb",
+  classic:   "#475569",
+  creative:  "#7c3aed",
+  minimal:   "#4b5563",
+  executive: "#111827",
+  slate:     "#0284c7",
+  chronos:   "#0f766e",
+  terra:     "#c2410c",
+  tech:      "#0891b2",
+  nova:      "#2563eb",
+  prism:     "#0f766e",
+  apex:      "#475569",
+};
 
 const OUT_DIR = path.join(process.cwd(), "public", "template-previews");
 
@@ -51,7 +74,7 @@ async function pingServer(url, retries = 20, delayMs = 1500) {
   for (let i = 0; i < retries; i++) {
     try {
       const res = await fetch(`${url}/`);
-      if (res.ok || res.status < 500) return; // server is up
+      if (res.ok || res.status < 500) return;
     } catch {
       // not yet ready
     }
@@ -65,6 +88,20 @@ async function pingServer(url, retries = 20, delayMs = 1500) {
   process.exit(1);
 }
 
+async function capture(page, id, color, outPath) {
+  const hex = color.replace(/^#/, "");
+  const url = `${DEV_URL}/thumbnail-capture/${id}?color=${hex}`;
+
+  await page.setViewport({ width: A4_W, height: A4_H, deviceScaleFactor: 2 });
+  await page.goto(url, { waitUntil: "networkidle2", timeout: 30_000 });
+  await page.waitForFunction(
+    () => document.documentElement.getAttribute("data-ready") === "true",
+    { timeout: 15_000 }
+  );
+  await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(resolve)));
+  await page.screenshot({ path: outPath, clip: { x: 0, y: 0, width: A4_W, height: A4_H } });
+}
+
 // ── Main ────────────────────────────────────────────────────────────────────
 
 async function main() {
@@ -75,7 +112,6 @@ async function main() {
   await pingServer(DEV_URL);
   console.log("\nServer is up.\n");
 
-  // Unique user-data dir avoids conflicts with any running Chrome instance
   const { tmpdir } = await import("os");
   const userDataDir = path.join(tmpdir(), `puppeteer_thumb_${Date.now()}`);
 
@@ -86,59 +122,56 @@ async function main() {
       "--disable-setuid-sandbox",
       "--disable-dev-shm-usage",
       "--disable-gpu",
-      "--font-render-hinting=none", // sharper text in screenshots
+      "--font-render-hinting=none",
     ],
     userDataDir,
   });
 
+  let total = 0;
   let failed = 0;
 
-  for (const id of TEMPLATE_IDS) {
-    const outPath = path.join(OUT_DIR, `${id}.png`);
-    const url = `${DEV_URL}/thumbnail-capture/${id}`;
+  for (const [id, presets] of Object.entries(TEMPLATE_PRESETS)) {
+    const defaultColor = DEFAULT_ACCENTS[id];
 
-    process.stdout.write(`  Capturing ${id}...`);
+    // Build capture jobs: default + all presets (deduped)
+    const jobs = [
+      { color: defaultColor, outName: `${id}.png` },
+      ...presets
+        .filter((c) => c.toLowerCase() !== defaultColor.toLowerCase())
+        .map((color) => ({
+          color,
+          outName: `${id}-${color.replace(/^#/, "")}.png`,
+        })),
+    ];
 
-    const page = await browser.newPage();
-    try {
-      // Set viewport to exactly A4 dimensions — no scaling needed
-      await page.setViewport({ width: A4_W, height: A4_H, deviceScaleFactor: 2 });
+    console.log(`  ${id} (${jobs.length} variant${jobs.length > 1 ? "s" : ""})`);
 
-      await page.goto(url, { waitUntil: "networkidle2", timeout: 30_000 });
+    for (const { color, outName } of jobs) {
+      const outPath = path.join(OUT_DIR, outName);
+      process.stdout.write(`    ${outName}...`);
 
-      // Wait for the ReadySignal component to set data-ready="true"
-      await page.waitForFunction(
-        () => document.documentElement.getAttribute("data-ready") === "true",
-        { timeout: 15_000 }
-      );
-
-      // One extra frame to ensure paint is complete
-      await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(resolve)));
-
-      // Screenshot the exact A4 clip — deviceScaleFactor:2 means the PNG is
-      // 1588×2246 px (2× physical pixels) for crisp rendering at normal display size.
-      await page.screenshot({
-        path: outPath,
-        clip: { x: 0, y: 0, width: A4_W, height: A4_H },
-      });
-
-      console.log(`  ✓  Saved ${path.relative(process.cwd(), outPath)}`);
-    } catch (err) {
-      console.error(`\n  ✗  Failed to capture ${id}: ${err.message}`);
-      failed += 1;
-    } finally {
-      await page.close().catch(() => null);
+      const page = await browser.newPage();
+      try {
+        await capture(page, id, color, outPath);
+        console.log("  ✓");
+        total++;
+      } catch (err) {
+        console.error(`  ✗  ${err.message}`);
+        failed++;
+      } finally {
+        await page.close().catch(() => null);
+      }
     }
   }
 
   await browser.close();
 
   if (failed > 0) {
-    console.error(`\n${failed} template(s) failed. See errors above.`);
+    console.error(`\n${failed} capture(s) failed.`);
     process.exit(1);
   }
 
-  console.log(`\nAll ${TEMPLATE_IDS.length} thumbnails saved to public/template-previews/\n`);
+  console.log(`\nAll ${total} thumbnails saved to public/template-previews/\n`);
 }
 
 main().catch((err) => {

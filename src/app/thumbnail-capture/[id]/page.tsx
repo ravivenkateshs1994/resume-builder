@@ -15,23 +15,22 @@ const A4_H = 1123;
 
 interface Props {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ color?: string }>;
 }
 
-export default async function ThumbnailCapturePage({ params }: Props) {
+export default async function ThumbnailCapturePage({ params, searchParams }: Props) {
   const { id } = await params;
+  const { color } = await searchParams;
 
   if (!VALID_IDS.has(id)) notFound();
 
   const templateId = id as TemplateId;
   const data = TEMPLATE_MOCK_DATA[templateId];
+  const accentColor = color ? `#${color}` : undefined;
 
   return (
     <>
       <ReadySignal />
-      {/*
-        Render the template at exactly A4 pixel dimensions.
-        overflow:hidden prevents any stray content from expanding the page.
-      */}
       <div
         data-template-root
         style={{
@@ -42,7 +41,7 @@ export default async function ThumbnailCapturePage({ params }: Props) {
           position: "relative",
         }}
       >
-        <ResumeRenderer data={data} templateId={templateId} />
+        <ResumeRenderer data={data} templateId={templateId} accentColor={accentColor} />
       </div>
     </>
   );
