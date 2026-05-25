@@ -256,7 +256,7 @@ export const TEMPLATE_CATALOG: TemplateCatalogItem[] = [
     roleCategory: "software",
     levelCategory: "mid",
   },
-];
+].sort((a, b) => (b.atsScore ?? 0) - (a.atsScore ?? 0));
 
 export type TemplateTierFilter = "all" | "recommended" | "free" | "premium";
 
