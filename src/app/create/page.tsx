@@ -4,9 +4,11 @@ import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useResumeStore } from "@/store/resumeStore";
 import Link from "next/link";
-import MobileNav from "@/components/MobileNav";
 import { useSearchParams } from "next/navigation";
 import StepIndicator from "@/components/StepIndicator";
+import { FloatingResumeBanner } from "@/components/FloatingResumeBanner";
+import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 import {
   TEMPLATE_CATALOG as TEMPLATE_OPTIONS,
   TemplateGalleryCard,
@@ -76,40 +78,11 @@ const PreviewStep = dynamic(() => import("@/components/steps/PreviewStep"), {
   loading: () => <StepShell title="Preview" />,
 });
 
-function AppHeader() {
-  return (
-    <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/85 backdrop-blur-md">
-      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
-        <div className="flex h-16 items-center justify-between gap-4">
-          <Link href="/" className="flex min-w-0 items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-cyan-500 text-sm font-bold text-white shadow-sm shadow-indigo-300/40">
-              CR
-            </div>
-            <span className="truncate text-sm font-bold tracking-wide text-slate-900 sm:text-base">Career Readiness Platform</span>
-          </Link>
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
-            <Link href="/" className="crp-nav-link">
-              Home
-            </Link>
-            <Link href="/create" className="crp-nav-link crp-nav-link-active">
-              Resume Tailoring
-            </Link>
-            <Link href="/gap-analysis" className="crp-nav-link">
-              Gap Analysis
-            </Link>
-          </nav>
-          <MobileNav />
-        </div>
-      </div>
-    </header>
-  );
-}
-
 const flowStages = [
-  { number: "01", title: "Choose template" },
-  { number: "02", title: "Enter details" },
-  { number: "03", title: "Download resume" },
-] as const;
+  { number: "01", title: "Template" },
+  { number: "02", title: "Fill Details" },
+  { number: "03", title: "Final Preview" }
+];
 
 function FlowStrip({ activeStep }: { activeStep: number }) {
   return (
@@ -576,7 +549,7 @@ function CreatePageContent() {
   if (mode === "gate") {
     return (
       <div className="crp-shell flex min-h-screen max-w-full flex-col overflow-x-hidden text-sm md:text-base">
-        <AppHeader />
+        <SiteHeader />
 
         <FlowStrip activeStep={0} />
 
@@ -927,6 +900,9 @@ function CreatePageContent() {
         </div>
 
         {fileInput}
+
+        <SiteFooter />
+        <FloatingResumeBanner />
       </div>
     );
   }
@@ -934,7 +910,7 @@ function CreatePageContent() {
   // ── Form screen ──────────────────────────────────────────────────────────────
   return (
     <div className="crp-shell min-h-screen max-w-full overflow-x-hidden text-sm md:text-base">
-      <AppHeader />
+      <SiteHeader />
 
       <FlowStrip activeStep={currentStep === "preview" ? 2 : 1} />
 
@@ -1039,6 +1015,8 @@ function CreatePageContent() {
           </div>
         </div>
       </section>
+      <SiteFooter />
+      <FloatingResumeBanner />
     </div>
   );
 }

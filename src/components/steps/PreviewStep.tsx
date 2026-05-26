@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useResumeStore } from "@/store/resumeStore";
+import Link from "next/link";
 import AccentColorPicker from "@/components/AccentColorPicker";
 import ResumeRenderer from "@/components/templates/ResumeRenderer";
 import { TEMPLATE_CATALOG } from "@/lib/templateCatalog";
@@ -197,12 +198,12 @@ export default function PreviewStep() {
             Compare your resume against any job description and get personalized learning resources.
           </p>
         </div>
-        <a
-          href="/gap-analysis"
+        <Link
+          href="/gap-analysis/analysis"
           className="min-h-[44px] w-full rounded-lg bg-blue-600 px-4 py-2 text-center text-sm font-medium text-white transition-colors hover:bg-blue-700 md:w-auto"
         >
           Open Gap Analyzer
-        </a>
+        </Link>
       </div>
 
       {/* Export Buttons */}

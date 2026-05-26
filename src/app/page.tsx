@@ -1,5 +1,6 @@
 ﻿import Link from "next/link";
-import MobileNav from "@/components/MobileNav";
+import { SiteFooter } from "@/components/SiteFooter";
+import { SiteHeader } from "@/components/SiteHeader";
 import {
   BookOpenCheck,
   Bot,
@@ -80,27 +81,8 @@ const roadmapFeatures = [
 
 export default function LandingPage() {
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900">
-      <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/85 backdrop-blur-md">
-        <div className="mx-auto w-full max-w-7xl px-6">
-          <div className="flex h-16 items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-cyan-500 text-sm font-bold text-white shadow-sm shadow-indigo-300/40">
-                CR
-              </div>
-              <span className="text-sm font-bold tracking-wide sm:text-base">Career Readiness Platform</span>
-            </div>
-
-            <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 md:flex">
-              <a href="#home" className="crp-nav-link crp-nav-link-active">Home</a>
-              <Link href="/create" className="crp-nav-link">Resume Tailoring</Link>
-              <Link href="/gap-analysis" className="crp-nav-link">Gap Analysis</Link>
-            </nav>
-
-            <MobileNav />
-          </div>
-        </div>
-      </header>
+    <main className="min-h-screen bg-white text-slate-900">
+      <SiteHeader />
 
       <section id="home" className="relative overflow-hidden">
         <div aria-hidden className="pointer-events-none absolute inset-0">
@@ -205,6 +187,8 @@ export default function LandingPage() {
           })}
         </div>
       </section>
+
+      <SiteFooter />
     </main>
   );
 }

@@ -48,6 +48,7 @@ interface ResumeStore {
   selectedTemplate: TemplateId;
   templateAccentColor: string;
   isGenerating: boolean;
+  uploadedResume: { label: string; resumeData: ResumeData } | null;
 
   // Navigation
   nextStep: () => void;
@@ -55,6 +56,7 @@ interface ResumeStore {
   goToStep: (step: FormStep) => void;
 
   // Data setters
+  setUploadedResume: (val: { label: string; resumeData: ResumeData } | null) => void;
   setPersonalInfo: (info: ResumeData["personalInfo"]) => void;
   setTargetRole: (role: string) => void;
   setJobDescription: (jd: string) => void;
@@ -92,6 +94,7 @@ export const useResumeStore = create<ResumeStore>()(
   selectedTemplate: "modern",
   templateAccentColor: getDefaultTemplateAccent("modern"),
   isGenerating: false,
+  uploadedResume: null,
 
   nextStep: () => {
     const idx = STEPS.indexOf(get().currentStep);
@@ -104,6 +107,8 @@ export const useResumeStore = create<ResumeStore>()(
   },
 
   goToStep: (step) => set({ currentStep: step }),
+
+  setUploadedResume: (val) => set({ uploadedResume: val }),
 
   setPersonalInfo: (info) =>
     set((s) => ({ resumeData: { ...s.resumeData, personalInfo: info } })),
