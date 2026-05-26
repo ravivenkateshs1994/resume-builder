@@ -3,11 +3,12 @@
 import { useResumeStore } from "@/store/resumeStore";
 import { FileText, Sparkles, LayoutDashboard, ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export function FloatingResumeBanner() {
   const { resumeData, uploadedResume } = useResumeStore();
   const pathname = usePathname();
+  const router = useRouter();
   
   const hasBuilderResume = !!(
     resumeData.personalInfo?.fullName || 
@@ -59,11 +60,19 @@ export function FloatingResumeBanner() {
           )}
           
           {pathname.includes("/create") ? (
-            <Link href="/create?step=personal" className="text-xs sm:text-sm font-semibold bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-1 rounded-full transition-all flex items-center gap-1.5 whitespace-nowrap">
+            <button
+              type="button"
+              onClick={() => {
+                // eslint-disable-next-line no-console
+                console.debug("[FloatingResumeBanner] Continue clicked - navigating to /create?step=personal");
+                router.push("/create?step=personal");
+              }}
+              className="text-xs sm:text-sm font-semibold bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-1 rounded-full transition-all flex items-center gap-1.5 whitespace-nowrap"
+            >
               <Sparkles className="h-3 w-3" />
               <span className="hidden sm:inline">Continue</span>
               <ArrowRight className="h-3 w-3" />
-            </Link>
+            </button>
           ) : (
             !pathname.includes("/gap-analysis/analysis") && (
               <Link href="/gap-analysis/analysis" className="text-xs sm:text-sm font-semibold bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-1 rounded-full transition-all flex items-center gap-1.5 whitespace-nowrap">

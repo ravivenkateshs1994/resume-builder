@@ -39,6 +39,7 @@ const sections: Section[] = [
     title: "Storage and retention",
     items: [
       "Resume data and settings are stored locally in your browser using persistent storage so you can resume where you left off.",
+      "By default, locally stored resume drafts and related state are retained for up to 24 hours (one day) in your browser; older cached drafts are automatically cleared.",
       "You can remove locally stored data by clearing site storage in your browser.",
       "We do not intentionally keep a separate user profile database in the current version of the app.",
     ],

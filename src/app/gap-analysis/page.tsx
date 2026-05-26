@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import Link from "next/link";
-import { FileText, ArrowRight } from "lucide-react";
+import { FileText, ArrowRight, BadgeCheck, GraduationCap, ChevronDown, ChevronUp, Briefcase, BookOpen, Code2, Trophy, Wrench, BrainCircuit, PlayCircle } from "lucide-react";
 import { useResumeStore } from "@/store/resumeStore";
 
 export default function GapAnalysisPage() {
@@ -90,6 +90,66 @@ export default function GapAnalysisPage() {
 
 
 // Gap Card
+// Types used by GapCard
+interface LearningResource {
+  title: string;
+  type: "course" | "video" | "docs" | "book" | "practice";
+  platform: string;
+  searchQuery: string;
+}
+
+interface Gap {
+  id: string;
+  category: string;
+  item: string;
+  importance: "high" | "medium" | "low";
+  context: string;
+  learningResources: LearningResource[];
+}
+
+type GapStatus = "unknown" | "known" | "learning";
+
+const importanceColor: Record<string, string> = {
+  high: "bg-red-100 text-red-700 border-red-200",
+  medium: "bg-amber-100 text-amber-700 border-amber-200",
+  low: "bg-slate-100 text-slate-600 border-slate-200",
+};
+
+const categoryIcon: Record<string, any> = {
+  "Technical Skill": Wrench,
+  "Soft Skill": BrainCircuit,
+  "Tool/Platform": Code2,
+  Certification: Trophy,
+  "Domain Knowledge": BookOpen,
+  Experience: Briefcase,
+};
+
+const resourceIcon: Record<LearningResource["type"], any> = {
+  course: GraduationCap,
+  video: PlayCircle,
+  docs: FileText,
+  book: BookOpen,
+  practice: Code2,
+};
+
+function platformUrl(resource: LearningResource): string {
+  const q = encodeURIComponent(resource.searchQuery);
+  switch (resource.platform.toLowerCase()) {
+    case "youtube":
+      return `https://www.youtube.com/results?search_query=${q}`;
+    case "coursera":
+      return `https://www.coursera.org/search?query=${q}`;
+    case "udemy":
+      return `https://www.udemy.com/courses/search/?src=ukw&q=${q}`;
+    case "edx":
+      return `https://www.edx.org/search?q=${q}`;
+    case "leetcode":
+      return `https://leetcode.com/problemset/all/?search=${q}`;
+    case "official docs":
+    default:
+      return `https://www.google.com/search?q=${q}`;
+  }
+}
 
 function GapCard({
   gap,

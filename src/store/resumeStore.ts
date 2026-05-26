@@ -251,5 +251,43 @@ export const useResumeStore = create<ResumeStore>()(
       isGenerating: false,
     }),
   }),
-  { name: "resume-store" }
+  {
+    name: "resume-store",
+    // Persist with a 24-hour TTL: stored payload includes __savedAt timestamp
+    getStorage: () => ({
+      getItem: (name: string) => {
+        try {
+          const raw = localStorage.getItem(name);
+          if (!raw) return null;
+          const parsed = JSON.parse(raw);
+          // If the stored payload contains a __savedAt timestamp, enforce TTL
+          const TTL = 1000 * 60 * 60 * 24; // 24 hours
+          if (parsed && typeof parsed === "object" && parsed.__savedAt) {
+            const savedAt = Number(parsed.__savedAt) || 0;
+            if (Date.now() - savedAt > TTL) {
+              localStorage.removeItem(name);
+              return null;
+            }
+            // Return the serialized state part for zustand to parse
+            return JSON.stringify(parsed.state ?? parsed);
+          }
+          // Backwards compatibility: return raw for older plain-state entries
+          return raw;
+        } catch (e) {
+          return null;
+        }
+      },
+      setItem: (name: string, value: string) => {
+        try {
+          const state = JSON.parse(value);
+          const payload = { state, __savedAt: Date.now() };
+          localStorage.setItem(name, JSON.stringify(payload));
+        } catch (e) {
+          // fallback: write raw value
+          localStorage.setItem(name, value);
+        }
+      },
+      removeItem: (name: string) => localStorage.removeItem(name),
+    }),
+  }
 ));

@@ -68,6 +68,13 @@ const sections: Section[] = [
     ],
   },
   {
+    title: "Data retention",
+    items: [
+      "Drafts and resume data are stored locally in your browser and are retained for up to 24 hours by default.",
+      "You can clear your browser storage to remove locally saved drafts at any time.",
+    ],
+  },
+  {
     title: "Disclaimer and liability",
     items: [
       "To the maximum extent allowed by law, we disclaim warranties about accuracy, fitness for a particular purpose, and uninterrupted operation.",

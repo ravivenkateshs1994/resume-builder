@@ -127,19 +127,34 @@ function CreatePageContent() {
     goToStep,
     reset,
   } = useResumeStore();
+  const { uploadedResume, setUploadedResume } = useResumeStore();
 
   // "gate" = upload/scratch choice screen, "form" = step form
   const [mode, setMode] = useState<"gate" | "form">("gate");
 
   const searchParams = useSearchParams();
+  // Derive the step query string so the effect depends on a primitive value
+  const stepQuery = searchParams.get("step");
   useEffect(() => {
-    const step = searchParams.get("step");
-    if (step && ["personal", "experience", "education", "skills", "preview"].includes(step)) {
-      goToStep(step as Parameters<typeof goToStep>[0]);
+    // DEBUG: log step query and store interaction to troubleshoot client nav
+    // eslint-disable-next-line no-console
+    console.debug("[CreatePage] stepQuery:", stepQuery);
+    if (stepQuery && ["personal", "experience", "education", "skills", "preview"].includes(stepQuery)) {
+      // If the user brought an uploaded resume from the gap-analysis flow, apply it into the main resume data so the form pre-fills.
+      if (uploadedResume && !prefilled) {
+        // eslint-disable-next-line no-console
+        console.debug("[CreatePage] applying uploadedResume into store", uploadedResume.label);
+        setResumeData(uploadedResume.resumeData);
+        setUploadedResume(null);
+        setPrefilled(true);
+      }
+      // eslint-disable-next-line no-console
+      console.debug("[CreatePage] calling goToStep:", stepQuery);
+      goToStep(stepQuery as Parameters<typeof goToStep>[0]);
       setMode("form");
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // Re-run when the raw query string for `step` changes (works with client nav)
+  }, [stepQuery]);
 
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
