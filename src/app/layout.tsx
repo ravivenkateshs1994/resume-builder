@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import ChunkErrorHandler from "@/components/ChunkErrorHandler";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -27,6 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${jakarta.variable} ${playfair.variable} bg-gray-50 text-gray-900 antialiased`}>
+        <ChunkErrorHandler />
         {children}
       </body>
     </html>
