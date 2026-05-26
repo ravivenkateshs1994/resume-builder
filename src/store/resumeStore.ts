@@ -1,10 +1,10 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type {
-  ResumeData,
-  FormStep,
-  TemplateId,
-  WorkExperience,
+  },
+  {
+    name: "resume-store",
+    // Persist with a 24-hour TTL: stored payload includes __savedAt timestamp
+    storage: () => ({
   Education,
   Certification,
 } from "@/types/resume";
