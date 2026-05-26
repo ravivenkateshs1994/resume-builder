@@ -134,26 +134,24 @@ function CreatePageContent() {
 
   const searchParams = useSearchParams();
   // Derive the step query string so the effect depends on a primitive value
-  const stepQuery = searchParams.get("step");
+  const stepQuery = searchParams?.get("step") ?? null;
+  // Use a ref for prefilled so the effect can read it without being a dep
+  const prefilledRef = useRef(false);
+  const [prefilled, setPrefilled] = useState(false);
+
   useEffect(() => {
-    // DEBUG: log step query and store interaction to troubleshoot client nav
-    // eslint-disable-next-line no-console
-    console.debug("[CreatePage] stepQuery:", stepQuery);
     if (stepQuery && ["personal", "experience", "education", "skills", "preview"].includes(stepQuery)) {
       // If the user brought an uploaded resume from the gap-analysis flow, apply it into the main resume data so the form pre-fills.
-      if (uploadedResume && !prefilled) {
-        // eslint-disable-next-line no-console
-        console.debug("[CreatePage] applying uploadedResume into store", uploadedResume.label);
+      if (uploadedResume && !prefilledRef.current) {
         setResumeData(uploadedResume.resumeData);
         setUploadedResume(null);
+        prefilledRef.current = true;
         setPrefilled(true);
       }
-      // eslint-disable-next-line no-console
-      console.debug("[CreatePage] calling goToStep:", stepQuery);
       goToStep(stepQuery as Parameters<typeof goToStep>[0]);
       setMode("form");
     }
-  // Re-run when the raw query string for `step` changes (works with client nav)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stepQuery]);
 
   const [uploading, setUploading] = useState(false);
@@ -168,7 +166,6 @@ function CreatePageContent() {
     "Organising your work history...",
     "Almost there — putting it all together...",
   ];
-  const [prefilled, setPrefilled] = useState(false);
   const [showStartChoice, setShowStartChoice] = useState(false);
   const [pendingTemplate, setPendingTemplate] = useState<TemplateId | null>(null);
   const [activeTierFilter, setActiveTierFilter] = useState<TemplateTierFilter>("all");
@@ -205,7 +202,7 @@ function CreatePageContent() {
 
     async function loadRecommendations() {
       try {
-        const jdId = searchParams.get("jdId") || "default";
+        const jdId = searchParams?.get("jdId") || "default";
         const res = await fetch(`/api/templates/recommend?jdId=${encodeURIComponent(jdId)}`, {
           cache: "no-store",
         });

@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import MobileNav from "./MobileNav";
 
 export function SiteHeader() {
-  const pathname = usePathname();
+  const pathname = usePathname() ?? "";
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 backdrop-blur-md">

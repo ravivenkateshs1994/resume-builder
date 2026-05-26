@@ -14,7 +14,7 @@ const NAV_LINKS = [
 export default function MobileNav() {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const pathname = usePathname();
+  const pathname = usePathname() ?? "";
 
   useEffect(() => { setMounted(true); }, []);
 
