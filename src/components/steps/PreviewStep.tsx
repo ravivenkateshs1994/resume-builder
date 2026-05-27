@@ -6,6 +6,7 @@ import AccentColorPicker from "@/components/AccentColorPicker";
 import ResumeRenderer from "@/components/templates/ResumeRenderer";
 import { TEMPLATE_CATALOG } from "@/lib/templateCatalog";
 import { useRef, useState } from "react";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 type LegacyNavigator = Navigator & {
   msSaveOrOpenBlob?: (blob: Blob, defaultName?: string) => boolean;
@@ -81,7 +82,43 @@ export default function PreviewStep() {
 
   const [exportingDocx, setExportingDocx] = useState(false);
   const [exportingPdf, setExportingPdf] = useState(false);
+  const [cloudSaving, setCloudSaving] = useState(false);
+  const [cloudSaveMessage, setCloudSaveMessage] = useState<string | null>(null);
   const previewRef = useRef<HTMLDivElement>(null);
+
+  async function saveResumeToCloud() {
+    setCloudSaveMessage(null);
+    setCloudSaving(true);
+    try {
+      const supabase = getSupabaseBrowserClient();
+      const { data } = await supabase.auth.getSession();
+      const token = data.session?.access_token;
+      if (!token) {
+        setCloudSaveMessage("Please log in from Analysis workspace first, then save again.");
+        return;
+      }
+
+      const response = await fetch("/api/cloud/resumes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: resumeData.personalInfo.fullName || resumeData.targetRole || "Resume Draft",
+          resumeData,
+        }),
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload?.error || "Failed to save resume.");
+
+      setCloudSaveMessage("Resume saved to cloud.");
+    } catch (error) {
+      setCloudSaveMessage(error instanceof Error ? error.message : "Failed to save resume.");
+    } finally {
+      setCloudSaving(false);
+    }
+  }
 
   async function exportDocx() {
     setExportingDocx(true);
@@ -222,7 +259,16 @@ export default function PreviewStep() {
         >
           {exportingDocx ? "Preparing DOCX..." : "Download DOCX"}
         </button>
+        <button
+          onClick={saveResumeToCloud}
+          disabled={cloudSaving}
+          className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 font-medium text-white transition-colors hover:bg-indigo-700 disabled:opacity-50 md:w-auto"
+        >
+          {cloudSaving ? "Saving..." : "Save Resume to Cloud"}
+        </button>
       </div>
+
+      {cloudSaveMessage && <p className="text-xs text-slate-500 mt-2">{cloudSaveMessage}</p>}
 
       <div className="mt-2 flex justify-start">
         <button

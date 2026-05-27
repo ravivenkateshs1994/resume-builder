@@ -3,10 +3,24 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import MobileNav from "./MobileNav";
-import InstallAppButton from "./InstallAppButton";
+import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
+import { useState, useRef, useEffect } from "react";
 
 export function SiteHeader() {
   const pathname = usePathname() ?? "";
+  const { isLoggedIn, userEmail, signOut } = useSupabaseAuth();
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    function onDocClick(e: MouseEvent) {
+      const el = profileRef.current;
+      if (!el) return;
+      if (e.target instanceof Node && !el.contains(e.target)) setProfileOpen(false);
+    }
+    document.addEventListener("click", onDocClick);
+    return () => document.removeEventListener("click", onDocClick);
+  }, []);
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 backdrop-blur-md">
@@ -22,20 +36,20 @@ export function SiteHeader() {
           <div className="flex-1" />
 
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
-            <Link 
-              href="/" 
+            <Link
+              href="/"
               className={`transition-colors hover:text-indigo-600 ${pathname === "/" ? "text-indigo-600 font-semibold" : ""}`}
             >
               Home
             </Link>
-            <Link 
-              href="/create" 
+            <Link
+              href="/create"
               className={`transition-colors hover:text-indigo-600 ${pathname.startsWith("/create") ? "text-indigo-600 font-semibold" : ""}`}
             >
               Resume Builder
             </Link>
-            <Link 
-              href="/gap-analysis" 
+            <Link
+              href="/gap-analysis"
               className={`transition-colors hover:text-indigo-600 ${pathname.startsWith("/gap-analysis") ? "text-indigo-600 font-semibold" : ""}`}
             >
               Gap Analysis
@@ -43,7 +57,52 @@ export function SiteHeader() {
           </nav>
 
           <div className="flex items-center gap-4">
-            <InstallAppButton />
+            <div className="hidden md:flex items-center gap-3" ref={profileRef}>
+              {isLoggedIn ? (
+                <div className="relative">
+                  <button
+                    type="button"
+                    aria-haspopup="menu"
+                    aria-expanded={profileOpen}
+                    onClick={() => setProfileOpen((v) => !v)}
+                    className="inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium text-slate-700 hover:text-indigo-600"
+                  >
+                    My Profile
+                    <svg className="h-4 w-4 text-slate-500" viewBox="0 0 20 20" fill="none" aria-hidden>
+                      <path d="M6 8l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+
+                  {profileOpen && (
+                    <div role="menu" className="absolute right-0 z-50 mt-2 w-44 overflow-hidden rounded-md border bg-white shadow-lg">
+                      <Link
+                        href="/dashboard"
+                        role="menuitem"
+                        onClick={() => setProfileOpen(false)}
+                        className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                      >
+                        Dashboard
+                      </Link>
+                      <button
+                        type="button"
+                        role="menuitem"
+                        onClick={() => {
+                          setProfileOpen(false);
+                          void signOut();
+                        }}
+                        className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Link href="/login" className="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white hover:opacity-95">
+                  Login
+                </Link>
+              )}
+            </div>
             <MobileNav />
           </div>
         </div>

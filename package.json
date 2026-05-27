@@ -11,6 +11,7 @@
     "test": "vitest run",
     "postinstall": "node scripts/install-puppeteer-browser.mjs",
     "generate-thumbnails": "node scripts/generate-thumbnails.mjs",
+    "seed:admin": "node scripts/seed-admin-user.mjs",
     "desktop:dev": "concurrently \"next dev\" \"wait-on http://localhost:3000 && cross-env ELECTRON_START_URL=http://localhost:3000 electron .\"",
     "desktop:build": "npm run build && electron-builder"
   },
@@ -45,6 +46,7 @@
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-slot": "^1.2.4",
     "@react-pdf/renderer": "^4.5.1",
+    "@supabase/supabase-js": "^2.106.2",
     "@tailwindcss/postcss": "^4.3.0",
     "@tiptap/extension-color": "^3.23.6",
     "@tiptap/extension-highlight": "^3.23.6",

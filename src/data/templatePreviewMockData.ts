@@ -211,7 +211,7 @@ export const TEMPLATE_MOCK_DATA: Record<TemplateId, ResumeData> = {
         ["Designed the company's three-year growth strategy adopted by the board, resulting in 22% revenue growth in year one.", "Led two strategic acquisitions totaling $120M, including 90-day post-merger integration for a 200-person acquired company.", "Built and ran the annual strategy planning cycle across eight business lines, producing all board-level materials.", "Established a portfolio governance model that improved capital allocation decisions and eliminated three underperforming initiatives."]),
       exp("Vice President, Strategy", "Crest Partners", "New York, NY", "2014", "2019",
         "Led strategy and operating plan development for a PE-backed portfolio across six companies.",
-        ["Authored market entry analyses for five new verticals; three were approved and successfully launched.", "Designed operating review frameworks adopted across all portfolio companies, improving board confidence in management teams.", "Managed a 90-day post-acquisition integration for a 300-person target company, achieving full operational merger ahead of schedule."]),
+        ["Authored market entry analysis for five new verticals; three were approved and successfully launched.", "Designed operating review frameworks adopted across all portfolio companies, improving board confidence in management teams.", "Managed a 90-day post-acquisition integration for a 300-person target company, achieving full operational merger ahead of schedule."]),
     ],
     education: [
       edu("The Wharton School, University of Pennsylvania", "MBA", "Strategy & Finance", "2006", "2008", "3.9", "Dean's Scholar — Top 5% of Class"),

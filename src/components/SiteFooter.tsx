@@ -30,7 +30,6 @@ export function SiteFooter() {
                   <li>
                     <Link href="/create" className="text-sm text-slate-500 hover:text-indigo-600 transition-colors inline-flex items-center gap-1.5">
                       Resume Builder
-                      <span className="bg-indigo-50 text-[10px] text-indigo-600 px-1.5 py-0.5 rounded font-bold">New</span>
                     </Link>
                   </li>
                   <li>

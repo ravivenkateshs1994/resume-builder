@@ -2,7 +2,7 @@
 
 export const dynamic = "force-dynamic";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
   BadgeCheck,
@@ -22,7 +22,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { parseResumeFile } from "@/lib/resumeFileParser";
-import { useResumeStore } from "@/store/resumeStore";
+import { useResumeStore, type SavedAnalysisRecord } from "@/store/resumeStore";
+import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import Link from "next/link";
 
 // Types
@@ -160,26 +161,92 @@ const categoryIcon: Record<string, LucideIcon> = {
 };
 
 export default function AnalysisWorkspacePage() {
-  const { resumeData } = useResumeStore();
+  const { resumeData, uploadedResume, setUploadedResume, pendingAnalysis, setPendingAnalysis } = useResumeStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [jobDescription, setJobDescription] = useState(resumeData.jobDescription || "");
   const [analyzing, setAnalyzing] = useState(false);
   const [result, setResult] = useState<GapResult | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const { uploadedResume, setUploadedResume } = useResumeStore();
   const [resumeUploadError, setResumeUploadError] = useState<string | null>(null);
   const [resumeUploading, setResumeUploading] = useState(false);
   const [generatingSampleJD, setGeneratingSampleJD] = useState(false);
 
   const [gapStatus, setGapStatus] = useState<Record<string, GapStatus>>({});
   const [expandedResources, setExpandedResources] = useState<Record<string, boolean>>({});
+  const [cloudHistory, setCloudHistory] = useState<SavedAnalysisRecord[]>([]);
+  const [cloudLoading, setCloudLoading] = useState(false);
+  const [cloudError, setCloudError] = useState<string | null>(null);
+  const { accessToken, userEmail } = useSupabaseAuth();
 
   const activeResumeData = uploadedResume?.resumeData ?? resumeData;
   const hasBuilderResume = Boolean(resumeData && Object.keys(resumeData).length > 0 && resumeData.personalInfo?.fullName !== "");
   const hasActiveResume = Boolean(activeResumeData && (activeResumeData.personalInfo?.fullName || activeResumeData.skills?.length));
   const usingUploadedResume = Boolean(uploadedResume);
   const roleForSampleJD = activeResumeData?.targetRole || activeResumeData?.personalInfo?.jobTitle || resumeData.targetRole || resumeData.personalInfo?.jobTitle || DEFAULT_SAMPLE_ROLE;
+
+  useEffect(() => {
+    if (!accessToken) {
+      setCloudHistory([]);
+      return;
+    }
+    void loadCloudHistory(accessToken);
+  }, [accessToken]);
+
+  // Restore an analysis passed from the Dashboard via in-memory store (no localStorage)
+  useEffect(() => {
+    if (!pendingAnalysis) return;
+    try {
+      // uploadedResume may already be set by the Dashboard when navigating
+      if (pendingAnalysis) {
+        if (uploadedResume == null && pendingAnalysis) {
+          // nothing to do; uploadedResume should be set concurrently by dashboard
+        }
+        if (pendingAnalysis.jobDescription) setJobDescription(pendingAnalysis.jobDescription);
+        if (pendingAnalysis.result) setResult(pendingAnalysis.result as GapResult);
+        setError(null);
+        setResumeUploadError(null);
+        setGapStatus({});
+        setExpandedResources({});
+      }
+    } catch (e) {
+      // ignore
+    } finally {
+      setPendingAnalysis(null);
+    }
+  }, [pendingAnalysis, uploadedResume, setPendingAnalysis]);
+
+  async function loadCloudHistory(token: string) {
+    setCloudLoading(true);
+    setCloudError(null);
+    try {
+      const res = await fetch("/api/cloud/analysis", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const payload = await res.json();
+      if (!res.ok) throw new Error(payload?.error || "Failed to load cloud history.");
+      setCloudHistory((payload.analysis || []) as SavedAnalysisRecord[]);
+    } catch (e) {
+      setCloudError(e instanceof Error ? e.message : "Failed to load cloud history.");
+    } finally {
+      setCloudLoading(false);
+    }
+  }
+
+  async function saveAnalysisToCloud(record: Omit<SavedAnalysisRecord, "id" | "createdAt">) {
+    if (!accessToken) return;
+    const res = await fetch("/api/cloud/analysis", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(record),
+    });
+    const payload = await res.json();
+    if (!res.ok) throw new Error(payload?.error || "Failed to save cloud analysis.");
+    setCloudHistory((prev) => [payload.analysis as SavedAnalysisRecord, ...prev].slice(0, 50));
+  }
 
   function openResumePicker() {
     fileInputRef.current?.click();
@@ -236,6 +303,22 @@ export default function AnalysisWorkspacePage() {
       if (!res.ok) throw new Error((await res.json()).error || "Analysis failed");
       const data: GapResult = await res.json();
       setResult(data);
+      const localRecord = {
+        targetRole: roleForSampleJD,
+        jobDescription,
+        resumeSnapshot: activeResumeData,
+        result: data,
+      };
+      // no local analysis history: analysis are saved directly to cloud when logged in
+      try {
+        await saveAnalysisToCloud(localRecord);
+      } catch (cloudSaveError) {
+        setError(
+          cloudSaveError instanceof Error
+            ? `Analysis complete, but cloud save failed: ${cloudSaveError.message}`
+            : "Analysis complete, but cloud save failed."
+        );
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong.");
     } finally {
@@ -274,6 +357,33 @@ export default function AnalysisWorkspacePage() {
     setExpandedResources((prev) => ({ ...prev, [id]: !prev[id] }));
   }
 
+  function restoreCloudAnalysis(record: SavedAnalysisRecord) {
+    setUploadedResume({
+      label: `Cloud snapshot - ${new Date(record.createdAt).toLocaleDateString()}`,
+      resumeData: record.resumeSnapshot,
+    });
+    setJobDescription(record.jobDescription);
+    setResult(record.result as GapResult);
+    setError(null);
+    setResumeUploadError(null);
+    setGapStatus({});
+    setExpandedResources({});
+  }
+
+  async function deleteCloudRecord(recordId: string) {
+    if (!accessToken) return;
+    const res = await fetch(`/api/cloud/analysis/${recordId}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    const payload = await res.json();
+    if (!res.ok) {
+      setCloudError(payload?.error || "Failed to delete cloud record.");
+      return;
+    }
+    setCloudHistory((prev) => prev.filter((item) => item.id !== recordId));
+  }
+
   return (
     <main className="min-h-screen crp-shell">
       <div className="max-w-6xl mx-auto px-6 pt-12 pb-20">
@@ -299,11 +409,10 @@ export default function AnalysisWorkspacePage() {
                         <FileText className="h-4 w-4 text-blue-600" />
                       </div>
                       <span className="truncate max-w-[200px] sm:max-w-[400px]">
-                        {usingUploadedResume ? uploadedResume?.label : (resumeData.personalInfo.fullName || "In-app Resume")}
+                        {usingUploadedResume
+                          ? (uploadedResume?.resumeData?.personalInfo?.fullName || uploadedResume?.label || "Uploaded Resume")
+                          : (resumeData.personalInfo.fullName || "In-app Resume")}
                       </span>
-                      {!usingUploadedResume && hasBuilderResume && (
-                        <span className="text-[10px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">App</span>
-                      )}
                     </div>
                   ) : (
                     <p className="text-sm text-slate-500 uppercase tracking-tight font-bold">No resume selected</p>
@@ -393,6 +502,8 @@ export default function AnalysisWorkspacePage() {
             {analyzing ? <span className="inline-flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" />Analyzing Gaps...</span> : <span className="inline-flex items-center gap-2"><Sparkles className="h-4 w-4" />Analyze Gaps</span>}
           </button>
         </div>
+
+        {/* Analysis history removed from UI */}
 
         {error && <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">{error}</div>}
         {result && (

@@ -6,7 +6,6 @@ import { useResumeStore } from "@/store/resumeStore";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import StepIndicator from "@/components/StepIndicator";
-import { FloatingResumeBanner } from "@/components/FloatingResumeBanner";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import {
@@ -85,32 +84,38 @@ const flowStages = [
 ];
 
 function FlowStrip({ activeStep }: { activeStep: number }) {
+  const goToStep = useResumeStore((s) => s.goToStep);
+  const currentStep = useResumeStore((s) => s.currentStep);
+
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6">
       <div className="rounded-2xl border border-slate-200/90 bg-white/90 px-3 py-2 shadow-[0_14px_35px_-24px_rgba(15,23,42,0.35)] backdrop-blur">
+        <span className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.22em] text-indigo-600">Template flow</span>
         <div className="flex flex-wrap items-center justify-start gap-2 sm:justify-center">
-          <span className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.22em] text-indigo-600">
-            Template flow
-          </span>
-          {flowStages.map((step, index) => (
-            <div
-              key={step.number}
-              className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-                index === activeStep ? "bg-indigo-50 text-slate-900" : "text-slate-500"
-              }`}
-            >
-              <span
-                className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
-                  index === activeStep
-                    ? "bg-gradient-to-br from-indigo-600 to-cyan-500 text-white shadow-sm shadow-indigo-200"
-                    : "border border-slate-200 bg-white text-slate-500"
-                }`}
+          {flowStages.map((step, index) => {
+            const isActive = index === activeStep;
+            return (
+              <div
+                key={step.number}
+                className={
+                  isActive
+                    ? "inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium transition-colors bg-indigo-50 text-slate-900"
+                    : "inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium transition-colors text-slate-500"
+                }
               >
-                {step.number}
-              </span>
-              <span>{step.title}</span>
-            </div>
-          ))}
+                <span
+                  className={
+                    isActive
+                      ? "flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-bold bg-gradient-to-br from-indigo-600 to-cyan-500 text-white shadow-sm shadow-indigo-200"
+                      : "flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-bold border border-slate-200 bg-white text-slate-500"
+                  }
+                >
+                  {step.number}
+                </span>
+                <span>{step.title}</span>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
@@ -127,6 +132,7 @@ function CreatePageContent() {
     goToStep,
     reset,
   } = useResumeStore();
+  const { resumeHistory } = useResumeStore();
   const { uploadedResume, setUploadedResume } = useResumeStore();
 
   // "gate" = upload/scratch choice screen, "form" = step form
@@ -138,6 +144,14 @@ function CreatePageContent() {
   // Use a ref for prefilled so the effect can read it without being a dep
   const prefilledRef = useRef(false);
   const [prefilled, setPrefilled] = useState(false);
+  // Separate banner visibility from the `prefilled` flag so we can hide the
+  // banner after a short timeout while keeping the form in a prefilled state
+  const [showPrefillBanner, setShowPrefillBanner] = useState(false);
+  useEffect(() => {
+    if (!showPrefillBanner) return;
+    const t = setTimeout(() => setShowPrefillBanner(false), 3000);
+    return () => clearTimeout(t);
+  }, [showPrefillBanner]);
 
   useEffect(() => {
     if (stepQuery && ["personal", "experience", "education", "skills", "preview"].includes(stepQuery)) {
@@ -147,6 +161,7 @@ function CreatePageContent() {
         setUploadedResume(null);
         prefilledRef.current = true;
         setPrefilled(true);
+        setShowPrefillBanner(true);
       }
       goToStep(stepQuery as Parameters<typeof goToStep>[0]);
       setMode("form");
@@ -520,6 +535,7 @@ function CreatePageContent() {
       }
       setResumeData(data);
       setPrefilled(true);
+      setShowPrefillBanner(true);
       setMode("form");
     } catch (err) {
       console.error(err);
@@ -545,6 +561,7 @@ function CreatePageContent() {
   // ── Hidden file input (shared between gate + form) ──────────────────────────
   const fileInput = (
     <input
+      id="resume-upload-input"
       ref={fileRef}
       type="file"
       accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
@@ -564,6 +581,36 @@ function CreatePageContent() {
         <SiteHeader />
 
         <FlowStrip activeStep={0} />
+
+        {resumeHistory.length > 0 && (
+          <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 mt-3">
+            <div className="flex items-center justify-end">
+              <label className="sr-only" htmlFor="saved-resume-select">Load saved resume</label>
+              <select
+                id="saved-resume-select"
+                className="text-sm rounded-md border border-slate-200 bg-white py-2 px-3"
+                defaultValue=""
+                onChange={(e) => {
+                  const id = e.target.value;
+                  if (!id) return;
+                  const rec = resumeHistory.find((r) => r.id === id);
+                  if (!rec) return;
+                  setResumeData(rec.resumeSnapshot);
+                  // switch into form mode and navigate to first form step
+                  setMode("form");
+                  goToStep("personal");
+                  setPrefilled(true);
+                  setShowPrefillBanner(true);
+                }}
+              >
+                <option value="">Load saved resume...</option>
+                {resumeHistory.map((r) => (
+                  <option key={r.id} value={r.id}>{`${r.title} — ${new Date(r.createdAt).toLocaleDateString()}`}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
 
         <div className="mx-auto w-full max-w-7xl px-4 pt-4 sm:px-6">
           <div className="crp-card crp-module-accent crp-soft-radial relative max-w-full overflow-hidden p-4 md:p-6">
@@ -914,7 +961,6 @@ function CreatePageContent() {
         {fileInput}
 
         <SiteFooter />
-        <FloatingResumeBanner />
       </div>
     );
   }
@@ -926,7 +972,7 @@ function CreatePageContent() {
 
       <FlowStrip activeStep={currentStep === "preview" ? 2 : 1} />
 
-      <div className="mx-auto w-full max-w-7xl px-4 pt-2 sm:px-6">
+      <div className="mx-auto w-full max-w-7xl px-4 pt-6 sm:px-6">
         <div className="crp-card crp-module-accent crp-soft-radial p-4 md:p-6">
           <span className="crp-badge">Resume Tailoring</span>
           <h1 className="crp-section-title mt-3 text-[28px] leading-tight md:text-[36px]">Resume Tailoring</h1>
@@ -936,21 +982,36 @@ function CreatePageContent() {
         </div>
       </div>
 
-      <div className="mx-auto w-full max-w-7xl px-4 pt-6 sm:px-6">
-        <div className="crp-card-soft crp-glass crp-module-accent flex flex-col items-start justify-between gap-4 px-4 py-3 md:flex-row md:items-center">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-600">Builder workspace</p>
-            <p className="text-sm text-slate-600 mt-0.5">Keep editing, or reset and return to template selection.</p>
-          </div>
-          <button
-            onClick={() => {
-              startFreshFlow();
-              setMode("gate");
-            }}
-            className="crp-btn-secondary min-h-[44px] w-full whitespace-nowrap px-5 py-2 text-sm md:w-auto"
-          >
-            Start over
-          </button>
+      {/* Steps (centered) and upload CTA */}
+      <div className="mx-auto w-full max-w-7xl px-4 pt-4 sm:px-6">
+        <div className="mx-auto max-w-2xl">
+          <StepIndicator />
+
+          {!prefilled && (
+            <div className="mt-4 flex justify-center">
+              <button
+                type="button"
+                onClick={() => document.getElementById("resume-upload-input")?.click()}
+                disabled={uploading}
+                aria-busy={uploading}
+                className={`w-full rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 text-lg font-semibold text-white shadow-lg focus:outline-none focus:ring-4 focus:ring-indigo-200 ${
+                  uploading ? "opacity-90 cursor-wait" : "hover:opacity-95"
+                }`}
+              >
+                {uploading ? (
+                  <span className="flex items-center justify-center gap-3">
+                    <svg className="h-5 w-5 animate-spin text-white" viewBox="0 0 24 24" fill="none" aria-hidden>
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                    </svg>
+                    <span>{UPLOAD_MESSAGES[uploadMsgIdx] ?? "Reading your resume..."}</span>
+                  </span>
+                ) : (
+                  "Upload resume"
+                )}
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -960,7 +1021,7 @@ function CreatePageContent() {
         {/* ── Left sidebar: vertical step navigator ── */}
         <div className="lg:w-44 lg:flex-shrink-0 lg:pt-1">
           <p className="mb-2 px-1 text-[10px] font-bold uppercase tracking-widest text-slate-400 lg:mb-3 lg:px-3">Steps</p>
-          <div className="lg:hidden">
+          <div className="hidden">
             <StepIndicator />
           </div>
           <div className="hidden lg:block">
@@ -971,29 +1032,22 @@ function CreatePageContent() {
         {/* ── Right: form content ── */}
         <div className="flex-1 min-w-0">
           {/* ── Prefill banner (shown only after upload) ── */}
-          {prefilled && (
-            <div className="mb-6 flex flex-col items-start justify-between gap-3 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm md:flex-row md:items-center">
-              <div className="flex items-center gap-2 text-green-700">
-                <span>✓</span>
-                <span className="break-words">Resume imported — fields pre-filled. Review and edit below.</span>
-              </div>
-              <div className="flex w-full flex-col items-stretch gap-3 md:w-auto md:flex-row md:items-center">
-                <button
-                  onClick={() => {
-                    startFreshFlow();
-                    fileRef.current?.click();
-                  }}
-                  className="min-h-[44px] w-full whitespace-nowrap text-left text-green-700 underline underline-offset-2 hover:text-green-900 md:w-auto"
-                >
-                  Upload different file
-                </button>
-                <button
-                  onClick={() => setPrefilled(false)}
-                  className="min-h-[44px] w-full text-left text-green-500 hover:text-green-700 md:w-auto"
-                  aria-label="Dismiss"
-                >
-                  ✕
-                </button>
+          {showPrefillBanner && (
+            <div className="relative mb-6 rounded-xl border border-green-200 bg-green-50/95 p-4 text-sm">
+              <button
+                onClick={() => setShowPrefillBanner(false)}
+                aria-label="Dismiss"
+                className="absolute right-3 top-3 inline-flex h-7 w-7 items-center justify-center rounded-md text-green-700 hover:bg-green-100"
+              >
+                ✕
+              </button>
+
+              <div className="flex items-start gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-green-100 text-green-700">✓</div>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-green-800">Resume imported — fields pre-filled.</p>
+                  <p className="mt-1 text-sm text-green-700">Review and edit below.</p>
+                </div>
               </div>
             </div>
           )}
@@ -1006,29 +1060,8 @@ function CreatePageContent() {
         </div>
       </div>
 
-      <section id="roadmap" className="mx-auto max-w-7xl px-4 pb-14">
-        <div className="crp-card-soft max-w-full overflow-x-hidden p-4 md:p-6">
-          <div className="flex items-center justify-between gap-3 mb-4">
-            <h2 className="text-[22px] font-bold text-slate-900 md:text-[30px]">Coming Soon</h2>
-            <span className="crp-badge">Roadmap</span>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
-            {[
-              { title: "Mock Interviews", desc: "Practice role-specific interviews generated from your profile and target JD." },
-              { title: "Interview Question Generator", desc: "Generate likely questions from job requirements and missing skills." },
-              { title: "AI Interview Feedback", desc: "Get clarity on technical depth, communication quality, and confidence." },
-              { title: "Personalized Study Plans", desc: "Turn your role target into a weekly learning and preparation path." },
-            ].map((item) => (
-              <article key={item.title} className="rounded-xl border border-dashed border-slate-300 bg-white p-4">
-                <p className="text-sm font-semibold text-slate-900">{item.title}</p>
-                <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">{item.desc}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Roadmap / Coming Soon section removed per design — kept page focused on resume creation */}
       <SiteFooter />
-      <FloatingResumeBanner />
     </div>
   );
 }
