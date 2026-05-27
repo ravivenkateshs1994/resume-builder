@@ -1,1 +1,94 @@
-{"name":"ai-resume-builder","version":"0.1.0","private":true,"scripts":{"dev":"next dev","build":"next build","start":"next start","lint":"eslint .","test":"vitest run","postinstall":"node scripts/install-puppeteer-browser.mjs","generate-thumbnails":"node scripts/generate-thumbnails.mjs"},"dependencies":{"@google/genai":"^2.6.0","@hookform/resolvers":"^5.2.2","@radix-ui/react-label":"^2.1.8","@radix-ui/react-progress":"^1.1.8","@radix-ui/react-select":"^2.2.6","@radix-ui/react-slot":"^1.2.4","@react-pdf/renderer":"^4.5.1","@tailwindcss/postcss":"^4.3.0","@tiptap/extension-color":"^3.23.6","@tiptap/extension-highlight":"^3.23.6","@tiptap/extension-link":"^3.23.6","@tiptap/extension-placeholder":"^3.23.6","@tiptap/extension-text-align":"^3.23.6","@tiptap/extension-text-style":"^3.23.6","@tiptap/extension-underline":"^3.23.6","@tiptap/pm":"^3.23.6","@tiptap/react":"^3.23.6","@tiptap/starter-kit":"^3.23.6","@types/multer":"^2.1.0","@types/node":"^25.9.1","@types/react":"^19.2.15","@types/react-dom":"^19.2.3","autoprefixer":"^10.5.0","class-variance-authority":"^0.7.1","clsx":"^2.1.1","docx":"^9.6.1","eslint":"^9.39.4","eslint-config-next":"^16.2.6","html2canvas-pro":"^2.0.2","lucide-react":"^1.16.0","mammoth":"^1.12.0","multer":"^2.1.1","next":"^15.5.18","pdf-parse":"^2.4.5","postcss":"^8.5.15","puppeteer":"^25.0.4","react":"^19.2.6","react-dom":"^19.2.6","react-hook-form":"^7.76.0","tailwind-merge":"^3.6.0","tailwindcss":"^4.3.0","typescript":"^6.0.3","zod":"^4.4.3","zustand":"^5.0.13"},"devDependencies":{"vitest":"^4.1.7"}}
+{
+  "name": "ai-resume-builder",
+  "version": "0.1.0",
+  "private": true,
+  "main": "electron/main.cjs",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "postinstall": "node scripts/install-puppeteer-browser.mjs",
+    "generate-thumbnails": "node scripts/generate-thumbnails.mjs",
+    "desktop:dev": "concurrently \"next dev\" \"wait-on http://localhost:3000 && cross-env ELECTRON_START_URL=http://localhost:3000 electron .\"",
+    "desktop:build": "npm run build && electron-builder"
+  },
+  "build": {
+    "appId": "com.local.airesumebuilder",
+    "productName": "AI Resume Builder",
+    "files": [
+      "electron/**/*",
+      ".next/**/*",
+      "public/**/*",
+      "package.json",
+      "next.config.ts"
+    ],
+    "directories": {
+      "buildResources": "public"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
+  },
+  "dependencies": {
+    "@google/genai": "^2.6.0",
+    "@hookform/resolvers": "^5.2.2",
+    "@radix-ui/react-label": "^2.1.8",
+    "@radix-ui/react-progress": "^1.1.8",
+    "@radix-ui/react-select": "^2.2.6",
+    "@radix-ui/react-slot": "^1.2.4",
+    "@react-pdf/renderer": "^4.5.1",
+    "@tailwindcss/postcss": "^4.3.0",
+    "@tiptap/extension-color": "^3.23.6",
+    "@tiptap/extension-highlight": "^3.23.6",
+    "@tiptap/extension-link": "^3.23.6",
+    "@tiptap/extension-placeholder": "^3.23.6",
+    "@tiptap/extension-text-align": "^3.23.6",
+    "@tiptap/extension-text-style": "^3.23.6",
+    "@tiptap/extension-underline": "^3.23.6",
+    "@tiptap/pm": "^3.23.6",
+    "@tiptap/react": "^3.23.6",
+    "@tiptap/starter-kit": "^3.23.6",
+    "@types/multer": "^2.1.0",
+    "@types/node": "^25.9.1",
+    "@types/react": "^19.2.15",
+    "@types/react-dom": "^19.2.3",
+    "autoprefixer": "^10.5.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "docx": "^9.6.1",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^16.2.6",
+    "html2canvas-pro": "^2.0.2",
+    "lucide-react": "^1.16.0",
+    "mammoth": "^1.12.0",
+    "multer": "^2.1.1",
+    "next": "^15.5.18",
+    "pdf-parse": "^2.4.5",
+    "postcss": "^8.5.15",
+    "puppeteer": "^25.0.4",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "react-hook-form": "^7.76.0",
+    "tailwind-merge": "^3.6.0",
+    "tailwindcss": "^4.3.0",
+    "typescript": "^6.0.3",
+    "zod": "^4.4.3",
+    "zustand": "^5.0.13"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "cross-env": "^10.1.0",
+    "electron": "^37.0.0",
+    "electron-builder": "^26.0.12",
+    "vitest": "^4.1.7",
+    "wait-on": "^9.0.3"
+  }
+}

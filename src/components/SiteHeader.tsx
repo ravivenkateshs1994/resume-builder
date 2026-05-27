@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import MobileNav from "./MobileNav";
+import InstallAppButton from "./InstallAppButton";
 
 export function SiteHeader() {
   const pathname = usePathname() ?? "";
@@ -42,6 +43,7 @@ export function SiteHeader() {
           </nav>
 
           <div className="flex items-center gap-4">
+            <InstallAppButton />
             <MobileNav />
           </div>
         </div>
