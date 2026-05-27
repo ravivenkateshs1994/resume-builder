@@ -185,6 +185,23 @@ export default function AnalysisWorkspacePage() {
   const usingUploadedResume = Boolean(uploadedResume);
   const roleForSampleJD = activeResumeData?.targetRole || activeResumeData?.personalInfo?.jobTitle || resumeData.targetRole || resumeData.personalInfo?.jobTitle || DEFAULT_SAMPLE_ROLE;
 
+  async function loadCloudHistory(token: string) {
+    setCloudLoading(true);
+    setCloudError(null);
+    try {
+      const res = await fetch("/api/cloud/analysis", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const payload = await res.json();
+      if (!res.ok) throw new Error(payload?.error || "Failed to load cloud history.");
+      setCloudHistory((payload.analysis || []) as SavedAnalysisRecord[]);
+    } catch (e) {
+      setCloudError(e instanceof Error ? e.message : "Failed to load cloud history.");
+    } finally {
+      setCloudLoading(false);
+    }
+  }
+
   useEffect(() => {
     if (!accessToken) {
       setCloudHistory([]);
@@ -215,24 +232,6 @@ export default function AnalysisWorkspacePage() {
       setPendingAnalysis(null);
     }
   }, [pendingAnalysis, uploadedResume, setPendingAnalysis]);
-
-  async function loadCloudHistory(token: string) {
-    setCloudLoading(true);
-    setCloudError(null);
-    try {
-      const res = await fetch("/api/cloud/analysis", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const payload = await res.json();
-      if (!res.ok) throw new Error(payload?.error || "Failed to load cloud history.");
-      setCloudHistory((payload.analysis || []) as SavedAnalysisRecord[]);
-    } catch (e) {
-      setCloudError(e instanceof Error ? e.message : "Failed to load cloud history.");
-    } finally {
-      setCloudLoading(false);
-    }
-  }
-
   async function saveAnalysisToCloud(record: Omit<SavedAnalysisRecord, "id" | "createdAt">) {
     if (!accessToken) return;
     const res = await fetch("/api/cloud/analysis", {

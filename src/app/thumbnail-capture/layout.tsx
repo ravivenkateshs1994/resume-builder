@@ -11,7 +11,7 @@ export default function ThumbnailCaptureLayout({
   return (
     <>
       {/* Override root-layout body styles for clean screenshot baseline */}
-      {/* eslint-disable-next-line react/no-unknown-property */}
+      { }
       <style>{`
         body {
           margin: 0 !important;
