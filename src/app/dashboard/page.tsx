@@ -1,20 +1,26 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { useResumeStore } from "@/store/resumeStore";
 import { useRouter } from "next/navigation";
-import DashboardItemCard from "@/components/DashboardItemCard";
+import { SiteHeader } from "@/components/SiteHeader";
+import HeroCard from "@/components/dashboard/HeroCard";
+import StatCards from "@/components/dashboard/StatCards";
+import ResumeList from "@/components/dashboard/ResumeList";
+import ResumePreview from "@/components/dashboard/ResumePreview";
+import ActivityTimeline from "@/components/dashboard/ActivityTimeline";
+import EmptyState from "@/components/dashboard/EmptyState";
 import type { ResumeData } from "@/types/resume";
 
 export default function DashboardPage() {
-  const { accessToken, userEmail, isLoggedIn, signOut, authReady } = useSupabaseAuth();
+  const { accessToken, userEmail, isLoggedIn } = useSupabaseAuth();
   const router = useRouter();
   const { setResumeData, setUploadedResume, setPendingAnalysis } = useResumeStore();
 
-  const [tab, setTab] = useState<"resumes" | "analysis">("resumes");
+  const [tab, setTab] = useState<'resumes' | 'analysis'>('resumes');
+
   const [query, setQuery] = useState("");
   const [resumes, setResumes] = useState<{
     id: string;
@@ -107,15 +113,25 @@ export default function DashboardPage() {
     setDebugAuth(qs.has("debugAuth"));
   }, []);
 
-  function cleanJobDescription(text?: string) {
-    if (!text) return "";
-    // Remove leading 'Role Overview:' or similar prefixes
-    return text.replace(/^\s*Role\s*Overview\s*[:\-–—]?\s*/i, "").trim();
-  }
-
   useEffect(() => {
     if (!isLoggedIn) return;
   }, [isLoggedIn]);
+
+  useEffect(() => {
+    // Auto-select the latest item for the active tab when none is selected
+    if (selectedId) return;
+    if (tab === 'resumes') {
+      if (resumes.length > 0) {
+        const latest = [...resumes].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
+        if (latest) setSelectedId(latest.id);
+      }
+    } else {
+      if (analysis.length > 0) {
+        const latest = [...analysis].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
+        if (latest) setSelectedId(latest.id);
+      }
+    }
+  }, [resumes, analysis, tab, selectedId]);
 
   function openResumeInBuilder(id: string) {
     const r = resumes.find((x) => x.id === id);
@@ -133,51 +149,55 @@ export default function DashboardPage() {
           {toast.message}
         </div>
       )}
-      <main className="mx-auto max-w-6xl px-4 py-8">
-        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Dashboard</h1>
-            <p className="text-sm text-slate-600">Welcome {userEmail ?? ""}. Manage your saved resumes and analysis here.</p>
-            {debugAuth && (
-              <div className="mt-2 rounded-md bg-slate-50 p-2 text-xs text-slate-700 border border-slate-100">
-                <div>authReady: {String(authReady)}</div>
-                <div>isLoggedIn: {String(isLoggedIn)}</div>
-                <div>accessToken present: {accessToken ? `yes (len ${accessToken.length})` : "no"}</div>
-                <div className="mt-1 text-xxs text-slate-400">(Enable by adding ?debugAuth=1 to the URL)</div>
-              </div>
-            )}
-          </div>
+      <main className="mx-auto max-w-7xl space-y-6 px-4 py-8">
 
-          <div className="flex items-center gap-2">
-            <div>
-              {tab === "resumes" ? (
-                <button
-                  onClick={() => router.push("/create")}
-                  className="rounded-md bg-indigo-600 px-3 py-1 text-sm font-semibold text-white"
-                >
-                  Create Resume
-                </button>
-              ) : (
-                <button
-                  onClick={() => router.push("/gap-analysis/analysis")}
-                  className="rounded-md bg-indigo-600 px-3 py-1 text-sm font-semibold text-white"
-                >
-                  Create Analysis
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
+        {/* Hero */}
+        <HeroCard userName={userEmail?.split("@")[0]} onCreate={() => router.push("/create")} onUpload={() => router.push("/create")} />
+
+        {/* KPI Row */}
+        <StatCards
+          stats={[
+            {
+              label: "Total Resumes",
+              value: resumes.length,
+              trend: resumes.length > 0 ? { direction: "up", value: resumes.length } : undefined,
+            },
+            {
+              label: "Avg ATS Score",
+              value:
+                analysis.length > 0
+                  ? `${Math.round(
+                      (analysis
+                        .filter((a) => a.result?.score != null)
+                        .reduce((s, a) => s + (a.result?.score ?? 0), 0) /
+                        Math.max(1, analysis.filter((a) => a.result?.score != null).length)) * 100
+                    )}%`
+                  : "—",
+            },
+            {
+              label: "Analysis Done",
+              value: analysis.length,
+              trend: analysis.length > 0 ? { direction: "up", value: analysis.length } : undefined,
+            },
+            {
+              label: "Skills Missing",
+              value: analysis.reduce(
+                (acc, a) => acc + ((a.result?.missingSkills ?? []).length || 0),
+                0
+              ),
+            },
+          ]}
+        />
 
         {/* Confirm modal */}
         {confirm && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-            <div className="w-full max-w-md rounded bg-white p-6">
-              <p className="mb-4 text-sm text-slate-700">{confirm.message}</p>
-              <div className="flex justify-end gap-2">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+            <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
+              <p className="mb-5 text-sm leading-relaxed text-slate-700">{confirm.message}</p>
+              <div className="flex justify-end gap-3">
                 <button
                   onClick={() => setConfirm(null)}
-                  className="rounded-md border border-slate-200 bg-white px-3 py-1 text-sm"
+                  className="crp-btn-secondary px-4 py-2 text-sm"
                 >
                   Cancel
                 </button>
@@ -227,7 +247,7 @@ export default function DashboardPage() {
                     }
                     setTimeout(() => setToast(null), 3000);
                   }}
-                  className="rounded-md bg-indigo-600 px-3 py-1 text-sm font-semibold text-white"
+                  className="crp-btn-primary px-4 py-2 text-sm font-semibold"
                 >
                   Confirm
                 </button>
@@ -236,223 +256,172 @@ export default function DashboardPage() {
           </div>
         )}
 
-        <div className="mb-4 rounded-lg border bg-white p-3">
-          <nav className="flex gap-2">
-            <button
-              onClick={() => setTab("resumes")}
-              className={`px-3 py-1 text-sm font-semibold ${tab === "resumes" ? "bg-indigo-50 text-indigo-700" : "text-slate-600"}`}
-            >
-              Resumes
-            </button>
-            <button
-              onClick={() => setTab("analysis")}
-              className={`px-3 py-1 text-sm font-semibold ${tab === "analysis" ? "bg-indigo-50 text-indigo-700" : "text-slate-600"}`}
-            >
-              Analysis
-            </button>
-          </nav>
-        </div>
+        {/* Main 2-column layout */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-1">
-            <div className="rounded-lg border bg-white p-4">
-              <h3 className="mb-3 text-sm font-semibold text-slate-700">{tab === "resumes" ? "Saved Resumes" : "Saved analysis"}</h3>
-              <div className="mb-3 flex items-center gap-3">
-                <div className="relative flex-1">
-                  <input
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder={tab === 'resumes' ? 'Search resumes, names, skills...' : 'Search analysis, job titles...'}
-                    className="w-full rounded-md border border-slate-200 bg-white py-2 px-3 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
-                  />
-                  <div className="pointer-events-none absolute right-3 top-2 text-xs text-slate-400">⌕</div>
-                </div>
-                <div className="text-sm text-slate-500">{tab === 'resumes' ? resumes.length : analysis.length} items</div>
-              </div>
-              {loading && <p className="text-sm text-slate-500">Loading…</p>}
-              {tab === "resumes" && resumesError && (
-                <div className="space-y-2">
-                  <p className="text-sm text-red-500">{resumesError}</p>
-                  {authRequired && (
-                    <div>
-                      <button onClick={() => router.push('/login')} className="rounded-md bg-indigo-600 px-3 py-1 text-sm font-semibold text-white">Sign in</button>
-                    </div>
-                  )}
-                </div>
-              )}
-              {tab === "analysis" && analysisError && (
-                <div className="space-y-2">
-                  <p className="text-sm text-red-500">{analysisError}</p>
-                  {authRequired && (
-                    <div>
-                      <button onClick={() => router.push('/login')} className="rounded-md bg-indigo-600 px-3 py-1 text-sm font-semibold text-white">Sign in</button>
-                    </div>
-                  )}
-                </div>
-              )}
-              {!loading && tab === "resumes" && (
-                <div className="space-y-3">
-                  {resumes.filter(r => {
-                    if (!query) return true;
-                    const q = query.toLowerCase();
-                    return (r.title || '').toLowerCase().includes(q) || (r.resumeData.personalInfo?.fullName || '').toLowerCase().includes(q) || (r.resumeData.skills || []).join(' ').toLowerCase().includes(q);
-                  }).map((r) => (
-                    <DashboardItemCard
-                      key={r.id}
-                      id={r.id}
-                      title={r.resumeData.personalInfo?.fullName || r.title}
-                      meta={new Date(r.createdAt).toLocaleString()}
-                      primaryLabel="Import"
-                      onView={() => setSelectedId(r.id)}
-                      onPrimary={() => setConfirm({ id: r.id, type: "import-resume", message: "Import this resume into the builder? Unsaved changes will be lost." })}
-                      onDelete={() => setConfirm({ id: r.id, type: "delete-resume", message: "Delete this saved resume? This cannot be undone." })}
-                    />
-                  ))}
-                  {resumes.length === 0 && !loading && <div className="text-sm text-slate-500">No saved resumes.</div>}
-                </div>
-              )}
-
-              {!loading && tab === "analysis" && (
-                <div className="space-y-3">
-                  {analysis.filter(a => {
-                    if (!query) return true;
-                    const q = query.toLowerCase();
-                    return (a.targetRole || '').toLowerCase().includes(q) || (a.jobDescription || '').toLowerCase().includes(q);
-                  }).map((a) => (
-                    <DashboardItemCard
-                      key={a.id}
-                      id={a.id}
-                      title={a.targetRole || a.jobDescription}
-                      meta={new Date(a.createdAt).toLocaleString()}
-                      primaryLabel="Open"
-                      onView={() => setSelectedId(a.id)}
-                      onPrimary={() => {
-                        try {
-                          setUploadedResume({ label: `Cloud snapshot - ${new Date(a.createdAt).toLocaleDateString()}`, resumeData: a.resumeSnapshot });
-                          setPendingAnalysis({ jobDescription: a.jobDescription, result: a.result });
-                          router.push("/gap-analysis/analysis");
-                        } catch (e) {
-                          setToast({ message: "Failed to open analysis.", type: "error" });
-                          setTimeout(() => setToast(null), 3000);
-                        }
-                      }}
-                      onDelete={() => setConfirm({ id: a.id, type: "delete-analysis", message: "Delete this analysis? This cannot be undone." })}
-                    />
-                  ))}
-                  {analysis.length === 0 && !loading && <div className="text-sm text-slate-500">No analysis yet.</div>}
-                </div>
-              )}
+          {/* Left — Resumes list */}
+          <div className="lg:col-span-2">
+            <div className="mb-4 flex items-center gap-3">
+              <button onClick={() => setTab('resumes')} className={`rounded-full px-3 py-1 text-sm ${tab === 'resumes' ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-slate-600'}`}>
+                Resumes
+              </button>
+              <button onClick={() => setTab('analysis')} className={`rounded-full px-3 py-1 text-sm ${tab === 'analysis' ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-slate-600'}`}>
+                Analysis
+              </button>
             </div>
+
+            <ResumeList
+              resumes={resumes}
+              analyses={analysis}
+              mode={tab}
+              query={query}
+              setQuery={setQuery}
+              selectedId={selectedId}
+              onSelect={(id) => setSelectedId(id)}
+              onImport={(id) =>
+                setConfirm({
+                  id,
+                  type: "import-resume",
+                  message: "Import this resume into the builder? Unsaved changes will be lost.",
+                })
+              }
+              onPrimary={(id) => {
+                // Open analysis in gap-analysis workspace
+                const a = analysis.find((x) => x.id === id);
+                if (!a) return;
+                try {
+                  setUploadedResume({ label: `Cloud snapshot - ${new Date(a.createdAt).toLocaleDateString()}`, resumeData: a.resumeSnapshot });
+                  setPendingAnalysis({ jobDescription: a.jobDescription, result: a.result });
+                  router.push("/gap-analysis/analysis");
+                } catch (e) {
+                  setToast({ message: "Failed to open analysis.", type: "error" });
+                  setTimeout(() => setToast(null), 3000);
+                }
+              }}
+              onDelete={(id) =>
+                setConfirm({
+                  id,
+                  type: tab === 'resumes' ? "delete-resume" : "delete-analysis",
+                  message: tab === 'resumes' ? "Delete this saved resume? This cannot be undone." : "Delete this analysis? This cannot be undone.",
+                })
+              }
+              loading={loading}
+            />
+
+            {/* Auth / load errors */}
+            {resumesError && (
+              <div className="mt-3 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">
+                {resumesError}
+                {authRequired && (
+                  <button
+                    onClick={() => router.push("/login")}
+                    className="ml-3 underline"
+                  >
+                    Sign in
+                  </button>
+                )}
+              </div>
+            )}
           </div>
 
-          <div className="lg:col-span-2">
-            <div className="rounded-lg bg-white p-6 shadow-sm min-h-[240px]">
-              {selectedId == null && <div className="flex h-full items-center justify-center"><p className="text-sm text-slate-500">Select an item to view details.</p></div>}
+          {/* Right — AI Insights / Resume Preview + Activity */}
+          <div className="flex flex-col gap-6 lg:col-span-3">
+            {tab === 'resumes' ? (
+              resumes.length === 0 && !loading ? (
+                <EmptyState onCreate={() => router.push("/create")} />
+              ) : (
+                <ResumePreview
+                  item={selectedId ? resumes.find((r) => r.id === selectedId) : undefined}
+                  onOpen={() => {
+                    const id = selectedId;
+                    if (!id) return;
+                    openResumeInBuilder(id);
+                  }}
+                />
+              )
+            ) : (
+              // Analysis tab
+              analysis.length === 0 && !loading ? (
+                <div className="crp-card-soft p-8 text-center">
+                  <h3 className="mb-2 text-lg font-semibold text-slate-900">No saved analysis yet</h3>
+                  <p className="mb-4 text-sm text-slate-600">Analyze a job description to get AI-driven recommendations and ATS scores.</p>
+                  <div className="flex justify-center">
+                    <button onClick={() => router.push('/gap-analysis/analysis')} className="crp-btn-primary px-4 py-2">Create Analysis</button>
+                  </div>
+                </div>
+              ) : (
+                // show selected analysis details or prompt to select
+                (selectedId == null) ? (
+                  <div className="crp-card p-6 text-center text-slate-600">Select an analysis to view details.</div>
+                ) : (() => {
+                  const item = analysis.find(a => a.id === selectedId);
+                  if (!item) return <div className="crp-card p-6 text-sm text-slate-500">Analysis not found.</div>;
 
-              {selectedId != null && tab === "resumes" && (
-                (() => {
-                  const item = resumes.find((r) => r.id === selectedId);
-                  if (!item) return <p className="text-sm text-slate-500">Resume not found.</p>;
+                  const score = item.result?.score != null ? Math.round(item.result.score * 100) : null;
+                  const missing: string[] = item.result?.missingSkills ?? [];
+                  const recommendations: string[] = item.result?.recommendations ?? [];
+
                   return (
-                    <div>
-                      <h3 className="text-lg font-semibold">{item.title}</h3>
-                      <p className="text-xs text-slate-500">Saved {new Date(item.createdAt).toLocaleString()}</p>
-                      <div className="mt-4 space-y-3">
-                        <div className="text-sm text-slate-700">
-                          <div className="font-semibold">{item.resumeData.personalInfo?.fullName || "—"}</div>
-                          <div className="text-xs text-slate-500">{item.resumeData.personalInfo?.email || ""} {item.resumeData.personalInfo?.phone ? `· ${item.resumeData.personalInfo.phone}` : ""}</div>
-                          <div className="mt-2 text-sm">{item.resumeData.summary || item.resumeData.targetRole || "No summary provided."}</div>
+                    <div className="crp-card p-6">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <h3 className="text-lg font-semibold">{item.targetRole || "Analysis"}</h3>
+                          <p className="text-xs text-slate-500">{new Date(item.createdAt).toLocaleString()}</p>
                         </div>
+                        <div className="flex gap-2">
+                          <button onClick={() => {
+                            try {
+                              setUploadedResume({ label: `Cloud snapshot - ${new Date(item.createdAt).toLocaleDateString()}`, resumeData: item.resumeSnapshot });
+                              setPendingAnalysis({ jobDescription: item.jobDescription, result: item.result });
+                              router.push('/gap-analysis/analysis');
+                            } catch (e) {
+                              setToast({ message: 'Failed to open analysis.', type: 'error' });
+                              setTimeout(() => setToast(null), 3000);
+                            }
+                          }} className="crp-btn-primary px-3 py-1">Open</button>
+                          <button onClick={() => setConfirm({ id: item.id, type: 'delete-analysis', message: 'Delete this analysis? This cannot be undone.' })} className="crp-btn-ghost px-3 py-1">Delete</button>
+                        </div>
+                      </div>
 
-                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                          <div>
-                            <div className="mb-1 text-xs font-semibold text-slate-500">Top skills</div>
+                      <div className="mt-4">
+                        <p className="mb-2 font-semibold">Job description</p>
+                        <div className="rounded-md border bg-slate-50 p-3 text-sm whitespace-pre-wrap max-h-56 overflow-auto">{item.jobDescription || "(none)"}</div>
+                      </div>
+
+                      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        {score != null && (
+                          <div className="crp-score-card p-4">
+                            <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Match score</p>
+                            <p className={`mt-1 text-3xl font-extrabold ${score >= 70 ? 'text-emerald-600' : score >= 45 ? 'text-amber-600' : 'text-rose-500'}`}>{score}%</p>
+                          </div>
+                        )}
+
+                        {missing.length > 0 && (
+                          <div className="rounded-2xl border border-amber-100 bg-amber-50 p-4">
+                            <p className="mb-2 text-xs font-bold uppercase tracking-wide text-amber-700">Missing skills</p>
                             <div className="flex flex-wrap gap-2">
-                              {(item.resumeData.skills ?? []).slice(0, 12).map((s: string, idx: number) => (
-                                <span key={idx} className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-700">{s}</span>
-                              ))}
-                              {(item.resumeData.skills ?? []).length === 0 && <div className="text-xs text-slate-500">No skills listed.</div>}
+                              {missing.map((sk, i) => <span key={i} className="rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-800">{sk}</span>)}
                             </div>
                           </div>
+                        )}
 
-                          <div>
-                            <div className="mb-1 text-xs font-semibold text-slate-500">Experience</div>
-                            <div className="text-xs text-slate-700">
-                              {(item.resumeData.workExperience ?? []).slice(0, 6).map((w: any) => (
-                                <div key={w.id} className="mb-1">
-                                  <div className="font-medium">{w.title || ""} — {w.company || ""}</div>
-                                  <div className="text-xs text-slate-500">{w.startDate || ""} {w.endDate ? `– ${w.endDate}` : ""}</div>
-                                </div>
-                              ))}
-                              {(item.resumeData.workExperience ?? []).length === 0 && <div className="text-xs text-slate-500">No experience entries.</div>}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="mt-3 text-xs text-slate-500">
-                          <div>Education: {(item.resumeData.education ?? []).length} entries</div>
-                          <div>Certifications: {(item.resumeData.certifications ?? []).length} entries</div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })()
-              )}
-
-              {selectedId != null && tab === "analysis" && (
-                (() => {
-                  const item = analysis.find((a) => a.id === selectedId);
-                  if (!item) return <p className="text-sm text-slate-500">Analysis not found.</p>;
-                  return (
-                    <div>
-                      <h3 className="text-lg font-semibold">{item.targetRole || "Analysis"}</h3>
-                      <p className="text-xs text-slate-500">{new Date(item.createdAt).toLocaleString()}</p>
-                      <div className="mt-4 space-y-4">
-                        <div>
-                          <p className="mb-2 font-semibold">Job description</p>
-                              <div className="rounded-md border bg-slate-50 p-3 text-xs whitespace-pre-wrap max-h-48 overflow-auto">{cleanJobDescription(item.jobDescription) || "(none)"}</div>
-                        </div>
-
-                        <div>
-                          <p className="mb-2 font-semibold">AI Analysis</p>
-                          {/* Friendly render of common result fields */}
-                          {item.result?.recommendations && Array.isArray(item.result.recommendations) ? (
-                            <ul className="list-inside list-disc text-sm">
-                              {item.result.recommendations.map((rec: any, i: number) => (
-                                <li key={i} className="text-sm text-slate-700">{rec}</li>
-                              ))}
+                        {recommendations.length > 0 && (
+                          <div className="rounded-2xl border border-indigo-100 bg-indigo-50 p-4 sm:col-span-2">
+                            <p className="mb-2 text-xs font-bold uppercase tracking-wide text-indigo-700">Recommendations</p>
+                            <ul className="space-y-1 text-sm text-slate-700">
+                              {recommendations.map((r: any, i: number) => <li key={i}>→ {r}</li>)}
                             </ul>
-                          ) : null}
-
-                          {item.result?.missingSkills && Array.isArray(item.result.missingSkills) ? (
-                            <div className="mt-2">
-                              <div className="text-xs font-semibold text-slate-500">Missing skills</div>
-                              <div className="flex flex-wrap gap-2 mt-1">
-                                {item.result.missingSkills.map((sk: string, i: number) => (
-                                  <span key={i} className="rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-800">{sk}</span>
-                                ))}
-                              </div>
-                            </div>
-                          ) : null}
-
-                          {item.result?.score != null && (
-                            <div className="mt-3">
-                              <div className="text-xs font-semibold text-slate-500">Match score</div>
-                              <div className="text-lg font-bold text-emerald-700">{Math.round(item.result.score * 100)}%</div>
-                            </div>
-                          )}
-
-                          {/* Fallback raw JSON if nothing matched */}
-                          {!item.result?.recommendations && !item.result?.missingSkills && item.result && (
-                            <pre className="mt-2 text-xs whitespace-pre-wrap max-h-72 overflow-auto">{JSON.stringify(item.result, null, 2)}</pre>
-                          )}
-                        </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   );
                 })()
-              )}
-            </div>
+              )
+            )}
+
+            {/* Activity timeline (changes with active tab) */}
+            <ActivityTimeline items={(tab === 'analysis' ? analysis : resumes).slice(0, 8)} />
           </div>
         </div>
       </main>
