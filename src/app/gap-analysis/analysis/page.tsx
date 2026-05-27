@@ -23,7 +23,6 @@ import {
 } from "lucide-react";
 import { parseResumeFile } from "@/lib/resumeFileParser";
 import { useResumeStore } from "@/store/resumeStore";
-import type { ResumeData } from "@/types/resume";
 import Link from "next/link";
 
 // Types
@@ -42,6 +41,7 @@ interface Gap {
   importance: "high" | "medium" | "low";
   context: string;
   learningResources: LearningResource[];
+  practicalPlan?: string[];
 }
 
 interface GapResult {
@@ -66,7 +66,54 @@ interface GapResult {
 
 type GapStatus = "unknown" | "known" | "learning";
 
-const SAMPLE_JD = `We are hiring a Senior Frontend Engineer with strong React, TypeScript, and Next.js experience. Candidates should be comfortable building responsive UI systems, collaborating with product/design, improving performance, and writing maintainable component architecture. Experience with testing, accessibility, and API integration is preferred.`;
+const DEFAULT_SAMPLE_ROLE = "Frontend Engineer";
+
+function generateSampleJobDescription(inputRole?: string): string {
+  const role = (inputRole || DEFAULT_SAMPLE_ROLE).trim();
+  const roleKey = role.toLowerCase();
+
+  if (roleKey.includes("frontend") || roleKey.includes("front end")) {
+    return `We are hiring a ${role} with strong React, TypeScript, and Next.js experience. Candidates should be comfortable building responsive UI systems, collaborating with product and design, improving performance, and writing maintainable component architecture. Experience with testing, accessibility, and API integration is preferred.`;
+  }
+
+  if (roleKey.includes("backend") || roleKey.includes("back end")) {
+    return `We are hiring a ${role} with strong Node.js, API design, and cloud deployment experience. Candidates should be comfortable designing scalable services, optimizing databases, implementing authentication and observability, and collaborating with frontend and DevOps teams. Experience with distributed systems, testing, and CI/CD is preferred.`;
+  }
+
+  if (roleKey.includes("full stack") || roleKey.includes("fullstack")) {
+    return `We are hiring a ${role} with strong experience across React, TypeScript, Node.js, and modern cloud platforms. Candidates should be comfortable building end-to-end product features, designing APIs, integrating databases, and shipping performant user experiences. Experience with testing, system design, and CI/CD is preferred.`;
+  }
+
+  if (roleKey.includes("data") && roleKey.includes("analyst")) {
+    return `We are hiring a ${role} with strong SQL, Excel, and BI dashboarding skills. Candidates should be comfortable defining KPIs, building reliable reports, analyzing trends, and presenting insights to cross-functional stakeholders. Experience with Python, experimentation analysis, and data storytelling is preferred.`;
+  }
+
+  if (roleKey.includes("data") && roleKey.includes("scientist")) {
+    return `We are hiring a ${role} with strong Python, statistics, and machine learning experience. Candidates should be comfortable building predictive models, conducting experiments, preparing datasets, and communicating findings to product and business teams. Experience with MLOps, feature engineering, and cloud ML workflows is preferred.`;
+  }
+
+  if (roleKey.includes("product manager") || roleKey.includes("product owner")) {
+    return `We are hiring a ${role} who can drive product strategy from discovery to launch. Candidates should be comfortable writing PRDs, prioritizing roadmaps, defining success metrics, and partnering with design, engineering, and go-to-market teams. Experience with user research, experimentation, and stakeholder management is preferred.`;
+  }
+
+  if (roleKey.includes("designer") || roleKey.includes("ux") || roleKey.includes("ui")) {
+    return `We are hiring a ${role} with strong UX thinking, interaction design, and visual design skills. Candidates should be comfortable leading user research, building wireframes and high-fidelity prototypes, collaborating with product and engineering, and maintaining design systems. Experience with accessibility and usability testing is preferred.`;
+  }
+
+  if (roleKey.includes("devops") || roleKey.includes("site reliability") || roleKey.includes("sre")) {
+    return `We are hiring a ${role} with strong cloud infrastructure, CI/CD, and observability experience. Candidates should be comfortable automating deployments, managing Kubernetes or containerized workloads, improving reliability, and strengthening incident response practices. Experience with security hardening and performance tuning is preferred.`;
+  }
+
+  if (roleKey.includes("qa") || roleKey.includes("quality assurance") || roleKey.includes("test engineer")) {
+    return `We are hiring a ${role} with strong manual and automation testing experience. Candidates should be comfortable building test plans, writing API and UI automation suites, validating release quality, and partnering closely with developers throughout the SDLC. Experience with performance testing and CI integration is preferred.`;
+  }
+
+  if (roleKey.includes("marketing")) {
+    return `We are hiring a ${role} with strong campaign strategy, analytics, and cross-channel execution skills. Candidates should be comfortable planning and running growth campaigns, optimizing funnels, collaborating with content and product teams, and presenting performance insights. Experience with lifecycle marketing and A/B testing is preferred.`;
+  }
+
+  return `We are hiring a ${role} who can drive measurable outcomes in a cross-functional environment. Candidates should be comfortable owning projects end-to-end, collaborating with stakeholders, using data to guide decisions, and communicating clearly across teams. Experience with modern tools, process improvement, and execution at scale is preferred.`;
+}
 
 // Helpers
 
@@ -123,6 +170,7 @@ export default function AnalysisWorkspacePage() {
   const { uploadedResume, setUploadedResume } = useResumeStore();
   const [resumeUploadError, setResumeUploadError] = useState<string | null>(null);
   const [resumeUploading, setResumeUploading] = useState(false);
+  const [generatingSampleJD, setGeneratingSampleJD] = useState(false);
 
   const [gapStatus, setGapStatus] = useState<Record<string, GapStatus>>({});
   const [expandedResources, setExpandedResources] = useState<Record<string, boolean>>({});
@@ -131,9 +179,39 @@ export default function AnalysisWorkspacePage() {
   const hasBuilderResume = Boolean(resumeData && Object.keys(resumeData).length > 0 && resumeData.personalInfo?.fullName !== "");
   const hasActiveResume = Boolean(activeResumeData && (activeResumeData.personalInfo?.fullName || activeResumeData.skills?.length));
   const usingUploadedResume = Boolean(uploadedResume);
+  const roleForSampleJD = activeResumeData?.targetRole || activeResumeData?.personalInfo?.jobTitle || resumeData.targetRole || resumeData.personalInfo?.jobTitle || DEFAULT_SAMPLE_ROLE;
 
   function openResumePicker() {
     fileInputRef.current?.click();
+  }
+
+  async function generateAiSampleJD() {
+    setGeneratingSampleJD(true);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          field: "sample-jd",
+          role: roleForSampleJD,
+          resumeData: activeResumeData,
+        }),
+      });
+
+      const payload = await res.json();
+      if (!res.ok) throw new Error(payload?.error || "Failed to generate sample JD.");
+
+      const sampleJD = (payload?.result || "").trim();
+      if (!sampleJD) throw new Error("AI returned an empty sample JD.");
+      setJobDescription(sampleJD);
+    } catch (e) {
+      setJobDescription(generateSampleJobDescription(roleForSampleJD));
+      setError(e instanceof Error ? `${e.message} Loaded a fallback sample JD for now.` : "AI generation failed. Loaded a fallback sample JD.");
+    } finally {
+      setGeneratingSampleJD(false);
+    }
   }
 
   async function analyze() {
@@ -300,7 +378,14 @@ export default function AnalysisWorkspacePage() {
             <textarea value={jobDescription} onChange={(e) => setJobDescription(e.target.value)} rows={8} placeholder="Paste the full job description here - the more detail, the better the analysis." className="crp-textarea resize-none" />
             <div className="mt-2 flex items-center justify-between gap-3">
               <p className="text-xs text-slate-400">{jobDescription.length} characters</p>
-              <button type="button" onClick={() => setJobDescription(SAMPLE_JD)} className="text-xs font-semibold text-indigo-600 hover:text-indigo-700">Use Sample JD</button>
+              <button
+                type="button"
+                onClick={() => void generateAiSampleJD()}
+                disabled={generatingSampleJD}
+                className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {generatingSampleJD ? "Generating..." : "Use Sample JD"}
+              </button>
             </div>
           </div>
 
@@ -377,6 +462,20 @@ export default function AnalysisWorkspacePage() {
                         <button type="button" onClick={() => setStatus(gap.id, "learning")} className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${status === "learning" ? "bg-indigo-100 text-indigo-700" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}>Learning</button>
                         <button type="button" onClick={() => setStatus(gap.id, "unknown")} className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${status === "unknown" ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}>Unknown</button>
                       </div>
+
+                      {gap.practicalPlan?.length ? (
+                        <div className="mt-4 rounded-xl border border-indigo-100 bg-indigo-50/50 p-3">
+                          <p className="text-xs font-semibold uppercase tracking-wide text-indigo-700">Practical Weekly Plan</p>
+                          <ul className="mt-2 space-y-1.5">
+                            {gap.practicalPlan.map((step) => (
+                              <li key={`${gap.id}-${step}`} className="text-sm text-slate-700 flex items-start gap-2">
+                                <span className="mt-1 h-1.5 w-1.5 rounded-full bg-indigo-500 shrink-0" />
+                                <span>{step}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ) : null}
 
                       {gap.learningResources?.length > 0 && (
                         <div className="mt-4 border-t border-slate-100 pt-4">

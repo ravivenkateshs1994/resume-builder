@@ -7,13 +7,14 @@ import type { ResumeData } from "@/types/resume";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { field, resumeData, rawText, htmlContent, selectedText, jobTitle } = body as {
-      field: "summary" | "bullets" | "optimize" | "suggest-skills";
+    const { field, resumeData, rawText, htmlContent, selectedText, jobTitle, role } = body as {
+      field: "summary" | "bullets" | "optimize" | "suggest-skills" | "sample-jd";
       resumeData: ResumeData;
       rawText?: string;
       htmlContent?: string;
       selectedText?: string;
       jobTitle?: string;
+      role?: string;
     };
 
     if (field === "summary") {
@@ -240,6 +241,28 @@ export async function POST(req: NextRequest) {
         skills = content.split(/\n/).map((l: string) => l.replace(/^[-*\d."'\s]+/, "").replace(/[",]+$/, "").trim()).filter(Boolean);
       }
       return NextResponse.json({ result: skills });
+    }
+
+    if (field === "sample-jd") {
+      const targetRole = (role || resumeData?.targetRole || resumeData?.personalInfo?.jobTitle || "Frontend Engineer").trim();
+      const skills = (resumeData?.skills || []).slice(0, 12).join(", ");
+
+      const prompt = [
+        "You are a hiring manager writing a realistic job description.",
+        `Write a concise, role-specific sample job description for the role: "${targetRole}".`,
+        "Output rules:",
+        "- Return plain text only (no markdown, no headings with #, no code fences).",
+        "- Keep it between 140 and 240 words.",
+        "- Include these sections in prose with clear labels: Role Overview, Responsibilities, Requirements, Preferred.",
+        "- Keep it practical and ATS-friendly with specific skills and outcomes.",
+        "- Do not include salary, location, visa, or legal boilerplate.",
+        skills ? `Candidate's known skills for context: ${skills}` : "",
+      ]
+        .filter(Boolean)
+        .join("\n");
+
+      const text = await generate(prompt, 0.7);
+      return NextResponse.json({ result: text.trim() });
     }
 
     return NextResponse.json({ error: "Invalid field" }, { status: 400 });

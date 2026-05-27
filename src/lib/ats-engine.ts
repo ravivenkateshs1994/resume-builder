@@ -171,6 +171,7 @@ export interface AtsGapInsight {
   importance: "high" | "medium" | "low";
   context: string;
   learningResources: AtsGapLearningResource[];
+  practicalPlan: string[];
 }
 
 const SECTION_ORDER: AtsSectionKey[] = [
@@ -914,45 +915,128 @@ function classifyGapCategory(keyword: string): AtsGapCategory {
   return "Domain Knowledge";
 }
 
+function buildOfficialDocsQuery(baseQuery: string): string {
+  const normalized = normalizeForMatch(baseQuery);
+
+  if (normalized.includes("react")) return "react official docs learn";
+  if (normalized.includes("next js") || normalized.includes("nextjs")) return "next.js official docs learn";
+  if (normalized.includes("typescript")) return "typescript handbook";
+  if (normalized.includes("javascript")) return "mdn javascript guide";
+  if (normalized.includes("node")) return "node.js docs learn";
+  if (normalized.includes("python")) return "python official tutorial";
+  if (normalized.includes("sql")) return "sql tutorial documentation";
+  if (normalized.includes("aws")) return "aws documentation getting started";
+  if (normalized.includes("azure")) return "azure documentation getting started";
+  if (normalized.includes("gcp") || normalized.includes("google cloud")) return "google cloud documentation quickstart";
+  if (normalized.includes("docker")) return "docker docs getting started";
+  if (normalized.includes("kubernetes")) return "kubernetes docs tutorials";
+  if (normalized.includes("git")) return "git scm book";
+  if (normalized.includes("figma")) return "figma help center";
+
+  return `${baseQuery} official documentation beginner`;
+}
+
+function buildGuidedTitle(step: string, topic: string): string {
+  return `${step}: ${topic}`;
+}
+
 function buildLearningResources(keyword: string, category: AtsGapCategory): AtsGapLearningResource[] {
   const baseQuery = keyword.trim();
-  const docsQuery = `${baseQuery} official documentation`;
-  const courseQuery = `learn ${baseQuery}`;
-  const videoQuery = `${baseQuery} tutorial`;
-  const practiceQuery = `${baseQuery} practice`;
+  const docsQuery = buildOfficialDocsQuery(baseQuery);
+  const beginnerCourseQuery = `${baseQuery} beginner course with exercises`;
+  const beginnerVideoQuery = `${baseQuery} full tutorial for beginners`;
+  const guidedPracticeQuery = `${baseQuery} hands-on practice exercises`;
+  const projectQuery = `${baseQuery} beginner to intermediate project tutorial`;
+  const interviewQuery = `${baseQuery} interview questions with answers`;
 
   if (category === "Certification") {
     return [
-      { title: `Official ${baseQuery} certification guide`, type: "docs", platform: "Official docs", searchQuery: `${baseQuery} certification guide` },
-      { title: `${baseQuery} certification prep video`, type: "video", platform: "YouTube", searchQuery: `${baseQuery} certification prep` },
-      { title: `${baseQuery} certification course`, type: "course", platform: "Coursera", searchQuery: `${baseQuery} certification course` },
-      { title: `${baseQuery} practice questions`, type: "practice", platform: "Udemy", searchQuery: `${baseQuery} practice questions` },
+      { title: buildGuidedTitle("Step 1 - Understand the exam", `${baseQuery} certification overview`), type: "docs", platform: "Official docs", searchQuery: `${baseQuery} certification exam guide syllabus` },
+      { title: buildGuidedTitle("Step 2 - Learn the core topics", `${baseQuery} prep course`), type: "course", platform: "Coursera", searchQuery: `${baseQuery} certification prep course beginner` },
+      { title: buildGuidedTitle("Step 3 - Follow a study walkthrough", `${baseQuery} prep playlist`), type: "video", platform: "YouTube", searchQuery: `${baseQuery} certification preparation full course` },
+      { title: buildGuidedTitle("Step 4 - Practice and assess", `${baseQuery} mock questions`), type: "practice", platform: "Udemy", searchQuery: `${baseQuery} certification practice test questions` },
+      { title: buildGuidedTitle("Step 5 - Last-week revision", `${baseQuery} exam tips`), type: "book", platform: "Book search", searchQuery: `${baseQuery} certification exam tips cheat sheet` },
     ];
   }
 
   if (category === "Soft Skill") {
     return [
-      { title: `${baseQuery} playbook`, type: "book", platform: "Book search", searchQuery: `${baseQuery} book` },
-      { title: `${baseQuery} workshop`, type: "course", platform: "Coursera", searchQuery: `${baseQuery} workshop` },
-      { title: `${baseQuery} examples`, type: "video", platform: "YouTube", searchQuery: `${baseQuery} examples` },
-      { title: `${baseQuery} interview practice`, type: "practice", platform: "Official docs", searchQuery: `${baseQuery} interview practice` },
+      { title: buildGuidedTitle("Step 1 - Learn the framework", `${baseQuery} fundamentals`), type: "book", platform: "Book search", searchQuery: `${baseQuery} practical guide examples` },
+      { title: buildGuidedTitle("Step 2 - Apply in real scenarios", `${baseQuery} workshop`), type: "course", platform: "Coursera", searchQuery: `${baseQuery} communication leadership workshop` },
+      { title: buildGuidedTitle("Step 3 - Watch roleplay examples", `${baseQuery} in workplace`), type: "video", platform: "YouTube", searchQuery: `${baseQuery} workplace examples role play` },
+      { title: buildGuidedTitle("Step 4 - Practice answers", `${baseQuery} interview drills`), type: "practice", platform: "Official docs", searchQuery: `${baseQuery} behavioral interview practice` },
+      { title: buildGuidedTitle("Step 5 - Reflect and improve", `${baseQuery} self review template`), type: "docs", platform: "Official docs", searchQuery: `${baseQuery} self assessment template` },
     ];
   }
 
   if (category === "Tool/Platform") {
     return [
-      { title: `Official ${baseQuery} docs`, type: "docs", platform: "Official docs", searchQuery: docsQuery },
-      { title: `${baseQuery} tutorial`, type: "video", platform: "YouTube", searchQuery: videoQuery },
-      { title: `Learn ${baseQuery}`, type: "course", platform: "Coursera", searchQuery: courseQuery },
-      { title: `${baseQuery} hands-on practice`, type: "practice", platform: "Udemy", searchQuery: practiceQuery },
+      { title: buildGuidedTitle("Step 1 - Start with official docs", `${baseQuery} basics`), type: "docs", platform: "Official docs", searchQuery: docsQuery },
+      { title: buildGuidedTitle("Step 2 - Build foundation", `${baseQuery} beginner course`), type: "course", platform: "Coursera", searchQuery: beginnerCourseQuery },
+      { title: buildGuidedTitle("Step 3 - Follow end-to-end tutorial", `${baseQuery} walkthrough`), type: "video", platform: "YouTube", searchQuery: beginnerVideoQuery },
+      { title: buildGuidedTitle("Step 4 - Do guided exercises", `${baseQuery} practice set`), type: "practice", platform: "Udemy", searchQuery: guidedPracticeQuery },
+      { title: buildGuidedTitle("Step 5 - Build one portfolio project", `${baseQuery} project`), type: "practice", platform: "Official docs", searchQuery: projectQuery },
+    ];
+  }
+
+  if (category === "Experience") {
+    return [
+      { title: buildGuidedTitle("Step 1 - Understand expected scope", `${baseQuery} role expectations`), type: "docs", platform: "Official docs", searchQuery: `${baseQuery} responsibilities and skills` },
+      { title: buildGuidedTitle("Step 2 - Learn the core stack", `${baseQuery} fundamentals`), type: "course", platform: "Coursera", searchQuery: beginnerCourseQuery },
+      { title: buildGuidedTitle("Step 3 - Replicate real tasks", `${baseQuery} practical walkthrough`), type: "video", platform: "YouTube", searchQuery: `${baseQuery} real world tasks tutorial` },
+      { title: buildGuidedTitle("Step 4 - Practice portfolio-ready tasks", `${baseQuery} hands-on`), type: "practice", platform: "Udemy", searchQuery: projectQuery },
+      { title: buildGuidedTitle("Step 5 - Prepare for interviews", `${baseQuery} interview prep`), type: "practice", platform: "Official docs", searchQuery: interviewQuery },
     ];
   }
 
   return [
-    { title: `Official ${baseQuery} documentation`, type: "docs", platform: "Official docs", searchQuery: docsQuery },
-    { title: `${baseQuery} learning path`, type: "course", platform: "Coursera", searchQuery: courseQuery },
-    { title: `${baseQuery} walkthrough`, type: "video", platform: "YouTube", searchQuery: videoQuery },
-    { title: `${baseQuery} practice exercises`, type: "practice", platform: "Udemy", searchQuery: practiceQuery },
+    { title: buildGuidedTitle("Step 1 - Understand the concept", `${baseQuery} fundamentals`), type: "docs", platform: "Official docs", searchQuery: docsQuery },
+    { title: buildGuidedTitle("Step 2 - Learn with structure", `${baseQuery} learning path`), type: "course", platform: "Coursera", searchQuery: beginnerCourseQuery },
+    { title: buildGuidedTitle("Step 3 - See practical examples", `${baseQuery} walkthrough`), type: "video", platform: "YouTube", searchQuery: beginnerVideoQuery },
+    { title: buildGuidedTitle("Step 4 - Practice deliberately", `${baseQuery} exercises`), type: "practice", platform: "Udemy", searchQuery: guidedPracticeQuery },
+    { title: buildGuidedTitle("Step 5 - Validate interview readiness", `${baseQuery} interview prep`), type: "practice", platform: "Official docs", searchQuery: interviewQuery },
+  ];
+}
+
+function buildPracticalPlan(keyword: string, category: AtsGapCategory): string[] {
+  const topic = canonicalizeKeyword(keyword);
+
+  if (category === "Certification") {
+    return [
+      `Day 1: Read the official ${topic} exam guide and note every exam domain.`,
+      "Day 2-4: Complete one beginner-friendly prep module and write short notes for each domain.",
+      `Day 5-6: Solve 30-50 ${topic} practice questions and track weak areas.`,
+      `Day 7: Do one timed mock test and review every incorrect answer.`,
+      `Resume proof: Add "${topic} certification prep in progress" plus 1-2 key domains you practiced.`,
+    ];
+  }
+
+  if (category === "Soft Skill") {
+    return [
+      `Day 1: Learn one framework for ${topic} (for example STAR, SBI, or active listening checklist).`,
+      `Day 2-3: Practice with 3 realistic workplace scenarios and write your responses.`,
+      "Day 4: Record a 3-5 minute mock explanation and self-review clarity and structure.",
+      "Day 5-6: Use the skill in a real conversation or project update and collect feedback.",
+      `Resume proof: Add one bullet showing how ${topic} improved team outcome, delivery, or decision-making.`,
+    ];
+  }
+
+  if (category === "Experience") {
+    return [
+      `Day 1: Break ${topic} into 3 concrete capabilities expected in real jobs.`,
+      "Day 2-4: Recreate one real-world task end-to-end and document your decisions.",
+      "Day 5: Build a mini project or case study that demonstrates measurable output.",
+      "Day 6: Write a concise README or summary explaining problem, approach, and results.",
+      `Resume proof: Add 2 bullets with action + metric that demonstrate ${topic} in practice.`,
+    ];
+  }
+
+  return [
+    `Day 1: Learn ${topic} fundamentals from official docs and write a one-page summary.`,
+    `Day 2-3: Complete a beginner tutorial and replicate it without copy-pasting.`,
+    `Day 4-5: Build one mini project using ${topic} from scratch.`,
+    `Day 6: Solve 5 practical tasks or interview questions on ${topic}.`,
+    `Resume proof: Add one project bullet and 1-2 ${topic}-specific achievement bullets.`,
   ];
 }
 
@@ -1165,6 +1249,7 @@ function buildGapInsights(analysis: AtsAnalysisResult): AtsGapInsight[] {
       importance: "high",
       context: buildGapContext(gapKeyword, analysis),
       learningResources: buildLearningResources(gapKeyword, "Experience"),
+      practicalPlan: buildPracticalPlan(gapKeyword, "Experience"),
     });
     added.add(normalizeForMatch(gapKeyword));
   }
@@ -1184,6 +1269,7 @@ function buildGapInsights(analysis: AtsAnalysisResult): AtsGapInsight[] {
       importance,
       context: `Your resume is missing a ${label.toLowerCase()} section, which makes it harder for ATS systems to find the right signals.`,
       learningResources: buildLearningResources(label, category),
+      practicalPlan: buildPracticalPlan(label, category),
     });
     added.add(key);
   }
@@ -1203,6 +1289,7 @@ function buildGapInsights(analysis: AtsAnalysisResult): AtsGapInsight[] {
       importance: buildGapImportance(index, analysis, keyword),
       context: buildGapContext(keyword, analysis),
       learningResources: buildLearningResources(canonicalizeKeyword(keyword), category),
+      practicalPlan: buildPracticalPlan(canonicalizeKeyword(keyword), category),
     });
     added.add(normalized);
   });
