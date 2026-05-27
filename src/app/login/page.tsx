@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -9,8 +9,17 @@ import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 export default function LoginPage() {
   const { isLoggedIn, userEmail, signOut, signInWithPassword, supabase } = useSupabaseAuth();
   const router = useRouter();
+  const renderCount = useRef(0);
+  useEffect(() => {
+    renderCount.current += 1;
+    if (typeof window !== "undefined") {
+      console.debug("[diagnostics] LoginPage render", renderCount.current);
+    }
+  });
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const emailRef = useRef<HTMLInputElement | null>(null);
+  const passwordRef = useRef<HTMLInputElement | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -59,6 +68,7 @@ export default function LoginPage() {
           ) : (
             <div className="mt-6 space-y-3">
               <input
+                ref={emailRef}
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -66,6 +76,7 @@ export default function LoginPage() {
                 className="crp-input w-full"
               />
               <input
+                ref={passwordRef}
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

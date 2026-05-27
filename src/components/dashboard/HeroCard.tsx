@@ -4,11 +4,9 @@ import React from "react";
 
 interface Props {
   userName?: string;
-  onCreate?: () => void;
-  onUpload?: () => void;
 }
 
-export default function HeroCard({ userName, onCreate, onUpload }: Props) {
+export default function HeroCard({ userName }: Props) {
   return (
     <div className="crp-card-soft crp-module-accent p-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex-1">
@@ -35,20 +33,7 @@ export default function HeroCard({ userName, onCreate, onUpload }: Props) {
           </svg>
         </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => onCreate?.()}
-            className="crp-btn-primary px-3 py-2 text-sm"
-          >
-            Create Resume
-          </button>
-          <button
-            onClick={() => onUpload?.()}
-            className="crp-btn-ghost px-3 py-2 text-sm"
-          >
-            Upload
-          </button>
-        </div>
+        {/* No CTA buttons here by design */}
       </div>
     </div>
   );

@@ -4,13 +4,20 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import MobileNav from "./MobileNav";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, memo } from "react";
 
-export function SiteHeader() {
+function SiteHeaderImpl() {
   const pathname = usePathname() ?? "";
   const { isLoggedIn, signOut } = useSupabaseAuth();
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement | null>(null);
+  const headerRenderCount = useRef(0);
+  useEffect(() => {
+    headerRenderCount.current += 1;
+    if (typeof window !== "undefined") {
+      console.debug("[diagnostics] SiteHeader render", headerRenderCount.current);
+    }
+  });
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
@@ -110,3 +117,5 @@ export function SiteHeader() {
     </header>
   );
 }
+
+export const SiteHeader = memo(SiteHeaderImpl);

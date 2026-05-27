@@ -148,7 +148,7 @@ export default function DashboardPage() {
       <main className="mx-auto max-w-7xl space-y-6 px-4 py-8">
 
         {/* Hero */}
-        <HeroCard userName={userFullName ?? userEmail?.split("@")[0]} onCreate={() => router.push("/create")} onUpload={() => router.push("/create")} />
+        <HeroCard userName={userFullName ?? userEmail?.split("@")[0]} />
 
         {/* KPI Row */}
         <StatCards
