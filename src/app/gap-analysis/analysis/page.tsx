@@ -309,8 +309,126 @@ export default function AnalysisWorkspacePage() {
           </button>
         </div>
 
-        {/* Results placeholder - full UI can be restored from original file if needed */}
         {error && <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">{error}</div>}
+        {result && (
+          <section className="space-y-6">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">ATS Score</p>
+                <p className="mt-2 text-3xl font-extrabold text-slate-900">{result.atsScore}</p>
+              </article>
+              <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Keyword Score</p>
+                <p className="mt-2 text-3xl font-extrabold text-slate-900">{result.keywordScore}</p>
+              </article>
+              <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Section Score</p>
+                <p className="mt-2 text-3xl font-extrabold text-slate-900">{result.sectionScore}</p>
+              </article>
+              <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Experience Score</p>
+                <p className="mt-2 text-3xl font-extrabold text-slate-900">{result.experienceScore}</p>
+              </article>
+            </div>
+
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+              <h3 className="text-lg font-bold text-slate-900">Analysis Summary</h3>
+              <p className="mt-2 text-sm text-slate-700">{result.analysisSummary || result.matchSummary}</p>
+              {result.recommendations?.length > 0 && (
+                <div className="mt-4">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Top Recommendations</p>
+                  <ul className="mt-2 space-y-2">
+                    {result.recommendations.slice(0, 5).map((rec) => (
+                      <li key={rec} className="text-sm text-slate-700 flex items-start gap-2">
+                        <ArrowRight className="mt-0.5 h-4 w-4 text-indigo-600 shrink-0" />
+                        <span>{rec}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-xl font-extrabold text-slate-900">Gap Breakdown</h3>
+              {result.gaps?.length ? (
+                result.gaps.map((gap) => {
+                  const Icon = categoryIcon[gap.category] ?? BadgeCheck;
+                  const status = gapStatus[gap.id] ?? "unknown";
+                  const resourcesOpen = expandedResources[gap.id] ?? false;
+                  return (
+                    <article key={gap.id} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <Icon className="h-4 w-4 text-indigo-600" />
+                            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{gap.category}</p>
+                          </div>
+                          <h4 className="mt-1 text-base font-bold text-slate-900">{gap.item}</h4>
+                          <p className="mt-2 text-sm text-slate-600">{gap.context}</p>
+                        </div>
+                        <span className={`rounded-full border px-2.5 py-1 text-xs font-semibold uppercase tracking-wide ${importanceColor[gap.importance] ?? importanceColor.low}`}>
+                          {gap.importance}
+                        </span>
+                      </div>
+
+                      <div className="mt-4 flex flex-wrap items-center gap-2">
+                        <button type="button" onClick={() => setStatus(gap.id, "known")} className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${status === "known" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}>Known</button>
+                        <button type="button" onClick={() => setStatus(gap.id, "learning")} className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${status === "learning" ? "bg-indigo-100 text-indigo-700" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}>Learning</button>
+                        <button type="button" onClick={() => setStatus(gap.id, "unknown")} className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${status === "unknown" ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}>Unknown</button>
+                      </div>
+
+                      {gap.learningResources?.length > 0 && (
+                        <div className="mt-4 border-t border-slate-100 pt-4">
+                          <button
+                            type="button"
+                            onClick={() => toggleResources(gap.id)}
+                            className="inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:text-indigo-700"
+                          >
+                            Learning resources ({gap.learningResources.length})
+                            {resourcesOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                          </button>
+
+                          {resourcesOpen && (
+                            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                              {gap.learningResources.map((resource) => {
+                                const ResourceIcon = resourceIcon[resource.type] ?? FileText;
+                                return (
+                                  <a
+                                    key={`${gap.id}-${resource.title}`}
+                                    href={platformUrl(resource)}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="group rounded-xl border border-slate-200 bg-slate-50 p-3 transition hover:border-indigo-200 hover:bg-indigo-50"
+                                  >
+                                    <div className="flex items-center gap-2">
+                                      <ResourceIcon className="h-4 w-4 text-indigo-600" />
+                                      <p className="text-sm font-semibold text-slate-800 group-hover:text-indigo-700">{resource.title}</p>
+                                    </div>
+                                    <p className="mt-1 text-xs text-slate-500">{resource.platform}</p>
+                                  </a>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </article>
+                  );
+                })
+              ) : (
+                <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-600">No explicit gaps were returned for this resume and job description pair.</div>
+              )}
+            </div>
+
+            <div className="rounded-2xl border border-indigo-100 bg-indigo-50/70 p-4">
+              <Link href="/create" className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-700 hover:text-indigo-800">
+                Apply improvements in Resume Builder
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </section>
+        )}
 
       </div>
     </main>
