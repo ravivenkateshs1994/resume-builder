@@ -16,7 +16,7 @@ const NAV_LINKS = [
 export default function MobileNav() {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const { isLoggedIn, userEmail, signOut } = useSupabaseAuth();
+  const { isLoggedIn, userEmail, userFullName, signOut } = useSupabaseAuth();
   const pathname = usePathname() ?? "";
   const overlayRef = useRef<HTMLDivElement | null>(null);
 
@@ -121,15 +121,15 @@ export default function MobileNav() {
 
       <div className="shrink-0 px-6 pb-8">
         {isLoggedIn ? (
-          <div className="mt-4 border-t border-slate-100 pt-4">
+            <div className="mt-4 border-t border-slate-100 pt-4">
             <div className="text-sm text-slate-700">Signed in as</div>
-            <div className="mb-3 truncate text-sm font-medium text-slate-900">{userEmail ?? "Account"}</div>
+            <div className="mb-3 truncate text-sm font-medium text-slate-900">{userFullName ?? userEmail ?? "Account"}</div>
             <Link
               href="/dashboard"
               onClick={() => setOpen(false)}
               className="block w-full rounded-xl bg-indigo-600 px-4 py-3 text-center font-semibold text-white"
             >
-              My Profile
+              My Dashboard
             </Link>
             <button
               type="button"

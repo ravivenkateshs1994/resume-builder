@@ -14,7 +14,7 @@ const NAV = [
 
 export default function DashboardHeader() {
   const pathname = usePathname() ?? "";
-  const { isLoggedIn, userEmail, signOut } = useSupabaseAuth();
+  const { isLoggedIn, userEmail, userFullName, signOut } = useSupabaseAuth();
   const [open, setOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
@@ -29,8 +29,11 @@ export default function DashboardHeader() {
     return () => document.removeEventListener("click", onDoc);
   }, []);
 
-  const initials = (userEmail ?? "?").slice(0, 1).toUpperCase();
-  const displayName = userEmail ? userEmail.split("@")[0] : "Account";
+  const initials = (userFullName
+    ? userFullName.trim().split(/\s+/).map((s) => s[0]).slice(0, 2).join("")
+    : (userEmail ? userEmail.slice(0, 1) : "?"))
+    .toUpperCase();
+  const displayName = userFullName ?? (userEmail ? userEmail.split("@")[0] : "Account");
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200/60 bg-white/80 backdrop-blur-xl">
@@ -118,7 +121,7 @@ export default function DashboardHeader() {
             {open && (
               <div role="menu" className="absolute right-0 z-50 mt-2 w-48 overflow-hidden rounded-2xl border bg-white shadow-xl">
                 <div className="border-b px-4 py-3">
-                  <p className="truncate text-xs font-semibold text-slate-900">{userEmail ?? "Account"}</p>
+                  <p className="truncate text-xs font-semibold text-slate-900">{userFullName ?? userEmail ?? "Account"}</p>
                 </div>
                 <Link href="/dashboard" role="menuitem" onClick={() => setOpen(false)} className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">
                   Dashboard

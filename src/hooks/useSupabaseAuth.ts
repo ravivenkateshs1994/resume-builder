@@ -7,6 +7,7 @@ import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 export function useSupabaseAuth() {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [userFullName, setUserFullName] = useState<string | null>(null);
   const [authReady, setAuthReady] = useState(false);
 
   const supabase = useMemo(() => {
@@ -30,6 +31,10 @@ export function useSupabaseAuth() {
       if (!mounted) return;
       setAccessToken(data.session?.access_token ?? null);
       setUserEmail(data.session?.user?.email ?? null);
+      // Try common metadata fields for full name
+      const meta = data.session?.user?.user_metadata as Record<string, any> | undefined;
+      const fullName = meta?.full_name ?? meta?.fullName ?? meta?.name ?? null;
+      setUserFullName(fullName ?? null);
       setAuthReady(true);
     };
 
@@ -38,6 +43,9 @@ export function useSupabaseAuth() {
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
       setAccessToken(session?.access_token ?? null);
       setUserEmail(session?.user?.email ?? null);
+      const meta = session?.user?.user_metadata as Record<string, any> | undefined;
+      const fullName = meta?.full_name ?? meta?.fullName ?? meta?.name ?? null;
+      setUserFullName(fullName ?? null);
       setAuthReady(true);
     });
 
@@ -79,6 +87,7 @@ export function useSupabaseAuth() {
     supabase,
     accessToken,
     userEmail,
+    userFullName,
     isLoggedIn: Boolean(accessToken),
     authReady,
     signOut,

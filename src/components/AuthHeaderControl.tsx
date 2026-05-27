@@ -38,7 +38,7 @@ export default function AuthHeaderControl() {
         aria-expanded={open}
         aria-haspopup="menu"
       >
-        My Profile
+        My Dashboard
       </button>
       {open && <ProfileDropdown onClose={() => setOpen(false)} signOut={signOut} />}
     </div>
@@ -57,7 +57,7 @@ function ProfileDropdown({ onClose, signOut }: { onClose: () => void; signOut: (
       <ul className="py-1 text-sm text-slate-700">
         <li>
           <Link href="/dashboard" className="block px-3 py-2 hover:bg-slate-50" onClick={onClose}>
-            Dashboard
+            View Dashboard
           </Link>
         </li>
         <li>

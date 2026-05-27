@@ -15,7 +15,7 @@ import EmptyState from "@/components/dashboard/EmptyState";
 import type { ResumeData } from "@/types/resume";
 
 export default function DashboardPage() {
-  const { accessToken, userEmail, isLoggedIn } = useSupabaseAuth();
+  const { accessToken, userEmail, isLoggedIn, userFullName } = useSupabaseAuth();
   const router = useRouter();
   const { setResumeData, setUploadedResume, setPendingAnalysis } = useResumeStore();
 
@@ -152,7 +152,7 @@ export default function DashboardPage() {
       <main className="mx-auto max-w-7xl space-y-6 px-4 py-8">
 
         {/* Hero */}
-        <HeroCard userName={userEmail?.split("@")[0]} onCreate={() => router.push("/create")} onUpload={() => router.push("/create")} />
+        <HeroCard userName={userFullName ?? userEmail?.split("@")[0]} onCreate={() => router.push("/create")} onUpload={() => router.push("/create")} />
 
         {/* KPI Row */}
         <StatCards
