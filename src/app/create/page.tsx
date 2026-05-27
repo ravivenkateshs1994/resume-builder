@@ -3,7 +3,6 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useResumeStore } from "@/store/resumeStore";
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import StepIndicator from "@/components/StepIndicator";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -84,8 +83,7 @@ const flowStages = [
 ];
 
 function FlowStrip({ activeStep }: { activeStep: number }) {
-  const goToStep = useResumeStore((s) => s.goToStep);
-  const currentStep = useResumeStore((s) => s.currentStep);
+  // FlowStrip only displays the progress stages; store actions not required here
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6">

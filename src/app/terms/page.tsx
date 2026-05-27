@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SiteHeader } from "@/components/SiteHeader";
-import { SiteFooter } from "@/components/SiteFooter";
+// page uses a custom header/footer markup; don't import SiteHeader/SiteFooter
 
 const lastUpdated = "May 22, 2026";
 

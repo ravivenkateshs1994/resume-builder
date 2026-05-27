@@ -31,21 +31,16 @@ export default function DashboardPage() {
   const [analysis, setanalysis] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [resumesError, setResumesError] = useState<string | null>(null);
-  const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [authRequired, setAuthRequired] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [toast, setToast] = useState<{ message: string; type?: "info" | "success" | "error" } | null>(null);
   const [confirm, setConfirm] = useState<null | { id?: string; type: "import-resume" | "delete-resume" | "delete-analysis"; message: string }>(null);
-  const [debugAuth, setDebugAuth] = useState(false);
-  
-
   useEffect(() => {
     if (!isLoggedIn) return;
     // load both lists independently so errors show per-tab
     let cancelled = false;
     setLoading(true);
     setResumesError(null);
-    setAnalysisError(null);
     setAuthRequired(false);
 
     (async () => {
@@ -60,7 +55,7 @@ export default function DashboardPage() {
             try {
               const payload = await rRes.json().catch(() => null);
               setResumesError(payload?.error || "Failed to load resumes");
-            } catch (e) {
+            } catch {
               setResumesError("Failed to load resumes");
             }
           }
@@ -82,13 +77,16 @@ export default function DashboardPage() {
         if (!aRes.ok) {
           if (aRes.status === 401) {
             setAuthRequired(true);
-            setAnalysisError("Authentication required — please sign in.");
+            setToast({ message: "Authentication required — please sign in.", type: "error" });
+            setTimeout(() => setToast(null), 5000);
           } else {
             try {
               const payload = await aRes.json().catch(() => null);
-              setAnalysisError(payload?.error || "Failed to load analysis");
-            } catch (e) {
-              setAnalysisError("Failed to load analysis");
+              setToast({ message: payload?.error || "Failed to load analysis", type: "error" });
+              setTimeout(() => setToast(null), 5000);
+            } catch {
+              setToast({ message: "Failed to load analysis", type: "error" });
+              setTimeout(() => setToast(null), 5000);
             }
           }
         } else {
@@ -96,7 +94,10 @@ export default function DashboardPage() {
           setanalysis(Array.isArray(aJson.analysis) ? aJson.analysis : []);
         }
       } catch (err) {
-        if (!cancelled) setAnalysisError(err instanceof Error ? err.message : "Failed to load analysis");
+        if (!cancelled) {
+          setToast({ message: err instanceof Error ? err.message : "Failed to load analysis", type: "error" });
+          setTimeout(() => setToast(null), 5000);
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -107,11 +108,6 @@ export default function DashboardPage() {
     };
   }, [isLoggedIn, accessToken]);
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const qs = new URLSearchParams(window.location.search);
-    setDebugAuth(qs.has("debugAuth"));
-  }, []);
 
   useEffect(() => {
     if (!isLoggedIn) return;
@@ -242,7 +238,7 @@ export default function DashboardPage() {
                           setToast({ message: payload?.error || "Failed to delete analysis.", type: "error" });
                         }
                       }
-                    } catch (e) {
+                    } catch {
                       setToast({ message: "Failed to perform action.", type: "error" });
                     }
                     setTimeout(() => setToast(null), 3000);
@@ -278,33 +274,6 @@ export default function DashboardPage() {
               setQuery={setQuery}
               selectedId={selectedId}
               onSelect={(id) => setSelectedId(id)}
-              onImport={(id) =>
-                setConfirm({
-                  id,
-                  type: "import-resume",
-                  message: "Import this resume into the builder? Unsaved changes will be lost.",
-                })
-              }
-              onPrimary={(id) => {
-                // Open analysis in gap-analysis workspace
-                const a = analysis.find((x) => x.id === id);
-                if (!a) return;
-                try {
-                  setUploadedResume({ label: `Cloud snapshot - ${new Date(a.createdAt).toLocaleDateString()}`, resumeData: a.resumeSnapshot });
-                  setPendingAnalysis({ jobDescription: a.jobDescription, result: a.result });
-                  router.push("/gap-analysis/analysis");
-                } catch (e) {
-                  setToast({ message: "Failed to open analysis.", type: "error" });
-                  setTimeout(() => setToast(null), 3000);
-                }
-              }}
-              onDelete={(id) =>
-                setConfirm({
-                  id,
-                  type: tab === 'resumes' ? "delete-resume" : "delete-analysis",
-                  message: tab === 'resumes' ? "Delete this saved resume? This cannot be undone." : "Delete this analysis? This cannot be undone.",
-                })
-              }
               loading={loading}
             />
 
@@ -374,7 +343,7 @@ export default function DashboardPage() {
                               setUploadedResume({ label: `Cloud snapshot - ${new Date(item.createdAt).toLocaleDateString()}`, resumeData: item.resumeSnapshot });
                               setPendingAnalysis({ jobDescription: item.jobDescription, result: item.result });
                               router.push('/gap-analysis/analysis');
-                            } catch (e) {
+                            } catch {
                               setToast({ message: 'Failed to open analysis.', type: 'error' });
                               setTimeout(() => setToast(null), 3000);
                             }

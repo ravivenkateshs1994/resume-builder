@@ -16,7 +16,7 @@ async function waitForServer(url, retries = 60) {
     try {
       const res = await fetch(url);
       if (res.ok) return;
-    } catch (_error) {
+    } catch {
       // Server not ready yet.
     }
     await wait(500);

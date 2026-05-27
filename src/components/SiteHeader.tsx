@@ -8,7 +8,7 @@ import { useState, useRef, useEffect } from "react";
 
 export function SiteHeader() {
   const pathname = usePathname() ?? "";
-  const { isLoggedIn, userEmail, signOut } = useSupabaseAuth();
+  const { isLoggedIn, signOut } = useSupabaseAuth();
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement | null>(null);
 

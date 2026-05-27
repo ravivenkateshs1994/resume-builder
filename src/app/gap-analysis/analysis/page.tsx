@@ -174,41 +174,16 @@ export default function AnalysisWorkspacePage() {
 
   const [gapStatus, setGapStatus] = useState<Record<string, GapStatus>>({});
   const [expandedResources, setExpandedResources] = useState<Record<string, boolean>>({});
-  const [cloudHistory, setCloudHistory] = useState<SavedAnalysisRecord[]>([]);
-  const [cloudLoading, setCloudLoading] = useState(false);
-  const [cloudError, setCloudError] = useState<string | null>(null);
-  const { accessToken, userEmail } = useSupabaseAuth();
+  const { accessToken } = useSupabaseAuth();
 
   const activeResumeData = uploadedResume?.resumeData ?? resumeData;
-  const hasBuilderResume = Boolean(resumeData && Object.keys(resumeData).length > 0 && resumeData.personalInfo?.fullName !== "");
+  
   const hasActiveResume = Boolean(activeResumeData && (activeResumeData.personalInfo?.fullName || activeResumeData.skills?.length));
   const usingUploadedResume = Boolean(uploadedResume);
   const roleForSampleJD = activeResumeData?.targetRole || activeResumeData?.personalInfo?.jobTitle || resumeData.targetRole || resumeData.personalInfo?.jobTitle || DEFAULT_SAMPLE_ROLE;
 
-  async function loadCloudHistory(token: string) {
-    setCloudLoading(true);
-    setCloudError(null);
-    try {
-      const res = await fetch("/api/cloud/analysis", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const payload = await res.json();
-      if (!res.ok) throw new Error(payload?.error || "Failed to load cloud history.");
-      setCloudHistory((payload.analysis || []) as SavedAnalysisRecord[]);
-    } catch (e) {
-      setCloudError(e instanceof Error ? e.message : "Failed to load cloud history.");
-    } finally {
-      setCloudLoading(false);
-    }
-  }
 
-  useEffect(() => {
-    if (!accessToken) {
-      setCloudHistory([]);
-      return;
-    }
-    void loadCloudHistory(accessToken);
-  }, [accessToken]);
+  // cloud history UI has been removed; server-side saving still occurs
 
   // Restore an analysis passed from the Dashboard via in-memory store (no localStorage)
   useEffect(() => {
@@ -226,7 +201,7 @@ export default function AnalysisWorkspacePage() {
         setGapStatus({});
         setExpandedResources({});
       }
-    } catch (e) {
+    } catch {
       // ignore
     } finally {
       setPendingAnalysis(null);
@@ -244,7 +219,8 @@ export default function AnalysisWorkspacePage() {
     });
     const payload = await res.json();
     if (!res.ok) throw new Error(payload?.error || "Failed to save cloud analysis.");
-    setCloudHistory((prev) => [payload.analysis as SavedAnalysisRecord, ...prev].slice(0, 50));
+    // cloud history UI removed; no local state update needed here
+    return payload.analysis as SavedAnalysisRecord;
   }
 
   function openResumePicker() {
@@ -356,32 +332,7 @@ export default function AnalysisWorkspacePage() {
     setExpandedResources((prev) => ({ ...prev, [id]: !prev[id] }));
   }
 
-  function restoreCloudAnalysis(record: SavedAnalysisRecord) {
-    setUploadedResume({
-      label: `Cloud snapshot - ${new Date(record.createdAt).toLocaleDateString()}`,
-      resumeData: record.resumeSnapshot,
-    });
-    setJobDescription(record.jobDescription);
-    setResult(record.result as GapResult);
-    setError(null);
-    setResumeUploadError(null);
-    setGapStatus({});
-    setExpandedResources({});
-  }
-
-  async function deleteCloudRecord(recordId: string) {
-    if (!accessToken) return;
-    const res = await fetch(`/api/cloud/analysis/${recordId}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
-    const payload = await res.json();
-    if (!res.ok) {
-      setCloudError(payload?.error || "Failed to delete cloud record.");
-      return;
-    }
-    setCloudHistory((prev) => prev.filter((item) => item.id !== recordId));
-  }
+  // previously-supported cloud history restore/delete functions removed
 
   return (
     <main className="min-h-screen crp-shell">

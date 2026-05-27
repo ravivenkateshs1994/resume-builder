@@ -160,7 +160,7 @@ export const useResumeStore = create<ResumeStore>()((set, get) => ({
             if (res.ok) {
               set((s) => ({ resumeHistory: s.resumeHistory.filter((r) => r.id !== rec.id) }));
             }
-          } catch (e) {
+          } catch {
             // ignore and continue
           }
         }

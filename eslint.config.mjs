@@ -31,15 +31,13 @@ export default defineConfig([
     },
   },
   {
-    files: ["**/package.json"],
-    plugins: {
-      "@next/next": nextPlugin,
-    },
   },
   globalIgnores([
     ".next/**",
     "out/**",
     "build/**",
+    "public/**",
+    "package.json",
     "next-env.d.ts",
     "eslint.config.mjs",
   ]),

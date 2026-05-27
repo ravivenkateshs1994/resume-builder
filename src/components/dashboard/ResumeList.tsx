@@ -20,16 +20,13 @@ interface AnalysisRow {
   result?: any;
 }
 
-export default function ResumeList({ resumes = [], analyses = [], mode = "resumes", query, setQuery, onSelect, onImport, onPrimary, onDelete, loading, selectedId }: {
+export default function ResumeList({ resumes = [], analyses = [], mode = "resumes", query, setQuery, onSelect, loading, selectedId }: {
   resumes?: ResumeRow[];
   analyses?: AnalysisRow[];
   mode?: "resumes" | "analysis";
   query: string;
   setQuery: (s: string) => void;
   onSelect: (id: string) => void;
-  onImport?: (id: string) => void;
-  onPrimary?: (id: string) => void;
-  onDelete?: (id: string) => void;
   loading?: boolean;
   selectedId?: string | null;
 }) {

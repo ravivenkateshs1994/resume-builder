@@ -12,13 +12,7 @@ export default function PrismTemplate({ data, accentColor }: Props) {
   const { personalInfo, summary, workExperience, education, skills, certifications } = data;
   const theme = createTemplateTheme(accentColor ?? getDefaultTemplateAccent("prism"));
 
-  const initials = personalInfo.fullName
-    ? personalInfo.fullName
-        .split(" ")
-        .slice(0, 2)
-        .map((w) => w[0]?.toUpperCase() ?? "")
-        .join("")
-    : "?";
+  // initials computed previously removed — not used in template
 
   return (
     <div

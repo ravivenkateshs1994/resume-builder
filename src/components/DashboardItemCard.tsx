@@ -16,7 +16,7 @@ interface Props {
   selected?: boolean;
 }
 
-export default function DashboardItemCard({ id, title, meta, excerpt, primaryLabel = "Open", onView, onPrimary, onDelete, onClick, compact = false, selected = false }: Props) {
+export default function DashboardItemCard({ title, meta, excerpt, primaryLabel = "Open", onView, onPrimary, onDelete, onClick, compact = false, selected = false }: Props) {
   function handleKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
     if (!compact) return;
     if (e.key === "Enter" || e.key === " ") {

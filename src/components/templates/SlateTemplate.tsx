@@ -9,12 +9,7 @@ export default function SlateTemplate({ data, accentColor }: Props) {
   const { personalInfo, summary, workExperience, education, skills, certifications } = data;
   const theme = createTemplateTheme(accentColor ?? getDefaultTemplateAccent("slate"));
 
-  const initials = personalInfo.fullName
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
+  // initials removed — not used by this template
 
   return (
     <div className="font-sans text-[12.5px] leading-relaxed max-w-[780px] mx-auto bg-white flex min-h-[900px]">

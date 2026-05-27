@@ -35,14 +35,7 @@ export default function NovaTemplate({ data, accentColor }: Props) {
   const { personalInfo, summary, workExperience, education, skills, certifications } = data;
   const theme = createTemplateTheme(accentColor ?? getDefaultTemplateAccent("nova"));
 
-  // Derive initials from full name
-  const initials = personalInfo.fullName
-    ? personalInfo.fullName
-        .split(" ")
-        .slice(0, 2)
-        .map((w) => w[0]?.toUpperCase() ?? "")
-        .join("")
-    : "?";
+  // initials were previously derived here but are not used by this template
 
   return (
     <div className="font-sans text-gray-800 text-[13px] leading-relaxed max-w-[780px] mx-auto bg-white">
