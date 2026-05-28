@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 
-const lastUpdated = "May 22, 2026";
+const lastUpdated = "May 28, 2026";
 
 type Section = {
   title: string;
@@ -13,60 +13,60 @@ const sections: Section[] = [
   {
     title: "Information we collect",
     items: [
-      "Information you enter into the app, including your name, contact details, work history, education, skills, job descriptions, and resume edits.",
-      "Files you upload, such as PDF or DOCX resumes, along with the text extracted from those files for parsing and analysis.",
-      "Basic device and usage data such as browser type, page views, and error logs that help keep the app stable.",
-      "Data stored in your browser so your resume draft, template choices, and progress can persist between visits.",
+      "Information you provide when you create an account or sign in (for example, your email and profile metadata).",
+      "Resume content and files you upload or save to your account (PDF, DOCX, and parsed resume data).",
+      "Job descriptions, target role text, and any content you submit to the AI-powered tools for analysis or tailoring.",
+      "Basic device, usage, and error data (browser type, page views, performance traces) to help maintain and improve the service.",
     ],
   },
   {
     title: "How we use information",
     items: [
-      "To build, edit, tailor, and export resumes and related documents.",
-      "To parse uploaded resumes and run gap analysis against job descriptions you provide.",
-      "To keep your draft and preferences available in your browser when you return.",
-      "To improve reliability, fix bugs, and protect the app from abuse.",
+      "To provide resume building, parsing, gap analysis, and export features you request.",
+      "To persist your saved resumes and analyses when you opt to save them to your account.",
+      "To run server-side AI processing and file extraction where required to produce results.",
+      "To detect and prevent abuse, fix bugs, and improve the product experience.",
     ],
   },
   {
     title: "How processing works",
     items: [
-      "When you use AI-powered features, the relevant resume content, job description, or selected text is sent to server-side processing so the feature can respond.",
-      "Uploaded PDF and DOCX files are processed to extract text and structure before the app generates results.",
-      "The current version does not require an account, so the main persistent storage for your draft lives in your browser.",
+      "When you use AI features, the relevant text is sent to the server and may be forwarded to third-party AI providers (configured by the operator) so the model can generate responses.",
+      "Uploaded files are processed server-side to extract text and structure used by parsing and analysis routines.",
+      "If you save data while signed in, that data is stored in our Supabase database and associated with your user account; if you use the app without signing in, drafts may be kept locally in your browser until you choose to save or upload them.",
     ],
   },
   {
     title: "Storage and retention",
     items: [
-      "Resume data and settings are stored locally in your browser using persistent storage so you can resume where you left off.",
-      "By default, locally stored resume drafts and related state are retained for up to 24 hours (one day) in your browser; older cached drafts are automatically cleared.",
-      "You can remove locally stored data by clearing site storage in your browser.",
-      "We do not intentionally keep a separate user profile database in the current version of the app.",
+      "Saved resumes and analysis results for signed-in users are stored in our Supabase database and retained until you delete them or otherwise request removal.",
+      "Local drafts stored in your browser persist until you clear site storage or they expire according to your browser settings.",
+      "Authentication sessions are managed by Supabase; signing out will clear the client-side session for your browser.",
+      "Backups, retention policies, and storage encryption are managed by our infrastructure providers (Supabase and cloud hosting).",
     ],
   },
   {
     title: "Sharing and third parties",
     items: [
       "We do not sell your personal information.",
-      "We may share content with service providers that help run the app, including AI and file-processing services, only as needed to provide the feature you requested.",
-      "We may also disclose information if required by law or to protect the service and its users.",
+      "We use third-party providers to host data and run AI models (for example Supabase for storage/auth and configured AI providers for model inference). These providers process data on our behalf and are subject to their own privacy and security practices.",
+      "We may disclose information if required by law or to protect the service and its users.",
     ],
   },
   {
     title: "Your choices and security",
     items: [
-      "Do not upload information you are uncomfortable sharing.",
-      "Review AI-generated output before sending it to employers or exporting it as a final resume.",
-      "Clear your browser storage whenever you want to remove the locally saved draft.",
-      "We use reasonable safeguards, but no online service can promise perfect security.",
+      "You can delete saved resumes and analyses from your account via the dashboard; contact support if you need assistance removing data from our servers.",
+      "To remove locally saved drafts, clear your browser site storage (localStorage / IndexedDB) for this site.",
+      "Do not submit sensitive personal data (such as government ID numbers or health details) unless absolutely necessary — review AI output before sharing or exporting it.",
+      "We use reasonable technical safeguards, but no system is perfect; if you discover a security issue, please report it to us.",
     ],
   },
   {
     title: "Updates to this policy",
     items: [
-      "We may update this policy as the app evolves.",
-      "Continued use of the service after an update means you accept the revised policy.",
+      "We may update this policy as the app evolves; the last updated date appears at the top of this page.",
+      "If we make material changes, we will post the changes here and, where appropriate, notify signed-in users.",
     ],
   },
 ];
@@ -115,8 +115,11 @@ export default function PrivacyPage() {
           </p>
           <div className="mt-10 grid gap-4 sm:grid-cols-3">
             <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-              <p className="text-xs font-bold uppercase tracking-widest text-indigo-600">No sign-in</p>
-              <p className="mt-2 text-sm leading-6 text-slate-600">The current version does not require an account to use the app.</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-indigo-600">Sign in &amp; save</p>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                Signing in lets you securely save resumes and analyses to your account (stored in Supabase). You can also
+                use the app without signing in — drafts persist locally until you choose to save them.
+              </p>
             </div>
             <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
               <p className="text-xs font-bold uppercase tracking-widest text-indigo-600">Browser storage</p>

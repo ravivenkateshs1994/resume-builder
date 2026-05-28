@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 
-const lastUpdated = "May 22, 2026";
+const lastUpdated = "May 28, 2026";
 
 type Section = {
   title: string;
@@ -23,6 +23,7 @@ const sections: Section[] = [
     items: [
       "The service helps you create, edit, tailor, and export resumes and analyze gaps against job descriptions.",
       "It may also parse PDF or DOCX resumes and generate supporting content such as summaries, bullets, and skills.",
+      "When you sign in and choose to save your work, resumes and analyses are persisted to your account in our Supabase backend.",
       "Features may change over time as the product evolves.",
     ],
   },
@@ -40,6 +41,7 @@ const sections: Section[] = [
       "The app uses AI and automated processing to draft content and analyze resumes.",
       "AI output may be incomplete, inaccurate, or not suited to your goals, so always verify it.",
       "We do not guarantee that AI-generated content will get you interviews, offers, or perfect ATS results.",
+      "AI processing may be performed by third-party AI providers configured by the operator; these providers receive only the content necessary to produce the requested result.",
     ],
   },
   {
@@ -69,8 +71,9 @@ const sections: Section[] = [
   {
     title: "Data retention",
     items: [
-      "Drafts and resume data are stored locally in your browser and are retained for up to 24 hours by default.",
-      "You can clear your browser storage to remove locally saved drafts at any time.",
+      "Saved resumes and analysis results for signed-in users are stored in our Supabase database and retained until you delete them or otherwise request removal.",
+      "Local drafts stored in your browser persist until you clear site storage or save them to your account.",
+      "Authentication sessions are managed by Supabase; signing out will clear the client-side session in your browser.",
     ],
   },
   {
