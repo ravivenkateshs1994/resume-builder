@@ -82,6 +82,8 @@ export default function PreviewStep() {
 
   const [exportingDocx, setExportingDocx] = useState(false);
   const [exportingPdf, setExportingPdf] = useState(false);
+  const [docxError, setDocxError] = useState<string | null>(null);
+  const [pdfError, setPdfError] = useState<string | null>(null);
   const [cloudSaving, setCloudSaving] = useState(false);
   const [cloudSaveMessage, setCloudSaveMessage] = useState<string | null>(null);
   const previewRef = useRef<HTMLDivElement>(null);
@@ -142,7 +144,7 @@ export default function PreviewStep() {
       );
     } catch (error) {
       console.error("DOCX export error:", error);
-      alert(error instanceof Error ? error.message : "DOCX export failed. Please try again.");
+      setDocxError(error instanceof Error ? error.message : "DOCX export failed. Please try again.");
     } finally {
       setExportingDocx(false);
     }
@@ -170,7 +172,7 @@ export default function PreviewStep() {
       );
     } catch (error) {
       console.error("PDF export error:", error);
-      alert(error instanceof Error ? error.message : "PDF export failed. Please try again.");
+      setPdfError(error instanceof Error ? error.message : "PDF export failed. Please try again.");
     } finally {
       setExportingPdf(false);
     }
@@ -246,6 +248,7 @@ export default function PreviewStep() {
       {/* Export Buttons */}
       <div className="flex flex-col gap-3 md:flex-row md:flex-wrap">
         <button
+          type="button"
           onClick={exportPdf}
           disabled={exportingPdf}
           className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-lg bg-red-600 px-5 py-2.5 font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50 md:w-auto"
@@ -253,6 +256,7 @@ export default function PreviewStep() {
           {exportingPdf ? "Preparing PDF..." : "Download PDF"}
         </button>
         <button
+          type="button"
           onClick={exportDocx}
           disabled={exportingDocx}
           className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-lg bg-blue-700 px-5 py-2.5 font-medium text-white transition-colors hover:bg-blue-800 disabled:opacity-50 md:w-auto"
@@ -260,6 +264,7 @@ export default function PreviewStep() {
           {exportingDocx ? "Preparing DOCX..." : "Download DOCX"}
         </button>
         <button
+          type="button"
           onClick={saveResumeToCloud}
           disabled={cloudSaving}
           className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 font-medium text-white transition-colors hover:bg-indigo-700 disabled:opacity-50 md:w-auto"
@@ -268,10 +273,22 @@ export default function PreviewStep() {
         </button>
       </div>
 
-      {cloudSaveMessage && <p className="text-xs text-slate-500 mt-2">{cloudSaveMessage}</p>}
+      {/* Save / export status messages — announced by screen readers */}
+      <div aria-live="polite" aria-atomic="true" className="space-y-1 mt-2">
+        {cloudSaveMessage && (
+          <p role="status" className="text-xs text-slate-500">{cloudSaveMessage}</p>
+        )}
+        {docxError && (
+          <p role="alert" className="text-xs text-red-600">{docxError}</p>
+        )}
+        {pdfError && (
+          <p role="alert" className="text-xs text-red-600">{pdfError}</p>
+        )}
+      </div>
 
       <div className="mt-2 flex justify-start">
         <button
+          type="button"
           onClick={prevStep}
           className="min-h-[44px] w-full rounded-lg border border-slate-200 px-5 py-2.5 font-medium text-slate-600 transition-colors hover:bg-slate-50 md:w-auto"
         >

@@ -113,7 +113,7 @@ export default function TermsPage() {
       <SiteHeader />
 
       <section className="relative overflow-hidden">
-        <div aria-hidden className="pointer-events-none absolute inset-0">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
           <div className="absolute -top-32 -left-32 h-[560px] w-[560px] rounded-full bg-indigo-100/70 blur-3xl" />
           <div className="absolute top-20 right-0 h-[360px] w-[360px] rounded-full bg-cyan-100/70 blur-3xl" />
         </div>
@@ -142,7 +142,7 @@ export default function TermsPage() {
               <p className="mt-2 text-sm leading-6 text-slate-600">Save your own copy of anything important before you rely on it elsewhere.</p>
             </div>
           </div>
-          <p className="mt-5 text-xs text-slate-400">Last updated {lastUpdated}</p>
+          <p className="mt-5 text-xs text-slate-600">Last updated {lastUpdated}</p>
         </div>
       </section>
 

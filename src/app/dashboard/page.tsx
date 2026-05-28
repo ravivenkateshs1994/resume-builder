@@ -139,12 +139,23 @@ export default function DashboardPage() {
   return (
     <div className="crp-shell min-h-screen">
       <SiteHeader />
-      {/* Toast */}
-      {toast && (
-        <div className={`fixed top-6 right-6 z-50 rounded-md px-4 py-2 text-sm shadow-lg ${toast.type === "error" ? "bg-red-600 text-white" : toast.type === "success" ? "bg-emerald-600 text-white" : "bg-slate-800 text-white"}`}>
-          {toast.message}
-        </div>
-      )}
+      {/* Toast — always-present region so screen readers announce changes */}
+      <div
+        aria-live={toast?.type === "error" ? "assertive" : "polite"}
+        aria-atomic="true"
+        role={toast?.type === "error" ? "alert" : "status"}
+        className={`fixed top-6 right-6 z-50 rounded-md px-4 py-2 text-sm shadow-lg transition-opacity duration-200 ${
+          toast
+            ? toast.type === "error"
+              ? "bg-red-600 text-white"
+              : toast.type === "success"
+              ? "bg-emerald-600 text-white"
+              : "bg-slate-800 text-white"
+            : "pointer-events-none opacity-0"
+        }`}
+      >
+        {toast?.message ?? ""}
+      </div>
       <main className="mx-auto max-w-7xl space-y-6 px-4 py-8">
 
         {/* Hero */}
@@ -192,12 +203,14 @@ export default function DashboardPage() {
               <p className="mb-5 text-sm leading-relaxed text-slate-700">{confirm.message}</p>
               <div className="flex justify-end gap-3">
                 <button
+                  type="button"
                   onClick={() => setConfirm(null)}
                   className="crp-btn-secondary px-4 py-2 text-sm"
                 >
                   Cancel
                 </button>
                 <button
+                  type="button"
                   onClick={async () => {
                     const id = confirm.id;
                     const type = confirm.type;
@@ -258,10 +271,10 @@ export default function DashboardPage() {
           {/* Left — Resumes list */}
           <div className="lg:col-span-2">
             <div className="mb-4 flex items-center gap-3">
-              <button onClick={() => setTab('resumes')} className={`rounded-full px-3 py-1 text-sm ${tab === 'resumes' ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-slate-600'}`}>
+              <button type="button" onClick={() => setTab('resumes')} className={`rounded-full px-3 py-1 text-sm ${tab === 'resumes' ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-slate-600'}`}>
                 Resumes
               </button>
-              <button onClick={() => setTab('analysis')} className={`rounded-full px-3 py-1 text-sm ${tab === 'analysis' ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-slate-600'}`}>
+              <button type="button" onClick={() => setTab('analysis')} className={`rounded-full px-3 py-1 text-sm ${tab === 'analysis' ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-slate-600'}`}>
                 Analysis
               </button>
             </div>
@@ -282,12 +295,13 @@ export default function DashboardPage() {
               <div className="mt-3 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">
                 {resumesError}
                 {authRequired && (
-                  <button
-                    onClick={() => router.push("/login")}
-                    className="ml-3 underline"
-                  >
-                    Sign in
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() => router.push("/login")}
+                      className="ml-3 underline"
+                    >
+                      Sign in
+                    </button>
                 )}
               </div>
             )}
@@ -314,8 +328,8 @@ export default function DashboardPage() {
                 <div className="crp-card-soft p-8 text-center">
                   <h3 className="mb-2 text-lg font-semibold text-slate-900">No saved analysis yet</h3>
                   <p className="mb-4 text-sm text-slate-600">Analyze a job description to get AI-driven recommendations and ATS scores.</p>
-                  <div className="flex justify-center">
-                    <button onClick={() => router.push('/gap-analysis/analysis')} className="crp-btn-primary px-4 py-2">Create Analysis</button>
+                    <div className="flex justify-center">
+                    <button type="button" onClick={() => router.push('/gap-analysis/analysis')} className="crp-btn-primary px-4 py-2">Create Analysis</button>
                   </div>
                 </div>
               ) : (
@@ -338,7 +352,7 @@ export default function DashboardPage() {
                           <p className="text-xs text-slate-500">{new Date(item.createdAt).toLocaleString()}</p>
                         </div>
                         <div className="flex gap-2">
-                          <button onClick={() => {
+                          <button type="button" onClick={() => {
                             try {
                               setUploadedResume({ label: `Cloud snapshot - ${new Date(item.createdAt).toLocaleDateString()}`, resumeData: item.resumeSnapshot });
                               setPendingAnalysis({ jobDescription: item.jobDescription, result: item.result });
@@ -348,7 +362,7 @@ export default function DashboardPage() {
                               setTimeout(() => setToast(null), 3000);
                             }
                           }} className="crp-btn-primary px-3 py-1">Open</button>
-                          <button onClick={() => setConfirm({ id: item.id, type: 'delete-analysis', message: 'Delete this analysis? This cannot be undone.' })} className="crp-btn-ghost px-3 py-1">Delete</button>
+                          <button type="button" onClick={() => setConfirm({ id: item.id, type: 'delete-analysis', message: 'Delete this analysis? This cannot be undone.' })} className="crp-btn-ghost px-3 py-1">Delete</button>
                         </div>
                       </div>
 

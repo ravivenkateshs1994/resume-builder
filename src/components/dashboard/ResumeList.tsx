@@ -55,7 +55,7 @@ export default function ResumeList({ resumes = [], analyses = [], mode = "resume
 
       {/* Search */}
       <div className="relative mb-4">
-        <svg className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-slate-400" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <svg className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-slate-400" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="1.6" />
           <path d="m21 21-4.35-4.35" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
         </svg>
@@ -63,6 +63,7 @@ export default function ResumeList({ resumes = [], analyses = [], mode = "resume
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={isAnalysis ? "Search analysis, job titles..." : "Search resumes, skills…"}
+          aria-label={isAnalysis ? "Search analysis" : "Search resumes"}
           className="w-full rounded-xl border border-slate-200 bg-white py-2 pl-9 pr-3 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-300/60"
         />
       </div>

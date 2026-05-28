@@ -98,7 +98,7 @@ export default function PrivacyPage() {
       <SiteHeader />
 
       <section className="relative overflow-hidden">
-        <div aria-hidden className="pointer-events-none absolute inset-0">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
           <div className="absolute -top-32 -left-32 h-[560px] w-[560px] rounded-full bg-indigo-100/70 blur-3xl" />
           <div className="absolute top-16 right-0 h-[360px] w-[360px] rounded-full bg-sky-100/70 blur-3xl" />
         </div>
@@ -130,7 +130,7 @@ export default function PrivacyPage() {
               <p className="mt-2 text-sm leading-6 text-slate-600">Resume text may be sent to server-side AI features when you ask for them.</p>
             </div>
           </div>
-          <p className="mt-5 text-xs text-slate-400">Last updated {lastUpdated}</p>
+          <p className="mt-5 text-xs text-slate-600">Last updated {lastUpdated}</p>
         </div>
       </section>
 

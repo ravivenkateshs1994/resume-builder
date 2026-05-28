@@ -149,23 +149,26 @@ export default function PersonalInfoStep() {
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         <div>
-          <label className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">
+          <label htmlFor="fullName" className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">
             Full Name <span className="text-red-500">*</span>
           </label>
           <input
+            id="fullName"
             value={form.fullName}
             onChange={(e) => setForm({ ...form, fullName: e.target.value })}
             placeholder="e.g. Jane Smith"
+            aria-invalid={Boolean(errors.fullName)}
             className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.fullName ? "border-red-400" : "border-slate-200"}`}
           />
-          {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
+          {errors.fullName && <p className="text-red-500 text-xs mt-1" role="alert">{errors.fullName}</p>}
         </div>
 
         <div>
-          <label className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">
+          <label htmlFor="jobTitle" className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">
             Job Title
           </label>
           <input
+            id="jobTitle"
             value={form.jobTitle || ""}
             onChange={(e) => setForm({ ...form, jobTitle: e.target.value })}
             placeholder="e.g. Senior Software Engineer"
@@ -174,51 +177,58 @@ export default function PersonalInfoStep() {
         </div>
 
         <div>
-          <label className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">
+          <label htmlFor="email" className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">
             Email <span className="text-red-500">*</span>
           </label>
           <input
+            id="email"
             type="email"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
             placeholder="jane@example.com"
+            aria-invalid={Boolean(errors.email)}
             className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.email ? "border-red-400" : "border-slate-200"}`}
           />
-          {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+          {errors.email && <p className="text-red-500 text-xs mt-1" role="alert">{errors.email}</p>}
         </div>
 
         <div>
-          <label className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">
+          <label htmlFor="phone" className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">
             Phone <span className="text-red-500">*</span>
           </label>
           <input
+            id="phone"
             type="tel"
             value={form.phone}
             onChange={(e) => setForm({ ...form, phone: e.target.value })}
             placeholder="+1 (555) 000-0000"
+            aria-invalid={Boolean(errors.phone)}
             className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.phone ? "border-red-400" : "border-slate-200"}`}
           />
-          {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+          {errors.phone && <p className="text-red-500 text-xs mt-1" role="alert">{errors.phone}</p>}
         </div>
 
         <div>
-          <label className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">
+          <label htmlFor="location" className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">
             City / Location <span className="text-red-500">*</span>
           </label>
           <input
+            id="location"
             value={form.location}
             onChange={(e) => setForm({ ...form, location: e.target.value })}
             placeholder="e.g. New York, NY"
+            aria-invalid={Boolean(errors.location)}
             className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.location ? "border-red-400" : "border-slate-200"}`}
           />
-          {errors.location && <p className="text-red-500 text-xs mt-1">{errors.location}</p>}
+          {errors.location && <p className="text-red-500 text-xs mt-1" role="alert">{errors.location}</p>}
         </div>
 
         <div>
-          <label className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">
+          <label htmlFor="linkedin" className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">
             LinkedIn
           </label>
           <input
+            id="linkedin"
             value={form.linkedin || ""}
             onChange={(e) => setForm({ ...form, linkedin: e.target.value })}
             placeholder="linkedin.com/in/janesmith"
@@ -227,10 +237,11 @@ export default function PersonalInfoStep() {
         </div>
 
         <div className="md:col-span-2">
-          <label className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">
+          <label htmlFor="website" className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">
             Website / Portfolio
           </label>
           <input
+            id="website"
             value={form.website || ""}
             onChange={(e) => setForm({ ...form, website: e.target.value })}
             placeholder="e.g. janesmith.dev"
@@ -241,6 +252,7 @@ export default function PersonalInfoStep() {
 
       <div className="mt-8 flex justify-end">
         <button
+          type="button"
           onClick={handleNext}
           className="min-h-[44px] w-full rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-2.5 font-medium text-white transition-colors hover:from-blue-700 hover:to-indigo-700 md:w-auto"
         >

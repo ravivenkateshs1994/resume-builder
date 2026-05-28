@@ -17,7 +17,7 @@ export default function HeroCard({ userName }: Props) {
       <div className="flex items-center gap-3">
         <div className="hidden sm:block">
           {/* Abstract AI illustration / analytics graphic */}
-          <svg viewBox="0 0 160 120" className="h-20 w-20" aria-hidden>
+          <svg viewBox="0 0 160 120" className="h-20 w-20" aria-hidden="true">
             <defs>
               <linearGradient id="g1" x1="0" x2="1">
                 <stop offset="0%" stopColor="#6366F1" stopOpacity="0.95" />

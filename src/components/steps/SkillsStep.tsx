@@ -108,8 +108,9 @@ export default function SkillsStep() {
       {/* Skills */}
       <div className="mb-6">
         <div className="mb-2 flex flex-col items-start justify-between gap-2 md:flex-row md:items-center">
-          <label className="block text-sm font-medium text-slate-700">Skills</label>
+          <label htmlFor="skill-input" className="block text-sm font-medium text-slate-700">Skills</label>
           <button
+            type="button"
             onClick={suggestSkills}
             className="flex min-h-[44px] w-full items-center justify-center gap-1.5 rounded-lg bg-blue-600 px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-blue-700 md:w-auto"
           >
@@ -118,6 +119,7 @@ export default function SkillsStep() {
         </div>
         <div className="mb-3 flex flex-col gap-2 md:flex-row">
           <input
+            id="skill-input"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && addSkill()}
@@ -125,6 +127,7 @@ export default function SkillsStep() {
             className="w-full flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
+            type="button"
             onClick={() => addSkill()}
             className="min-h-[44px] w-full rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-4 text-sm font-medium text-white transition-colors hover:from-blue-700 hover:to-indigo-700 md:w-auto"
           >
@@ -141,6 +144,7 @@ export default function SkillsStep() {
               {skillSuggestions.map((s) => (
                 <button
                   key={s}
+                  type="button"
                   onClick={() => addSuggestedSkill(s)}
                   className="inline-flex min-h-[44px] items-center gap-1 rounded-full border border-blue-300 bg-white px-3 py-1 text-xs font-medium text-blue-700 transition-colors hover:bg-blue-100 md:min-h-0"
                 >
@@ -159,6 +163,7 @@ export default function SkillsStep() {
             >
               {skill}
               <button
+                type="button"
                 onClick={() => removeSkill(skill)}
                 className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center leading-none text-blue-400 hover:text-blue-600 md:min-h-0 md:min-w-0"
               >
@@ -173,10 +178,11 @@ export default function SkillsStep() {
       </div>
 
       {/* Professional Summary */}
-      <div>
+        <div>
         <div className="mb-2 flex flex-col items-start justify-between gap-2 md:flex-row md:items-center">
-          <label className="block text-sm font-medium text-slate-700">Professional Summary</label>
+          <label htmlFor="professional-summary" className="block text-sm font-medium text-slate-700">Professional Summary</label>
           <button
+            type="button"
             onClick={generateSummary}
             disabled={generatingSummary}
             className="flex min-h-[44px] w-full items-center justify-center gap-1.5 rounded-lg bg-blue-600 px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50 md:w-auto"
@@ -189,6 +195,7 @@ export default function SkillsStep() {
           </button>
         </div>
         <textarea
+          id="professional-summary"
           value={resumeData.summary}
           onChange={(e) => setSummary(e.target.value)}
           rows={5}
@@ -196,19 +203,21 @@ export default function SkillsStep() {
           className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
         />
         {summaryError && (
-          <p className="text-red-500 text-xs mt-1.5">{summaryError}</p>
+          <p role="alert" aria-live="assertive" className="text-red-500 text-xs mt-1.5">{summaryError}</p>
         )}
         <p className="text-xs text-slate-400 mt-1">{resumeData.summary.length} characters</p>
       </div>
 
       <div className="mt-8 flex flex-col gap-3 md:flex-row md:justify-between">
         <button
+          type="button"
           onClick={prevStep}
           className="min-h-[44px] w-full rounded-lg border border-slate-200 px-5 py-2.5 font-medium text-slate-600 transition-colors hover:bg-slate-50 md:w-auto"
         >
           Back
         </button>
         <button
+          type="button"
           onClick={nextStep}
           className="min-h-[44px] w-full rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-2.5 font-medium text-white transition-colors hover:from-blue-700 hover:to-indigo-700 md:w-auto"
         >

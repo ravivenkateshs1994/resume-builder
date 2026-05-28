@@ -60,11 +60,11 @@ export function SiteFooter() {
 
         {/* Bottom Bar */}
         <div className="mt-12 border-t border-slate-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-600">
             &copy; {currentYear} Career Readiness Platform. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
-            <span className="flex items-center gap-1.5 text-xs text-slate-400">
+            <span className="flex items-center gap-1.5 text-xs text-slate-600">
               <span className="inline-block w-2 h-2 rounded-full bg-green-500" />
               Systems Operational
             </span>

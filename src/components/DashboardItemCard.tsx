@@ -36,7 +36,7 @@ export default function DashboardItemCard({ title, meta, excerpt, primaryLabel =
     >
       <div className="flex items-center gap-4 flex-1">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-50 to-indigo-100 text-indigo-600">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V6a4 4 0 014-4h0a4 4 0 014 4v1m-12 0h12M3 10h18v7a2 2 0 01-2 2H5a2 2 0 01-2-2v-7z" />
           </svg>
         </div>
@@ -51,15 +51,15 @@ export default function DashboardItemCard({ title, meta, excerpt, primaryLabel =
       {!compact && (
         <div className="flex items-center gap-2">
           {onView && (
-            <button onClick={onView} className="text-sm text-indigo-600 underline">View</button>
+            <button type="button" onClick={onView} className="text-sm text-indigo-600 underline">View</button>
           )}
           {onPrimary && (
-            <button onClick={onPrimary} className="crp-btn-primary px-3 py-1 text-sm font-semibold">{primaryLabel}</button>
+            <button type="button" onClick={onPrimary} className="crp-btn-primary px-3 py-1 text-sm font-semibold">{primaryLabel}</button>
           )}
           {onDelete && (
-            <button onClick={onDelete} className="crp-btn-ghost px-3 py-1 text-sm font-semibold text-slate-700">
+            <button type="button" onClick={onDelete} className="crp-btn-ghost px-3 py-1 text-sm font-semibold text-slate-700">
               <span className="sr-only">Delete</span>
-              <svg xmlns="http://www.w3.org/2000/svg" className="inline h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="inline h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 7h12M10 11v6m4-6v6M9 7V6a2 2 0 012-2h2a2 2 0 012 2v1" />
               </svg>
             </button>

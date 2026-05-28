@@ -32,10 +32,12 @@ function MonthYearSelect({
   value,
   onChange,
   disabled,
+  idPrefix,
 }: {
   value: string;
   onChange: (v: string) => void;
   disabled?: boolean;
+  idPrefix?: string;
 }) {
   const parts = value?.split(" ") ?? [];
   const month = MONTHS.includes(parts[0]) ? parts[0] : "";
@@ -53,11 +55,11 @@ function MonthYearSelect({
 
   return (
     <div className="flex flex-col gap-2 md:flex-row">
-      <select value={month} onChange={(e) => update(e.target.value, year)} disabled={disabled} className={selectClass}>
+      <select id={idPrefix ? `${idPrefix}-month` : undefined} value={month} onChange={(e) => update(e.target.value, year)} disabled={disabled} className={selectClass}>
         <option value="">Month</option>
         {MONTHS.map((m) => <option key={m} value={m}>{m}</option>)}
       </select>
-      <select value={YEARS.includes(year) ? year : ""} onChange={(e) => update(month, e.target.value)} disabled={disabled} className={selectClass}>
+      <select id={idPrefix ? `${idPrefix}-year` : undefined} value={YEARS.includes(year) ? year : ""} onChange={(e) => update(month, e.target.value)} disabled={disabled} className={selectClass}>
         <option value="">Year</option>
         {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
       </select>
@@ -98,11 +100,13 @@ function Divider() {
 }
 
 function DescriptionEditor({
+  id,
   value,
   onChange,
   onOptimize,
   isOptimizing,
 }: {
+  id?: string;
   value: string;
   onChange: (html: string) => void;
   onOptimize: (payload: { htmlContent: string; selectedText?: string }) => Promise<{ resultHtml?: string; resultText?: string; resultLines?: string[] } | null>;
@@ -255,6 +259,7 @@ function DescriptionEditor({
 
       {/* Editor area */}
       <EditorContent
+        id={id}
         editor={editor}
         className="tiptap-editor px-4 py-3 text-sm min-h-[140px] text-gray-800"
       />
@@ -346,36 +351,36 @@ export default function ExperienceStep() {
           const isCurrent = w.endDate === "Present";
           return (
             <div key={w.id} className="max-w-full overflow-hidden rounded-xl border border-slate-200">
-              <div className="flex items-center justify-between gap-2 border-b border-slate-200 bg-slate-50 px-4 py-3">
+                <div className="flex items-center justify-between gap-2 border-b border-slate-200 bg-slate-50 px-4 py-3">
                 <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Position {idx + 1}</span>
-                <button onClick={() => removeWorkExperience(w.id)} className="min-h-[44px] px-2 text-xs font-medium text-red-400 hover:text-red-600 md:min-h-0 md:px-0">Remove</button>
+                <button type="button" onClick={() => removeWorkExperience(w.id)} className="min-h-[44px] px-2 text-xs font-medium text-red-400 hover:text-red-600 md:min-h-0 md:px-0">Remove</button>
               </div>
 
               <div className="space-y-4 p-4 md:p-6">
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
-                    <label className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">Job Title <span className="text-red-500">*</span></label>
-                    <input value={w.title} onChange={(e) => updateWorkExperience(w.id, { title: e.target.value })} placeholder="e.g. Senior Software Engineer" className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    <label htmlFor={`job-title-${w.id}`} className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">Job Title <span className="text-red-500">*</span></label>
+                    <input id={`job-title-${w.id}`} value={w.title} onChange={(e) => updateWorkExperience(w.id, { title: e.target.value })} placeholder="e.g. Senior Software Engineer" className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                   </div>
                   <div>
-                    <label className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">Company <span className="text-red-500">*</span></label>
-                    <input value={w.company} onChange={(e) => updateWorkExperience(w.id, { company: e.target.value })} placeholder="e.g. Acme Corp" className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    <label htmlFor={`company-${w.id}`} className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">Company <span className="text-red-500">*</span></label>
+                    <input id={`company-${w.id}`} value={w.company} onChange={(e) => updateWorkExperience(w.id, { company: e.target.value })} placeholder="e.g. Acme Corp" className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                   </div>
                 </div>
 
                 <div>
-                  <label className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">Location</label>
-                  <input value={w.location || ""} onChange={(e) => updateWorkExperience(w.id, { location: e.target.value })} placeholder="e.g. New York, NY (or Remote)" className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  <label htmlFor={`location-${w.id}`} className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">Location</label>
+                  <input id={`location-${w.id}`} value={w.location || ""} onChange={(e) => updateWorkExperience(w.id, { location: e.target.value })} placeholder="e.g. New York, NY (or Remote)" className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
-                    <label className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">Start Date</label>
-                    <MonthYearSelect value={w.startDate} onChange={(v) => updateWorkExperience(w.id, { startDate: v })} />
+                    <label htmlFor={`start-${w.id}-month`} className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">Start Date</label>
+                    <MonthYearSelect idPrefix={`start-${w.id}`} value={w.startDate} onChange={(v) => updateWorkExperience(w.id, { startDate: v })} />
                   </div>
                   <div>
-                    <label className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">End Date</label>
-                    <MonthYearSelect value={isCurrent ? "" : w.endDate} onChange={(v) => updateWorkExperience(w.id, { endDate: v })} disabled={isCurrent} />
+                    <label htmlFor={`end-${w.id}-month`} className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">End Date</label>
+                    <MonthYearSelect idPrefix={`end-${w.id}`} value={isCurrent ? "" : w.endDate} onChange={(v) => updateWorkExperience(w.id, { endDate: v })} disabled={isCurrent} />
                     <label className="inline-flex items-center gap-2 mt-2 cursor-pointer select-none">
                       <input type="checkbox" checked={isCurrent} onChange={(e) => updateWorkExperience(w.id, { endDate: e.target.checked ? "Present" : "" })} className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
                       <span className="text-xs text-slate-600">Currently working here</span>
@@ -385,8 +390,9 @@ export default function ExperienceStep() {
 
                 {/* Description - rich text editor */}
                 <div>
-                  <label className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">Description</label>
+                  <label htmlFor={`description-${w.id}`} className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">Description</label>
                   <DescriptionEditor
+                    id={`description-${w.id}`}
                     value={w.description}
                     onChange={(html) => updateWorkExperience(w.id, { description: html })}
                     onOptimize={(payload) => optimizeDescription(w, payload)}
@@ -400,6 +406,7 @@ export default function ExperienceStep() {
       </div>
 
       <button
+        type="button"
         onClick={addWorkExperience}
         className="mt-4 min-h-[44px] w-full rounded-xl border-2 border-dashed border-slate-200 py-3 text-sm font-medium text-gray-500 transition-colors hover:border-blue-400 hover:text-blue-600"
       >
@@ -408,12 +415,14 @@ export default function ExperienceStep() {
 
       <div className="mt-8 flex flex-col gap-3 md:flex-row md:justify-between">
         <button
+          type="button"
           onClick={prevStep}
           className="min-h-[44px] w-full rounded-lg border border-slate-200 px-5 py-2.5 font-medium text-slate-600 transition-colors hover:bg-slate-50 md:w-auto"
         >
           Back
         </button>
         <button
+          type="button"
           onClick={nextStep}
           className="min-h-[44px] w-full rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-2.5 font-medium text-white transition-colors hover:from-blue-700 hover:to-indigo-700 md:w-auto"
         >

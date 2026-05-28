@@ -8,7 +8,7 @@ export default function ResumePreview({ item, onOpen }: { item?: { id: string; t
     return (
       <div className="crp-card-soft flex h-full min-h-[280px] flex-col items-center justify-center gap-3 p-8">
         <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-400">
-          <svg viewBox="0 0 24 24" fill="none" className="h-7 w-7" aria-hidden>
+          <svg viewBox="0 0 24 24" fill="none" className="h-7 w-7" aria-hidden="true">
             <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             <polyline points="14 2 14 8 20 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             <line x1="9" y1="13" x2="15" y2="13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -80,7 +80,7 @@ export default function ResumePreview({ item, onOpen }: { item?: { id: string; t
 
       {/* CTA */}
       <div className="mt-6 flex justify-end">
-        <button onClick={onOpen} className="crp-btn-primary px-5 py-2 text-sm font-semibold">Open in Builder</button>
+        <button type="button" onClick={onOpen} className="crp-btn-primary px-5 py-2 text-sm font-semibold">Open in Builder</button>
       </div>
     </div>
   );

@@ -174,6 +174,7 @@ export default function AnalysisWorkspacePage() {
 
   const [gapStatus, setGapStatus] = useState<Record<string, GapStatus>>({});
   const [expandedResources, setExpandedResources] = useState<Record<string, boolean>>({});
+  const [statusAnnouncement, setStatusAnnouncement] = useState("");
   const { accessToken } = useSupabaseAuth();
 
   const activeResumeData = uploadedResume?.resumeData ?? resumeData;
@@ -326,6 +327,8 @@ export default function AnalysisWorkspacePage() {
   function setStatus(id: string, status: GapStatus) {
     setGapStatus((prev) => ({ ...prev, [id]: status }));
     if (status === "learning") setExpandedResources((prev) => ({ ...prev, [id]: true }));
+    setStatusAnnouncement(`Skill marked as ${status}.`);
+    setTimeout(() => setStatusAnnouncement(""), 2000);
   }
 
   function toggleResources(id: string) {
@@ -336,6 +339,10 @@ export default function AnalysisWorkspacePage() {
 
   return (
     <main className="min-h-screen crp-shell">
+      {/* Polite live region for skill status changes */}
+      <div aria-live="polite" aria-atomic="true" className="sr-only">
+        {statusAnnouncement}
+      </div>
       <div className="max-w-6xl mx-auto px-6 pt-12 pb-20">
         {/* Reuse the workspace UI from previous implementation (input panel, analyze, results) */}
         {/* For brevity this child page contains the interactive workspace identical to the previous page. */}
@@ -433,8 +440,8 @@ export default function AnalysisWorkspacePage() {
           </div>
 
           <div className="mb-4">
-            <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-2">Job Description</label>
-            <textarea value={jobDescription} onChange={(e) => setJobDescription(e.target.value)} rows={8} placeholder="Paste the full job description here - the more detail, the better the analysis." className="crp-textarea resize-none" />
+            <label htmlFor="job-description" className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-2">Job Description</label>
+            <textarea id="job-description" value={jobDescription} onChange={(e) => setJobDescription(e.target.value)} rows={8} placeholder="Paste the full job description here - the more detail, the better the analysis." className="crp-textarea resize-none" />
             <div className="mt-2 flex items-center justify-between gap-3">
               <p className="text-xs text-slate-400">{jobDescription.length} characters</p>
               <button

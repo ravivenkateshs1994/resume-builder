@@ -85,7 +85,7 @@ export default function LandingPage() {
       <SiteHeader />
 
       <section id="home" className="relative overflow-hidden">
-        <div aria-hidden className="pointer-events-none absolute inset-0">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
           <div className="absolute -left-24 top-0 h-72 w-72 rounded-full bg-cyan-200/40 blur-3xl" />
           <div className="absolute right-0 top-8 h-80 w-80 rounded-full bg-indigo-200/45 blur-3xl" />
         </div>

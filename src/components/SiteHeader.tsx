@@ -69,7 +69,7 @@ function SiteHeaderImpl() {
                     className="inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium text-slate-700 hover:text-indigo-600"
                   >
                     My Dashboard
-                    <svg className="h-4 w-4 text-slate-500" viewBox="0 0 20 20" fill="none" aria-hidden>
+                    <svg className="h-4 w-4 text-slate-500" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                       <path d="M6 8l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </button>

@@ -12,7 +12,7 @@ export default function GapAnalysisPage() {
   return (
     <main className="min-h-screen crp-shell">
       <section className="relative overflow-hidden">
-        <div aria-hidden className="pointer-events-none absolute inset-0">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
           <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full bg-blue-100/60 blur-3xl" />
           <div className="absolute top-20 right-0 w-[400px] h-[400px] rounded-full bg-sky-100/60 blur-3xl" />
         </div>

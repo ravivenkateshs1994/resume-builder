@@ -61,7 +61,9 @@ export default function LoginPage() {
             </div>
           ) : (
             <div className="mt-6 space-y-3">
+              <label htmlFor="login-email" className="sr-only">Email</label>
               <input
+                id="login-email"
                 ref={emailRef}
                 type="email"
                 value={email}
@@ -69,7 +71,9 @@ export default function LoginPage() {
                 placeholder="Enter your email"
                 className="crp-input w-full"
               />
+              <label htmlFor="login-password" className="sr-only">Password</label>
               <input
+                id="login-password"
                 ref={passwordRef}
                 type="password"
                 value={password}
@@ -88,11 +92,7 @@ export default function LoginPage() {
             </div>
           )}
 
-          {message && <p className="mt-4 text-sm text-slate-600">{message}</p>}
-
-          <p className="mt-5 text-xs text-slate-500">
-            First time setup: seed the admin account with `npm run seed:admin`.
-          </p>
+          {message && <p role="status" aria-live="polite" className="mt-4 text-sm text-slate-600">{message}</p>}
         </section>
       </main>
       <SiteFooter />
