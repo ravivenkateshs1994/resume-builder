@@ -30,7 +30,7 @@ function createWindow() {
     height: 820,
     minWidth: 1024,
     minHeight: 700,
-    title: "AI Resume Builder",
+    title: "Career Readiness",
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,

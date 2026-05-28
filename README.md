@@ -1,4 +1,4 @@
-# ResumeAI — AI-Powered Resume Builder
+# Career Readiness — AI-Powered Resume Builder
 
 A full-stack resume builder that uses Google Gemini AI to generate professional content, tailor resumes to job descriptions, and analyze skill gaps with personalized learning recommendations.
 

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 
 const lastUpdated = "May 22, 2026";
 
@@ -71,8 +72,8 @@ const sections: Section[] = [
 ];
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | AI Resume Builder",
-  description: "How AI Resume Builder collects, uses, stores, and shares information.",
+  title: "Privacy Policy | Career Readiness",
+  description: "How Career Readiness collects, uses, stores, and shares information.",
 };
 
 function LegalSection({ title, items }: Section) {
@@ -94,27 +95,7 @@ function LegalSection({ title, items }: Section) {
 export default function PrivacyPage() {
   return (
     <main className="min-h-screen bg-[#f8f9fc] text-slate-900">
-      <header className="sticky top-0 z-30 border-b border-slate-100 bg-white/80 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 to-cyan-500 text-sm font-bold text-white">
-              R
-            </div>
-            <span className="text-lg font-bold tracking-tight text-slate-900">ResumeAI</span>
-          </Link>
-          <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 sm:flex">
-            <Link href="/" className="transition-colors hover:text-slate-900">
-              Home
-            </Link>
-            <Link href="/create" className="transition-colors hover:text-slate-900">
-              Builder
-            </Link>
-            <Link href="/gap-analysis" className="transition-colors hover:text-slate-900">
-              Gap Analyzer
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader />
 
       <section className="relative overflow-hidden">
         <div aria-hidden className="pointer-events-none absolute inset-0">
@@ -129,7 +110,7 @@ export default function PrivacyPage() {
             How your resume data is handled
           </h1>
           <p className="mt-6 max-w-2xl text-xl leading-relaxed text-slate-500">
-            This page explains what AI Resume Builder collects, how the app uses your resume content, and how your
+            This page explains what Career Readiness collects, how the app uses your resume content, and how your
             data is stored when you use the builder, upload a resume, or run gap analysis.
           </p>
           <div className="mt-10 grid gap-4 sm:grid-cols-3">
@@ -166,25 +147,7 @@ export default function PrivacyPage() {
         </div>
       </section>
 
-      <footer className="border-t border-slate-100 bg-white">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-8 sm:flex-row">
-          <p className="text-xs text-slate-400">© {new Date().getFullYear()} ResumeAI. All rights reserved.</p>
-          <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-slate-500">
-            <Link href="/" className="transition-colors hover:text-slate-700">
-              Home
-            </Link>
-            <Link href="/create" className="transition-colors hover:text-slate-700">
-              Builder
-            </Link>
-            <Link href="/gap-analysis" className="transition-colors hover:text-slate-700">
-              Gap Analyzer
-            </Link>
-            <Link href="/terms" className="transition-colors hover:text-slate-700">
-              Terms of Service
-            </Link>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </main>
   );
 }

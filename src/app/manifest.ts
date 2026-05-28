@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "AI Resume Builder",
-    short_name: "Resume Builder",
+    name: "Career Readiness",
+    short_name: "Career Readiness",
     description: "AI-powered resume tailoring, JD match analysis, and learning roadmaps.",
     start_url: "/",
     scope: "/",

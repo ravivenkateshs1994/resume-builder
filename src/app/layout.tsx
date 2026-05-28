@@ -17,13 +17,13 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "AI Career Readiness Platform",
+  title: "Career Readiness",
   description: "Become interview-ready with AI-powered resume tailoring, JD match analysis, skill-gap insights, and personalized learning roadmaps.",
-  applicationName: "AI Resume Builder",
+  applicationName: "Career Readiness",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
-    title: "AI Resume Builder",
+    title: "Career Readiness",
     statusBarStyle: "default",
   },
 };

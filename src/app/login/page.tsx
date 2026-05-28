@@ -9,13 +9,7 @@ import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 export default function LoginPage() {
   const { isLoggedIn, userEmail, signOut, signInWithPassword, supabase } = useSupabaseAuth();
   const router = useRouter();
-  const renderCount = useRef(0);
-  useEffect(() => {
-    renderCount.current += 1;
-    if (typeof window !== "undefined") {
-      console.debug("[diagnostics] LoginPage render", renderCount.current);
-    }
-  });
+  // diagnostics removed
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const emailRef = useRef<HTMLInputElement | null>(null);

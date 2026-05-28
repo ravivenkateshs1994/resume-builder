@@ -154,7 +154,7 @@ export default function MobileNav() {
           </div>
         )}
 
-        <p className="mt-4 text-center text-xs text-slate-400">AI Career Readiness Platform</p>
+        <p className="mt-4 text-center text-xs text-slate-400">Career Readiness Platform</p>
       </div>
     </div>
   );

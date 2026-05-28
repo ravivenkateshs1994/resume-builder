@@ -203,8 +203,8 @@ function SlatePdfDocument({
       title={`${displayName} Resume`}
       author={displayName}
       subject={headline || `${templateLabel} resume`}
-      creator="AI Resume Builder"
-      producer="AI Resume Builder"
+      creator="Career Readiness"
+      producer="Career Readiness"
       keywords={[displayName, headline, templateLabel].filter(Boolean).join(", ")}
     >
       <Page size="A4" style={slateStyles.page} wrap>
@@ -334,8 +334,8 @@ function VisualPdfDocument({ displayName, headline, templateLabel, visualPages }
       title={`${displayName} Resume`}
       author={displayName}
       subject={headline || `${templateLabel} resume`}
-      creator="AI Resume Builder"
-      producer="AI Resume Builder"
+      creator="Career Readiness"
+      producer="Career Readiness"
       keywords={[displayName, headline, templateLabel].filter(Boolean).join(", ")}
     >
       {visualPages.map((page, index) => (
@@ -441,8 +441,8 @@ export function ResumePdfDocument({ resumeData, selectedTemplate, accentColor, v
       title={`${displayName} Resume`}
       author={displayName}
       subject={headline || `${templateLabel} resume`}
-      creator="AI Resume Builder"
-      producer="AI Resume Builder"
+      creator="Career Readiness"
+      producer="Career Readiness"
       keywords={[displayName, headline, templateLabel].filter(Boolean).join(", ")}
     >
       <Page size="A4" style={styles.page} wrap>

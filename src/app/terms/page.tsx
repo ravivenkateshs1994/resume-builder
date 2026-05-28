@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-// page uses a custom header/footer markup; don't import SiteHeader/SiteFooter
+import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 
 const lastUpdated = "May 22, 2026";
 
@@ -13,7 +13,7 @@ const sections: Section[] = [
   {
     title: "Acceptance of these terms",
     items: [
-      "By visiting or using AI Resume Builder, you agree to these terms.",
+      "By visiting or using Career Readiness, you agree to these terms.",
       "If you do not agree, do not use the service.",
       "These terms apply to the current public version of the app and any related pages or tools we provide.",
     ],
@@ -84,8 +84,8 @@ const sections: Section[] = [
 ];
 
 export const metadata: Metadata = {
-  title: "Terms of Service | AI Resume Builder",
-  description: "The terms that govern use of AI Resume Builder and its resume tools.",
+  title: "Terms of Service | Career Readiness",
+  description: "The terms that govern use of Career Readiness and its resume tools.",
 };
 
 function LegalSection({ title, items }: Section) {
@@ -107,27 +107,7 @@ function LegalSection({ title, items }: Section) {
 export default function TermsPage() {
   return (
     <main className="min-h-screen bg-[#f8f9fc] text-slate-900">
-      <header className="sticky top-0 z-30 border-b border-slate-100 bg-white/80 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 to-cyan-500 text-sm font-bold text-white">
-              R
-            </div>
-            <span className="text-lg font-bold tracking-tight text-slate-900">ResumeAI</span>
-          </Link>
-          <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 sm:flex">
-            <Link href="/" className="transition-colors hover:text-slate-900">
-              Home
-            </Link>
-            <Link href="/create" className="transition-colors hover:text-slate-900">
-              Builder
-            </Link>
-            <Link href="/gap-analysis" className="transition-colors hover:text-slate-900">
-              Gap Analyzer
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader />
 
       <section className="relative overflow-hidden">
         <div aria-hidden className="pointer-events-none absolute inset-0">
@@ -143,7 +123,7 @@ export default function TermsPage() {
           </h1>
           <p className="mt-6 max-w-2xl text-xl leading-relaxed text-slate-500">
             These terms explain what the service does, what you are responsible for, and the limits that apply when
-            you use AI Resume Builder to create or analyze resumes.
+            you use Career Readiness to create or analyze resumes.
           </p>
           <div className="mt-10 grid gap-4 sm:grid-cols-3">
             <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
@@ -178,25 +158,7 @@ export default function TermsPage() {
         </div>
       </section>
 
-      <footer className="border-t border-slate-100 bg-white">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-8 sm:flex-row">
-          <p className="text-xs text-slate-400">© {new Date().getFullYear()} ResumeAI. All rights reserved.</p>
-          <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-slate-500">
-            <Link href="/" className="transition-colors hover:text-slate-700">
-              Home
-            </Link>
-            <Link href="/create" className="transition-colors hover:text-slate-700">
-              Builder
-            </Link>
-            <Link href="/gap-analysis" className="transition-colors hover:text-slate-700">
-              Gap Analyzer
-            </Link>
-            <Link href="/privacy" className="transition-colors hover:text-slate-700">
-              Privacy Policy
-            </Link>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </main>
   );
 }

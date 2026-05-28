@@ -11,13 +11,7 @@ function SiteHeaderImpl() {
   const { isLoggedIn, signOut } = useSupabaseAuth();
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement | null>(null);
-  const headerRenderCount = useRef(0);
-  useEffect(() => {
-    headerRenderCount.current += 1;
-    if (typeof window !== "undefined") {
-      console.debug("[diagnostics] SiteHeader render", headerRenderCount.current);
-    }
-  });
+  // diagnostics removed
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
