@@ -169,23 +169,6 @@ export function TemplateGalleryCard({
           {selectedState && (
             <div className="mt-1.5 text-[10px] font-semibold text-indigo-700">✓ Selected</div>
           )}
-          <button
-            type="button"
-            onClick={(e) => { e.stopPropagation(); onSelect(); }}
-            aria-pressed={selectedState}
-            className={[
-              "mt-2 min-h-[44px] w-full rounded-lg px-2 py-1.5 text-xs font-semibold transition-colors",
-              selectedState
-                ? "bg-indigo-600 text-white"
-                : "border border-slate-200 bg-white text-slate-700 hover:bg-indigo-50",
-            ].join(" ")}
-          >
-            {selectedState
-              ? "✓ Selected"
-              : recommended
-                ? `Select (AI Pick ${recommendationScore}% match)`
-                : `Select ${template.name}`}
-          </button>
           {onPreview && (
             <button
               type="button"
@@ -298,25 +281,6 @@ export function TemplateGalleryCard({
         {selectedState && (
           <div className="mt-1.5 text-[10px] font-semibold text-indigo-700">✓ Selected</div>
         )}
-        <button
-          type="button"
-          onClick={(e) => { e.stopPropagation(); onSelect(); }}
-          aria-pressed={selectedState}
-          className={[
-            "mt-2 min-h-[44px] w-full rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-colors",
-            selectedState
-              ? "bg-indigo-600 text-white"
-              : premium
-                ? "border border-amber-200 bg-white text-amber-700 hover:bg-amber-50"
-                : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
-          ].join(" ")}
-        >
-          {selectedState
-            ? "✓ Selected"
-            : recommended
-              ? `Select (AI Pick ${recommendationScore}% match)`
-              : `Select ${template.name}`}
-        </button>
         {onPreview && (
           <button
             type="button"

@@ -4,3 +4,5 @@ node_modules/
 .cache/
 *.pdf
 *.docx
+
+axe-report*.json

@@ -125,7 +125,6 @@ export default function LandingPage() {
         <div className="mb-8 flex items-center justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-600">Current Platform Capabilities</p>
-            <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">MVP Features</h2>
           </div>
         </div>
 
@@ -161,7 +160,6 @@ export default function LandingPage() {
       <section id="roadmap" className="mx-auto w-full max-w-7xl px-6 pb-24">
         <div className="mb-8">
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Future Roadmap</p>
-          <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">What&apos;s Coming Next</h2>
         </div>
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
