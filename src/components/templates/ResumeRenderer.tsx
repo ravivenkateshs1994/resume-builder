@@ -13,6 +13,8 @@ import TechTemplate from "./TechTemplate";
 import NovaTemplate from "./NovaTemplate";
 import PrismTemplate from "./PrismTemplate";
 import ApexTemplate from "./ApexTemplate";
+import PinnacleTemplate from "./PinnacleTemplate";
+import VectorTemplate from "./VectorTemplate";
 
 interface Props {
   data: ResumeData;
@@ -46,6 +48,10 @@ export default function ResumeRenderer({ data, templateId, accentColor }: Props)
       return <PrismTemplate data={data} accentColor={accentColor} />;
     case "apex":
       return <ApexTemplate data={data} accentColor={accentColor} />;
+    case "pinnacle":
+      return <PinnacleTemplate data={data} accentColor={accentColor} />;
+    case "vector":
+      return <VectorTemplate data={data} accentColor={accentColor} />;
     default:
       return <ModernTemplate data={data} accentColor={accentColor} />;
   }

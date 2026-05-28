@@ -15,6 +15,8 @@ export const PER_TEMPLATE_PRESETS: Record<TemplateId, string[]> = {
   nova:      ["#2563eb", "#7c3aed", "#be123c", "#0f766e", "#475569"],
   prism:     ["#0f766e", "#2563eb", "#7c3aed", "#475569", "#c2410c"],
   apex:      ["#475569", "#2563eb", "#0f766e", "#7c3aed", "#be123c"],
+  pinnacle:  ["#1e40af", "#1e3a5f", "#374151", "#0f766e", "#be123c"],
+  vector:    ["#0f766e", "#2563eb", "#7c3aed", "#0e7490", "#475569"],
 };
 
 export const DEFAULT_TEMPLATE_ACCENTS: Record<TemplateId, string> = {
@@ -30,6 +32,8 @@ export const DEFAULT_TEMPLATE_ACCENTS: Record<TemplateId, string> = {
   nova:      "#2563eb",
   prism:     "#0f766e",
   apex:      "#475569",
+  pinnacle:  "#1e40af",
+  vector:    "#0f766e",
 };
 
 export function getDefaultTemplateAccent(templateId: TemplateId): string {

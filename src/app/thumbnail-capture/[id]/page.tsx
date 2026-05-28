@@ -7,6 +7,7 @@ import { ReadySignal } from "../ReadySignal";
 const VALID_IDS = new Set<string>([
   "modern", "classic", "creative", "minimal", "executive",
   "slate", "chronos", "terra", "tech", "nova", "prism", "apex",
+  "pinnacle", "vector",
 ]);
 
 /** A4 at 96 dpi */

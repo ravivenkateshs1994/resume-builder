@@ -41,6 +41,8 @@ const TEMPLATE_PRESETS = {
   nova:      ["#2563eb", "#7c3aed", "#be123c", "#0f766e", "#475569"],
   prism:     ["#0f766e", "#2563eb", "#7c3aed", "#475569", "#c2410c"],
   apex:      ["#475569", "#2563eb", "#0f766e", "#7c3aed", "#be123c"],
+  pinnacle:  ["#1e40af", "#1e3a5f", "#374151", "#0f766e", "#be123c"],
+  vector:    ["#0f766e", "#2563eb", "#7c3aed", "#0e7490", "#475569"],
 };
 
 // Default accent per template (first preset, or fixed for slate/tech)
@@ -57,6 +59,8 @@ const DEFAULT_ACCENTS = {
   nova:      "#2563eb",
   prism:     "#0f766e",
   apex:      "#475569",
+  pinnacle:  "#1e40af",
+  vector:    "#0f766e",
 };
 
 const OUT_DIR = path.join(process.cwd(), "public", "template-previews");

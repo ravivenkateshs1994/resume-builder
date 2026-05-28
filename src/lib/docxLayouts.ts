@@ -931,6 +931,164 @@ function buildApexLayout(data: ResumeData, theme: Theme): DocxBlock[] {
   ];
 }
 
+// ─── Pinnacle: serif, centred header, finance/consulting prestige ─────────────
+function buildPinnacleLayout(data: ResumeData, theme: Theme): DocxBlock[] {
+  const { personalInfo, summary, workExperience, education, skills, certifications } = data;
+  const FONT = SERIF_FONT;
+
+  return [
+    // Centred name
+    p([rt(personalInfo.fullName || "Your Name", {
+      font: FONT,
+      size: 36,
+      color: "111827",
+      bold: true,
+    })], { alignment: AlignmentType.CENTER, spacing: { after: 20 } }),
+
+    // Job title centred in accent colour
+    ...(personalInfo.jobTitle
+      ? [p([rt(personalInfo.jobTitle, {
+          font: FONT,
+          size: 19,
+          color: theme.accent,
+          bold: false,
+        })], { alignment: AlignmentType.CENTER, spacing: { after: 20 } })]
+      : []),
+
+    // Contact line centred
+    ...(makeContactLine(personalInfo, { font: FONT, size: 16, color: "6b7280", align: AlignmentType.CENTER })
+      ? [makeContactLine(personalInfo, { font: FONT, size: 16, color: "6b7280", align: AlignmentType.CENTER })!]
+      : []),
+
+    // Full-width accent rule
+    rule(theme.accent, 8, 120),
+
+    // Summary
+    ...makeSummarySection(summary, theme, {
+      title: "Summary",
+      font: FONT,
+      heading: { font: FONT, size: 17, color: theme.accentDeep, borderColor: theme.accentBorder, bold: true },
+      bodyColor: "374151",
+    }),
+
+    // Experience
+    ...makeExperienceSection(workExperience, theme, {
+      title: "Experience",
+      font: FONT,
+      heading: { font: FONT, size: 17, color: theme.accentDeep, borderColor: theme.accentBorder, bold: true },
+      titleColor: "111827",
+      accentColor: theme.accent,
+      bodyColor: "374151",
+      mutedColor: "6b7280",
+      after: 80,
+    }),
+
+    // Education
+    ...makeEducationSection(education, theme, {
+      title: "Education",
+      font: FONT,
+      heading: { font: FONT, size: 17, color: theme.accentDeep, borderColor: theme.accentBorder, bold: true },
+      titleColor: "111827",
+      accentColor: theme.accent,
+      bodyColor: "374151",
+      mutedColor: "6b7280",
+    }),
+
+    // Skills — plain dot-separated text (maximum ATS readability)
+    ...makeSummarySection(skills.length ? skills.join("  ·  ") : "", theme, {
+      title: "Skills",
+      font: FONT,
+      heading: { font: FONT, size: 17, color: theme.accentDeep, borderColor: theme.accentBorder, bold: true },
+      bodyColor: "374151",
+    }),
+
+    // Certifications
+    ...makeCertificationsSection(certifications, theme, {
+      title: "Certifications",
+      font: FONT,
+      heading: { font: FONT, size: 17, color: theme.accentDeep, borderColor: theme.accentBorder, bold: true },
+      titleColor: "111827",
+      mutedColor: "6b7280",
+    }),
+  ];
+}
+
+// ─── Vector: FAANG-standard single-column with inline accent-bar headings ─────
+function buildVectorLayout(data: ResumeData, theme: Theme): DocxBlock[] {
+  const { personalInfo, summary, workExperience, education, skills, certifications } = data;
+  const FONT = STANDARD_FONT;
+
+  return [
+    // Name — extra-bold, left-aligned
+    p([rt(personalInfo.fullName || "Your Name", {
+      font: FONT,
+      size: 38,
+      color: "111827",
+      bold: true,
+    })], { spacing: { after: 20 } }),
+
+    // Job title in accent
+    ...(personalInfo.jobTitle
+      ? [lineParagraph(personalInfo.jobTitle, { font: FONT, size: 20, color: theme.accent, bold: true })]
+      : []),
+
+    // Contact row
+    ...(makeContactLine(personalInfo, { font: FONT, size: 16, color: "6b7280" })
+      ? [makeContactLine(personalInfo, { font: FONT, size: 16, color: "6b7280" })!]
+      : []),
+
+    rule(theme.accent, 6, 120),
+
+    // Summary
+    ...makeSummarySection(summary, theme, {
+      title: "Professional Summary",
+      font: FONT,
+      heading: { font: FONT, size: 17, color: theme.accent, borderColor: theme.accent },
+      bodyColor: "374151",
+    }),
+
+    // Experience
+    ...makeExperienceSection(workExperience, theme, {
+      title: "Work Experience",
+      font: FONT,
+      heading: { font: FONT, size: 17, color: theme.accent, borderColor: theme.accent },
+      titleColor: "111827",
+      accentColor: theme.accent,
+      bodyColor: "374151",
+      mutedColor: "6b7280",
+      after: 80,
+    }),
+
+    // Education
+    ...makeEducationSection(education, theme, {
+      title: "Education",
+      font: FONT,
+      heading: { font: FONT, size: 17, color: theme.accent, borderColor: theme.accent },
+      titleColor: "111827",
+      accentColor: theme.accent,
+      bodyColor: "374151",
+      mutedColor: "6b7280",
+    }),
+
+    // Technical Skills — plain dot-separated text
+    ...makeSummarySection(skills.length ? skills.join("  ·  ") : "", theme, {
+      title: "Technical Skills",
+      font: FONT,
+      heading: { font: FONT, size: 17, color: theme.accent, borderColor: theme.accent },
+      bodyColor: "374151",
+    }),
+
+    // Certifications
+    ...makeCertificationsSection(certifications, theme, {
+      title: "Certifications",
+      font: FONT,
+      heading: { font: FONT, size: 17, color: theme.accent, borderColor: theme.accent },
+      titleColor: "111827",
+      mutedColor: "6b7280",
+    }),
+  ];
+}
+
 function buildExecutiveLayout(data: ResumeData, theme: Theme): DocxBlock[] {
   const { personalInfo, summary, workExperience, education, skills, certifications } = data;
   const header = makeSingleCellBand(
@@ -1478,6 +1636,10 @@ export function buildDocxChildren(resumeData: ResumeData, templateId?: TemplateI
       return buildPrismLayout(resumeData, theme);
     case "apex":
       return buildApexLayout(resumeData, theme);
+    case "pinnacle":
+      return buildPinnacleLayout(resumeData, theme);
+    case "vector":
+      return buildVectorLayout(resumeData, theme);
     default:
       return buildModernLayout(resumeData, theme);
   }

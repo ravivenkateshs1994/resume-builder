@@ -30,6 +30,8 @@ const TEMPLATE_LABELS: Record<TemplateId, string> = {
   nova: "Nova",
   prism: "Prism",
   apex: "Apex",
+  pinnacle: "Pinnacle",
+  vector: "Vector",
 };
 
 function normalizeText(value: unknown): string {

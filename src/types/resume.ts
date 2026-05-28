@@ -68,7 +68,9 @@ export type TemplateId =
   | "tech"
   | "nova"
   | "prism"
-  | "apex";
+  | "apex"
+  | "pinnacle"
+  | "vector";
 
 // ─── Multi-Step Form Types ────────────────────────────────────────────────────
 
