@@ -11,12 +11,16 @@ export function SiteFooter() {
         <div className="xl:grid xl:grid-cols-3 xl:gap-8">
           {/* Brand Section */}
           <div className="space-y-6">
-            <Link href="/" className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-cyan-500 text-sm font-bold text-white shadow-sm shadow-indigo-300/40">
-                CR
-              </div>
-              <span className="text-lg font-bold tracking-tight text-slate-900">Career Readiness</span>
-            </Link>
+            <Link href="/" className="flex items-center gap-2.5" aria-label="Career Readiness">
+            <div className="h-9 sm:h-10 max-w-[140px] sm:max-w-[220px] flex items-center">
+              <img
+                src="/career-readiness-desktop-logo.png"
+                alt="Career Readiness"
+                className="max-h-full max-w-full object-contain"
+              />
+            </div>
+            <span className="sr-only">Career Readiness</span>
+          </Link>
             <p className="max-w-xs text-sm leading-relaxed text-slate-500">
               The AI-powered platform designed to help you land your dream role with tailored resumes and deep skill-gap analysis.
             </p>
