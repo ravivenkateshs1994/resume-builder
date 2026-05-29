@@ -2,11 +2,12 @@
 
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
-import { BriefcaseBusiness, LayoutTemplate, Wand2 } from "lucide-react";
+import { LayoutTemplate, Wand2 } from "lucide-react";
 import { useResumeStore } from "@/store/resumeStore";
 import { useSearchParams } from "next/navigation";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import StepIndicator from "@/components/StepIndicator";
+import AccentColorPicker from "@/components/AccentColorPicker";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import {
@@ -86,15 +87,15 @@ const flowStages = [
 const stepDetails = {
   personal: {
     title: "Personal foundations",
-    helper: "Set your target role, contact details, and summary before expanding the rest of the resume.",
+    helper: "Set your contact details and resume basics before expanding the rest of the document.",
   },
   experience: {
     title: "Experience editor",
-    helper: "Strengthen impact statements and align them with the job you want next.",
+    helper: "Strengthen impact statements so your strongest work reads clearly and credibly.",
   },
   education: {
     title: "Education and credentials",
-    helper: "Add proof points that support the role and stage you are targeting.",
+    helper: "Add academic and credential details that support your professional story.",
   },
   skills: {
     title: "Skill alignment",
@@ -150,7 +151,6 @@ function CreatePageContent() {
     currentStep,
     selectedTemplate,
     resumeData,
-    pendingAnalysis,
     setSelectedTemplate,
     setResumeData,
     goToStep,
@@ -219,6 +219,9 @@ function CreatePageContent() {
   const [focusedTemplateId, setFocusedTemplateId] = useState<TemplateId | null>(null);
   const premiumEnabled = isPremiumTemplatesEnabledClient();
   const trackedViews = useRef<Set<string>>(new Set());
+  const previewPanelRef = useRef<HTMLDivElement>(null);
+  const shouldScrollToPreviewRef = useRef(false);
+  const [previewPulse, setPreviewPulse] = useState(false);
   // Incrementing this forces step components to remount so their useState
   // initializers re-run against the freshly-populated store.
   const [uploadKey, setUploadKey] = useState(0);
@@ -304,25 +307,32 @@ function CreatePageContent() {
   const premiumTemplates = visibleTemplates.filter((template) => template.isPremium);
   const orderedTemplates = useMemo(() => [...freeTemplates, ...premiumTemplates], [freeTemplates, premiumTemplates]);
   const currentStepMeta = stepDetails[currentStep];
-  const jobDescription = resumeData.jobDescription?.trim() ?? "";
   const qualityChecks = [
-    { label: "Target role selected", done: Boolean(resumeData.targetRole?.trim()) },
-    { label: "Job description added", done: Boolean(jobDescription) || Boolean(pendingAnalysis?.jobDescription) },
+    {
+      label: "Personal details",
+      done: Boolean(
+        resumeData.personalInfo.fullName?.trim() &&
+          resumeData.personalInfo.email?.trim() &&
+          resumeData.personalInfo.phone?.trim() &&
+          resumeData.personalInfo.location?.trim()
+      ),
+    },
     { label: "Summary written", done: Boolean(resumeData.summary?.trim()) },
     { label: "Experience added", done: resumeData.workExperience.length > 0 },
+    { label: "Education added", done: resumeData.education.length > 0 },
     { label: "Skills added", done: resumeData.skills.length > 0 },
   ];
   const completedChecks = qualityChecks.filter((item) => item.done).length;
   const builderSuggestions = [
-    jobDescription
-      ? "Mirror the target role language in your summary and top experience bullets."
-      : "Paste the job description so the builder can guide keyword and relevance decisions.",
+    resumeData.summary?.trim()
+      ? "Keep your summary concise and aligned with the strongest proof points in your experience."
+      : "Write a short summary that explains your value in two or three focused sentences.",
     resumeData.workExperience.length > 0
       ? "Add outcome-driven metrics to your strongest role for more recruiter signal."
       : "Add at least one experience entry to unlock stronger preview quality and export confidence.",
     resumeData.skills.length > 0
-      ? "Keep technical and domain skills focused on the role you are targeting."
-      : "Add role-specific skills so the template preview reads like a targeted application.",
+      ? "Keep your skills section focused on the tools and capabilities you can defend in interviews."
+      : "Add your strongest tools, platforms, and domain skills so the resume reads as complete.",
   ];
   useEffect(() => {
     visibleTemplates.forEach((template) => {
@@ -350,6 +360,29 @@ function CreatePageContent() {
   }, [focusedTemplateId, selectedTemplate, visibleTemplates]);
 
   const focusedTemplate = orderedTemplates.find((template) => template.id === focusedTemplateId) ?? orderedTemplates[0] ?? null;
+
+  function focusTemplate(templateId: TemplateId, scrollToPreview = false) {
+    setFocusedTemplateId(templateId);
+    shouldScrollToPreviewRef.current =
+      scrollToPreview && typeof window !== "undefined" && window.matchMedia("(max-width: 1279px)").matches;
+  }
+
+  useEffect(() => {
+    if (!focusedTemplateId || !shouldScrollToPreviewRef.current) return;
+
+    shouldScrollToPreviewRef.current = false;
+    requestAnimationFrame(() => {
+      setPreviewPulse(true);
+      previewPanelRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }, [focusedTemplateId]);
+
+  useEffect(() => {
+    if (!previewPulse) return;
+
+    const timeoutId = window.setTimeout(() => setPreviewPulse(false), 900);
+    return () => window.clearTimeout(timeoutId);
+  }, [previewPulse]);
 
   function startFreshFlow(templateToKeep?: TemplateId) {
     reset();
@@ -862,7 +895,7 @@ function CreatePageContent() {
                             <button
                               key={t.id}
                               type="button"
-                              onClick={() => setFocusedTemplateId(t.id)}
+                              onClick={() => focusTemplate(t.id, true)}
                               className={`crp-template-rail-item w-full rounded-[26px] border p-3 text-left ${
                                 isFocused
                                   ? "border-slate-900 bg-slate-900 text-white shadow-[0_28px_70px_-42px_rgba(15,23,42,0.55)]"
@@ -900,6 +933,10 @@ function CreatePageContent() {
                                       </span>
                                     ))}
                                   </div>
+
+                                  <div className="mt-3" onClick={(event) => event.stopPropagation()}>
+                                    <AccentColorPicker templateId={t.id} onColorSelect={() => focusTemplate(t.id, true)} />
+                                  </div>
                                 </div>
                               </div>
                             </button>
@@ -908,7 +945,14 @@ function CreatePageContent() {
                       </div>
                     </div>
 
-                    <div className="rounded-[30px] border border-slate-200 bg-slate-950 p-4 text-white shadow-[0_30px_80px_-44px_rgba(15,23,42,0.62)] md:p-6">
+                    <div
+                      ref={previewPanelRef}
+                      className={`rounded-[30px] border bg-slate-950 p-4 text-white shadow-[0_30px_80px_-44px_rgba(15,23,42,0.62)] transition-all duration-500 md:p-6 ${
+                        previewPulse
+                          ? "border-cyan-300 shadow-[0_0_0_1px_rgba(165,243,252,0.55),0_30px_80px_-44px_rgba(34,211,238,0.45)]"
+                          : "border-slate-200"
+                      }`}
+                    >
                       <div className="flex flex-wrap items-center gap-2">
                         {focusedTemplate.isPremium && (
                           <span className="crp-premium-badge">{focusedTemplate.premiumBadgeType ?? "Premium"}</span>
@@ -932,6 +976,16 @@ function CreatePageContent() {
                       <div key={focusedTemplate.id} className="crp-template-stage mt-5 rounded-[28px] border border-white/10 bg-white/5 p-3 md:p-4">
                         <div className="rounded-[22px] border border-white/10 bg-white p-2 shadow-[0_32px_70px_-52px_rgba(15,23,42,0.6)] transition-transform duration-500 ease-out">
                           <TemplatePreviewCard template={focusedTemplate} />
+                        </div>
+                      </div>
+
+                      <div className="mt-4 rounded-[24px] border border-white/10 bg-white/5 p-4">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                          <div>
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-cyan-200">Color options</p>
+                            <p className="mt-1 text-sm text-slate-300">Try the preset accents for this template before applying it.</p>
+                          </div>
+                          <AccentColorPicker templateId={focusedTemplate.id} />
                         </div>
                       </div>
 
@@ -1208,20 +1262,6 @@ function CreatePageContent() {
                 <div className="xl:hidden">
                   <StepIndicator />
                 </div>
-              </div>
-
-              <div className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-[0_24px_60px_-46px_rgba(15,23,42,0.24)]">
-                <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
-                  <BriefcaseBusiness className="h-4 w-4 text-indigo-600" />
-                  Job context
-                </div>
-                <p className="mt-3 text-sm font-semibold text-slate-900">{resumeData.targetRole?.trim() || "No target role selected yet"}</p>
-                <p className="mt-2 text-sm leading-relaxed text-slate-600">
-                  {(jobDescription || pendingAnalysis?.jobDescription || "Add a job description to enable tighter alignment, stronger suggestions, and better score signals.")
-                    .toString()
-                    .slice(0, 260)}
-                  {(jobDescription || pendingAnalysis?.jobDescription) && (jobDescription || pendingAnalysis?.jobDescription)!.toString().length > 260 ? "..." : ""}
-                </p>
               </div>
 
               <div className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-[0_24px_60px_-46px_rgba(15,23,42,0.24)]">

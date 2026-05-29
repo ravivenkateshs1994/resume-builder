@@ -2,10 +2,11 @@
 
 import { useResumeStore } from "@/store/resumeStore";
 import type { TemplateId } from "@/types/resume";
-import { PER_TEMPLATE_PRESETS } from "@/lib/templateTheme";
+import { PER_TEMPLATE_PRESETS, hexToRgb } from "@/lib/templateTheme";
 
 interface Props {
   templateId: TemplateId;
+  onColorSelect?: () => void;
 }
 
 /**
@@ -13,7 +14,7 @@ interface Props {
  * Clicking a dot selects both the template and its accent color.
  * Returns null when the template has no curated color options.
  */
-export default function AccentColorPicker({ templateId }: Props) {
+export default function AccentColorPicker({ templateId, onColorSelect }: Props) {
   const { templateAccentColor, setTemplateAccentColor, selectedTemplate, setSelectedTemplate } =
     useResumeStore();
 
@@ -21,6 +22,13 @@ export default function AccentColorPicker({ templateId }: Props) {
   if (!presets.length) return null;
 
   const isCardSelected = selectedTemplate === templateId;
+  const isDarkSwatch = (color: string) => {
+    const rgb = hexToRgb(color);
+    if (!rgb) return false;
+
+    const luminance = (0.2126 * rgb.r + 0.7152 * rgb.g + 0.0722 * rgb.b) / 255;
+    return luminance < 0.22;
+  };
 
   return (
     <div className="flex items-center gap-1.5">
@@ -35,13 +43,19 @@ export default function AccentColorPicker({ templateId }: Props) {
               e.stopPropagation();
               setSelectedTemplate(templateId);
               setTemplateAccentColor(color);
+              onColorSelect?.();
             }}
             className={`w-4 h-4 rounded-full border-2 transition-all ${
               isActive
                 ? "border-slate-800 scale-110 shadow-sm"
                 : "border-slate-300 hover:border-slate-500 hover:scale-105"
             }`}
-            style={{ backgroundColor: color }}
+            style={{
+              backgroundColor: color,
+              boxShadow: isDarkSwatch(color)
+                ? "inset 0 0 0 1px rgba(255,255,255,0.35)"
+                : undefined,
+            }}
             aria-label={`${color} accent`}
             title={color}
           />

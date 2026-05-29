@@ -25,7 +25,7 @@ export default function SkillsStep() {
   }
 
   function suggestSkills() {
-    const role = (resumeData.targetRole || resumeData.personalInfo.jobTitle || "").toLowerCase();
+    const role = (resumeData.personalInfo.jobTitle || "").toLowerCase();
     const skillMap: Record<string, string[]> = {
       software: ["JavaScript", "TypeScript", "Python", "React", "Node.js", "REST APIs", "Git", "SQL", "Docker", "CI/CD", "Agile", "Unit Testing", "Linux", "AWS", "System Design"],
       frontend: ["React", "Vue.js", "TypeScript", "CSS/SASS", "Tailwind CSS", "Webpack", "Vite", "Accessibility (WCAG)", "Responsive Design", "GraphQL", "Jest", "Storybook", "Figma", "Web Performance", "Next.js"],

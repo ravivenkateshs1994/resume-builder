@@ -107,7 +107,7 @@ export default function PreviewStep() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          title: resumeData.personalInfo.fullName || resumeData.targetRole || "Resume Draft",
+          title: resumeData.personalInfo.fullName || resumeData.personalInfo.jobTitle || "Resume Draft",
           resumeData,
         }),
       });
