@@ -107,11 +107,10 @@ export default function PrivacyPage() {
             Privacy Policy
           </span>
           <h1 className="max-w-3xl text-5xl font-extrabold leading-[1.08] tracking-tight text-slate-900 sm:text-6xl">
-            How your resume data is handled
+            How we handle your data
           </h1>
           <p className="mt-6 max-w-2xl text-xl leading-relaxed text-slate-500">
-            This page explains what Career Readiness collects, how the app uses your resume content, and how your
-            data is stored when you use the builder, upload a resume, or run gap analysis.
+            This page explains what we collect, how we use it, and how it is stored when you use the app.
           </p>
           <div className="mt-10 grid gap-4 sm:grid-cols-3">
             <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
@@ -127,7 +126,7 @@ export default function PrivacyPage() {
             </div>
             <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
               <p className="text-xs font-bold uppercase tracking-widest text-indigo-600">AI processing</p>
-              <p className="mt-2 text-sm leading-6 text-slate-600">Resume text may be sent to server-side AI features when you ask for them.</p>
+              <p className="mt-2 text-sm leading-6 text-slate-600">Resume text may be processed by server-side AI features when requested.</p>
             </div>
           </div>
           <p className="mt-5 text-xs text-slate-600">Last updated {lastUpdated}</p>

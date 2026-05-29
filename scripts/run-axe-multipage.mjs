@@ -60,8 +60,7 @@ try {
         }
 
         const results = await page.evaluate(async () => {
-          // eslint-disable-next-line no-undef
-          return await axe.run(document, {
+          return await globalThis.axe.run(document, {
             runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa'] },
           });
         });

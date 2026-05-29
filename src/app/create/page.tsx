@@ -2,14 +2,15 @@
 
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import { BriefcaseBusiness, LayoutTemplate, Wand2 } from "lucide-react";
 import { useResumeStore } from "@/store/resumeStore";
 import { useSearchParams } from "next/navigation";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import StepIndicator from "@/components/StepIndicator";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import {
   TEMPLATE_CATALOG as TEMPLATE_OPTIONS,
-  TemplateGalleryCard,
   TemplatePreviewCard,
 } from "@/components/templates/templateGallery";
 import type { TemplateCatalogItem } from "@/components/templates/templateGallery";
@@ -82,6 +83,29 @@ const flowStages = [
   { number: "03", title: "Final Preview" }
 ];
 
+const stepDetails = {
+  personal: {
+    title: "Personal foundations",
+    helper: "Set your target role, contact details, and summary before expanding the rest of the resume.",
+  },
+  experience: {
+    title: "Experience editor",
+    helper: "Strengthen impact statements and align them with the job you want next.",
+  },
+  education: {
+    title: "Education and credentials",
+    helper: "Add proof points that support the role and stage you are targeting.",
+  },
+  skills: {
+    title: "Skill alignment",
+    helper: "Surface the right keywords, tools, and capabilities for ATS and recruiters.",
+  },
+  preview: {
+    title: "Review and export",
+    helper: "Check readiness, polish weak areas, and export with confidence.",
+  },
+} as const;
+
 function FlowStrip({ activeStep }: { activeStep: number }) {
   // FlowStrip only displays the progress stages; store actions not required here
 
@@ -125,6 +149,8 @@ function CreatePageContent() {
   const {
     currentStep,
     selectedTemplate,
+    resumeData,
+    pendingAnalysis,
     setSelectedTemplate,
     setResumeData,
     goToStep,
@@ -190,6 +216,7 @@ function CreatePageContent() {
   const [templates, setTemplates] = useState<TemplateCatalogItem[]>(TEMPLATE_OPTIONS);
   const [recommendedTemplateIds, setRecommendedTemplateIds] = useState<TemplateId[]>([]);
   const [previewTemplate, setPreviewTemplate] = useState<TemplateCatalogItem | null>(null);
+  const [focusedTemplateId, setFocusedTemplateId] = useState<TemplateId | null>(null);
   const premiumEnabled = isPremiumTemplatesEnabledClient();
   const trackedViews = useRef<Set<string>>(new Set());
   // Incrementing this forces step components to remount so their useState
@@ -275,6 +302,28 @@ function CreatePageContent() {
 
   const freeTemplates = visibleTemplates.filter((template) => !template.isPremium);
   const premiumTemplates = visibleTemplates.filter((template) => template.isPremium);
+  const orderedTemplates = useMemo(() => [...freeTemplates, ...premiumTemplates], [freeTemplates, premiumTemplates]);
+  const currentStepMeta = stepDetails[currentStep];
+  const jobDescription = resumeData.jobDescription?.trim() ?? "";
+  const qualityChecks = [
+    { label: "Target role selected", done: Boolean(resumeData.targetRole?.trim()) },
+    { label: "Job description added", done: Boolean(jobDescription) || Boolean(pendingAnalysis?.jobDescription) },
+    { label: "Summary written", done: Boolean(resumeData.summary?.trim()) },
+    { label: "Experience added", done: resumeData.workExperience.length > 0 },
+    { label: "Skills added", done: resumeData.skills.length > 0 },
+  ];
+  const completedChecks = qualityChecks.filter((item) => item.done).length;
+  const builderSuggestions = [
+    jobDescription
+      ? "Mirror the target role language in your summary and top experience bullets."
+      : "Paste the job description so the builder can guide keyword and relevance decisions.",
+    resumeData.workExperience.length > 0
+      ? "Add outcome-driven metrics to your strongest role for more recruiter signal."
+      : "Add at least one experience entry to unlock stronger preview quality and export confidence.",
+    resumeData.skills.length > 0
+      ? "Keep technical and domain skills focused on the role you are targeting."
+      : "Add role-specific skills so the template preview reads like a targeted application.",
+  ];
   useEffect(() => {
     visibleTemplates.forEach((template) => {
       if (trackedViews.current.has(template.id)) return;
@@ -286,6 +335,21 @@ function CreatePageContent() {
       });
     });
   }, [visibleTemplates]);
+
+  useEffect(() => {
+    if (!visibleTemplates.length) {
+      setFocusedTemplateId(null);
+      return;
+    }
+
+    const currentFocusedVisible = visibleTemplates.some((template) => template.id === focusedTemplateId);
+    if (currentFocusedVisible) return;
+
+    const selectedVisible = visibleTemplates.find((template) => template.id === selectedTemplate);
+    setFocusedTemplateId((selectedVisible ?? visibleTemplates[0]).id);
+  }, [focusedTemplateId, selectedTemplate, visibleTemplates]);
+
+  const focusedTemplate = orderedTemplates.find((template) => template.id === focusedTemplateId) ?? orderedTemplates[0] ?? null;
 
   function startFreshFlow(templateToKeep?: TemplateId) {
     reset();
@@ -580,108 +644,115 @@ function CreatePageContent() {
 
         <FlowStrip activeStep={0} />
 
-        {resumeHistory.length > 0 && (
-          <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 mt-3">
-            <div className="flex items-center justify-end">
-              <label className="sr-only" htmlFor="saved-resume-select">Load saved resume</label>
-              <select
-                id="saved-resume-select"
-                className="text-sm rounded-md border border-slate-200 bg-white py-2 px-3"
-                defaultValue=""
-                onChange={(e) => {
-                  const id = e.target.value;
-                  if (!id) return;
-                  const rec = resumeHistory.find((r) => r.id === id);
-                  if (!rec) return;
-                  setResumeData(rec.resumeSnapshot);
-                  // switch into form mode and navigate to first form step
-                  setMode("form");
-                  goToStep("personal");
-                  setPrefilled(true);
-                  setShowPrefillBanner(true);
-                }}
-              >
-                <option value="">Load saved resume...</option>
-                {resumeHistory.map((r) => (
-                  <option key={r.id} value={r.id}>{`${r.title} — ${new Date(r.createdAt).toLocaleDateString()}`}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-        )}
-
-        <div className="mx-auto w-full max-w-7xl px-4 pt-4 sm:px-6">
-          <div className="crp-card crp-module-accent crp-soft-radial relative max-w-full overflow-hidden p-4 md:p-6">
-            <div className="pointer-events-none absolute -right-10 -top-14 h-32 w-32 rounded-full bg-indigo-100/70 blur-2xl" />
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-              <div>
-                <span className="crp-badge">Template Selection</span>
-                <h1 className="crp-section-title mt-3 text-[28px] leading-tight md:text-[36px]">Choose Your Resume Template</h1>
-                <p className="crp-section-copy mt-2 max-w-3xl break-words text-sm leading-relaxed md:text-base">
-                  Select a professional ATS-friendly design for your tailored resume.
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-5 border-t border-slate-200/80 pt-5">
-              <div className="mb-3 flex items-center justify-between gap-3">
+        <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 pb-10 pt-4 sm:px-6">
+          <ScrollReveal delayMs={50}>
+            <section className="overflow-hidden rounded-[36px] border border-slate-200 bg-[radial-gradient(circle_at_top_left,_rgba(99,102,241,0.16),_transparent_28%),linear-gradient(180deg,#ffffff_0%,#f7fbff_100%)] p-6 shadow-[0_28px_70px_-46px_rgba(15,23,42,0.32)] md:p-8">
+              <div className="grid gap-8 xl:grid-cols-[1.15fr_0.85fr] xl:items-start">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-indigo-600">Template Studio</p>
+                  <span className="crp-badge">Template Studio</span>
+                  <h1 className="mt-4 text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">
+                    Design the resume first impression before you write a single line
+                  </h1>
+                  <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-600">
+                    Pick a template, import an existing resume, or start fresh — then move straight into the builder without changing your workflow.
+                  </p>
+
+                  {resumeHistory.length > 0 && (
+                    <div className="mt-6 max-w-md">
+                      <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500" htmlFor="saved-resume-select">
+                        Continue from a saved resume
+                      </label>
+                      <select
+                        id="saved-resume-select"
+                        className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm"
+                        defaultValue=""
+                        onChange={(e) => {
+                          const id = e.target.value;
+                          if (!id) return;
+                          const rec = resumeHistory.find((r) => r.id === id);
+                          if (!rec) return;
+                          setResumeData(rec.resumeSnapshot);
+                          setMode("form");
+                          goToStep("personal");
+                          setPrefilled(true);
+                          setShowPrefillBanner(true);
+                        }}
+                      >
+                        <option value="">Load saved resume...</option>
+                        {resumeHistory.map((r) => (
+                          <option key={r.id} value={r.id}>{`${r.title} — ${new Date(r.createdAt).toLocaleDateString()}`}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                </div>
+
+                <div className="rounded-[30px] border border-slate-200 bg-slate-950 p-5 text-white shadow-[0_32px_70px_-42px_rgba(15,23,42,0.65)] md:p-6">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-cyan-200">Flow</p>
+                      <h2 className="mt-2 text-2xl font-bold tracking-tight">Choose, import, edit</h2>
+                    </div>
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-cyan-100">
+                      <LayoutTemplate className="h-5 w-5" />
+                    </div>
+                  </div>
+
+                  <div className="mt-6 space-y-4">
+                    {[
+                      "Find a visual direction that matches your role and level.",
+                      "Import an existing resume or move into a blank tailored draft.",
+                      "Use the builder to refine content without losing template flexibility.",
+                    ].map((item, index) => (
+                      <div key={item} className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-xs font-bold text-white">
+                          0{index + 1}
+                        </div>
+                        <p className="text-sm leading-relaxed text-slate-200">{item}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                    <button
+                      type="button"
+                      onClick={() => setMode("form")}
+                      className="crp-btn-primary min-h-[44px] flex-1 px-5 py-3 text-sm"
+                    >
+                      Skip to builder
+                    </button>
+                    <div className="inline-flex min-h-[44px] flex-1 items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-slate-300">
+                      {recommendedTemplateIds.length > 0 ? "Recommended templates available" : `${visibleTemplates.length} templates available`}
+                    </div>
+                  </div>
                 </div>
               </div>
+            </section>
+          </ScrollReveal>
 
-              <div className="flex flex-wrap items-center gap-2">
-                {[
-                  { key: "recommended", label: "Recommended" },
-                  { key: "all", label: "All" },
-                  { key: "free", label: "Free" },
-                  ...(premiumEnabled ? [{ key: "premium", label: "Premium" }] : []),
-                ].map((f) => (
-                  <button
-                    key={f.key}
-                    type="button"
-                    onClick={() => setActiveTierFilter(f.key as TemplateTierFilter)}
-                    className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
-                      activeTierFilter === f.key
-                        ? "border-indigo-300 bg-indigo-50 text-indigo-700"
-                        : "border-slate-200 bg-white text-slate-600 hover:text-slate-800"
-                    }`}
-                  >
-                    {f.label}
-                  </button>
-                ))}
-              </div>
+          <ScrollReveal delayMs={100}>
+            <section className="rounded-[32px] border border-slate-200 bg-white p-4 shadow-[0_24px_60px_-42px_rgba(15,23,42,0.22)] md:p-5">
+              <div className="flex flex-col gap-4">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Filter studio</p>
+                  <p className="mt-1 text-sm text-slate-600">Narrow the catalog without changing the underlying selection flow.</p>
+                </div>
 
-              <div className="mt-3 flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center md:gap-4">
                 <div className="flex flex-wrap items-center gap-2">
                   {[
-                    { key: "all", label: "All Templates" },
-                    { key: "simple", label: "Simple" },
-                    { key: "modern", label: "Modern" },
-                    { key: "one-column", label: "One column" },
-                    { key: "with-photo", label: "With photo" },
-                    { key: "professional", label: "Professional" },
-                    { key: "ats", label: "ATS" },
+                    { key: "recommended", label: "Recommended" },
+                    { key: "all", label: "All" },
+                    { key: "free", label: "Free" },
+                    ...(premiumEnabled ? [{ key: "premium", label: "Premium" }] : []),
                   ].map((f) => (
                     <button
                       key={f.key}
                       type="button"
-                      onClick={() =>
-                        setActiveFilter(
-                          f.key as
-                            | "all"
-                            | "simple"
-                            | "modern"
-                            | "one-column"
-                            | "with-photo"
-                            | "professional"
-                            | "ats"
-                        )
-                      }
-                      className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
-                        activeFilter === f.key
-                          ? "bg-slate-900 text-white"
-                          : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                      onClick={() => setActiveTierFilter(f.key as TemplateTierFilter)}
+                      className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
+                        activeTierFilter === f.key
+                          ? "border-indigo-300 bg-indigo-50 text-indigo-700"
+                          : "border-slate-200 bg-white text-slate-600 hover:text-slate-800"
                       }`}
                     >
                       {f.label}
@@ -689,124 +760,216 @@ function CreatePageContent() {
                   ))}
                 </div>
 
-                <select
-                  value={activeRoleCategory}
-                  onChange={(event) => setActiveRoleCategory(event.target.value as RoleCategory)}
-                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 md:w-auto"
-                  aria-label="Filter by role category"
-                >
-                  <option value="all">All role categories</option>
-                  <option value="software">Software</option>
-                  <option value="design">Design</option>
-                  <option value="product">Product</option>
-                  <option value="operations">Operations</option>
-                  <option value="leadership">Leadership</option>
-                </select>
-
-                <select
-                  value={activeLevelCategory}
-                  onChange={(event) => setActiveLevelCategory(event.target.value as CareerLevel)}
-                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 md:w-auto"
-                  aria-label="Filter by level category"
-                >
-                  <option value="all">All levels</option>
-                  <option value="entry">Entry</option>
-                  <option value="mid">Mid</option>
-                  <option value="senior">Senior</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="mx-auto w-full max-w-7xl px-4 pt-6 sm:px-6">
-          <div className="flex justify-start sm:justify-end">
-            <button
-              type="button"
-              onClick={() => setMode("form")}
-              className="crp-btn-secondary min-h-[44px] w-full px-5 py-2 text-sm shadow-sm sm:w-auto"
-            >
-              Choose Later
-            </button>
-          </div>
-        </div>
-
-        <div className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6">
-
-          <div className="mb-3 mt-2 flex items-center justify-between gap-3">
-            <h3 className="text-[22px] font-bold tracking-tight text-slate-900 md:text-[30px]">All Templates</h3>
-          </div>
-
-          {!!freeTemplates.length && (
-            <div>
-              <h3 className="mb-3 text-sm font-bold uppercase tracking-[0.1em] text-slate-700">Free Templates</h3>
-              <div className="grid grid-cols-1 gap-y-5 gap-x-6 md:grid-cols-2 xl:grid-cols-3">
-                {freeTemplates.map((t) => (
-                  <div key={t.id} className="relative">
-                    <TemplateGalleryCard
-                      template={t}
-                      isSelected={selectedTemplate === t.id}
-                      onSelect={() => askStartPath(t.id)}
-                      onPreview={() => {
-                        setPreviewTemplate(t);
-                        trackEvent("template_preview", {
-                          templateId: t.id,
-                          isPremium: t.isPremium,
-                          priceModel: t.priceModel,
-                        });
-                      }}
-                      isPremium={false}
-                      atsScore={t.atsScore ?? undefined}
-                      recommendedFor={t.recommendedFor}
-                      isRecommended={recommendedTemplateIds.includes(t.id)}
-                      matchScore={t.atsScore ?? undefined}
-                      recommendationReason={
-                        t.recommendedFor?.length
-                          ? `AI recommendation: aligns with ${t.recommendedFor.slice(0, 2).join(" and ")} roles while maintaining ATS-friendly structure.`
-                          : "AI recommendation: strong role alignment, ATS readability, and recruiter-preferred structure."
-                      }
-                    />
+                <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+                  <div className="flex flex-wrap items-center gap-2">
+                    {[
+                      { key: "all", label: "All Templates" },
+                      { key: "simple", label: "Simple" },
+                      { key: "modern", label: "Modern" },
+                      { key: "one-column", label: "One column" },
+                      { key: "with-photo", label: "With photo" },
+                      { key: "professional", label: "Professional" },
+                      { key: "ats", label: "ATS" },
+                    ].map((f) => (
+                      <button
+                        key={f.key}
+                        type="button"
+                        onClick={() =>
+                          setActiveFilter(
+                            f.key as
+                              | "all"
+                              | "simple"
+                              | "modern"
+                              | "one-column"
+                              | "with-photo"
+                              | "professional"
+                              | "ats"
+                          )
+                        }
+                        className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
+                          activeFilter === f.key
+                            ? "bg-slate-900 text-white"
+                            : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                        }`}
+                      >
+                        {f.label}
+                      </button>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
 
-          {premiumEnabled && (
-            <div className="mt-8">
-              <h3 className="mb-3 text-sm font-bold uppercase tracking-[0.1em] text-slate-700">Premium Templates</h3>
-              <div className="grid grid-cols-1 gap-y-5 gap-x-6 md:grid-cols-2 xl:grid-cols-3">
-                {premiumTemplates.map((t) => (
-                  <TemplateGalleryCard
-                    key={t.id}
-                    template={t}
-                    isSelected={selectedTemplate === t.id}
-                    onSelect={() => askStartPath(t.id)}
-                    onPreview={() => {
-                      setPreviewTemplate(t);
-                      trackEvent("template_preview", {
-                        templateId: t.id,
-                        isPremium: t.isPremium,
-                        priceModel: t.priceModel,
-                      });
-                    }}
-                    isPremium
-                    atsScore={t.atsScore ?? undefined}
-                    recommendedFor={t.recommendedFor}
-                    isRecommended={recommendedTemplateIds.includes(t.id)}
-                    matchScore={t.atsScore ?? undefined}
-                    recommendationReason={
-                      t.recommendedFor?.length
-                        ? `AI recommendation: aligns with ${t.recommendedFor.slice(0, 2).join(" and ")} roles while maintaining ATS-friendly structure.`
-                        : "AI recommendation: strong role alignment, ATS readability, and recruiter-preferred structure."
-                    }
-                    badgeType={t.premiumBadgeType ?? "Premium"}
-                    locked={false}
-                  />
-                ))}
+                  <div className="flex flex-col gap-3 sm:flex-row">
+                    <select
+                      value={activeRoleCategory}
+                      onChange={(event) => setActiveRoleCategory(event.target.value as RoleCategory)}
+                      className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs font-medium text-slate-700"
+                      aria-label="Filter by role category"
+                    >
+                      <option value="all">All role categories</option>
+                      <option value="software">Software</option>
+                      <option value="design">Design</option>
+                      <option value="product">Product</option>
+                      <option value="operations">Operations</option>
+                      <option value="leadership">Leadership</option>
+                    </select>
+
+                    <select
+                      value={activeLevelCategory}
+                      onChange={(event) => setActiveLevelCategory(event.target.value as CareerLevel)}
+                      className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs font-medium text-slate-700"
+                      aria-label="Filter by level category"
+                    >
+                      <option value="all">All levels</option>
+                      <option value="entry">Entry</option>
+                      <option value="mid">Mid</option>
+                      <option value="senior">Senior</option>
+                    </select>
+                  </div>
+                </div>
               </div>
-            </div>
-          )}
+            </section>
+          </ScrollReveal>
+
+          <ScrollReveal delayMs={150}>
+            {!!orderedTemplates.length && focusedTemplate && (
+              <section className="space-y-6">
+                <div className="rounded-[36px] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f6f8fb_100%)] p-4 shadow-[0_26px_70px_-46px_rgba(15,23,42,0.24)] md:p-6">
+                  <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Template gallery</p>
+                      <h4 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">A focused browsing layout with a persistent preview</h4>
+                      <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">
+                        Scroll the template column on the left while the large preview stays visible on the right — choose once it feels right.
+                      </p>
+                    </div>
+                    <div className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
+                      {orderedTemplates.length} templates
+                    </div>
+                  </div>
+
+                  <div className="grid gap-5 xl:grid-cols-[minmax(280px,30%)_minmax(0,70%)] xl:items-start">
+                    <div className="rounded-[30px] border border-slate-200 bg-white p-3 shadow-[0_18px_50px_-40px_rgba(15,23,42,0.2)] xl:h-[920px] xl:overflow-hidden">
+                      <div className="mb-3 flex items-center justify-between gap-3 px-2">
+                        <div>
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Templates</p>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3 xl:h-[820px] xl:overflow-y-auto xl:pr-2">
+                        {orderedTemplates.map((t) => {
+                          const isFocused = focusedTemplate.id === t.id;
+
+                          return (
+                            <button
+                              key={t.id}
+                              type="button"
+                              onClick={() => setFocusedTemplateId(t.id)}
+                              className={`crp-template-rail-item w-full rounded-[26px] border p-3 text-left ${
+                                isFocused
+                                  ? "border-slate-900 bg-slate-900 text-white shadow-[0_28px_70px_-42px_rgba(15,23,42,0.55)]"
+                                  : "border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] text-slate-900 hover:border-indigo-200 hover:bg-indigo-50/30"
+                              }`}
+                            >
+                              <div className="flex gap-3">
+                                <div className={`w-20 shrink-0 overflow-hidden rounded-2xl border p-1 ${isFocused ? "border-white/10 bg-white/10" : "border-slate-200 bg-white"}`}>
+                                  <TemplatePreviewCard template={t} />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <div className="flex flex-wrap items-center gap-1.5">
+                                    {t.isPremium && <span className="crp-premium-badge">{t.premiumBadgeType ?? "Premium"}</span>}
+                                    {t.atsScore != null && <span className="crp-ats-badge">ATS {t.atsScore}</span>}
+                                    {recommendedTemplateIds.includes(t.id) && (
+                                      <span className="crp-ai-pick-badge">
+                                        <span className="text-[11px]">✨ Recommended</span>
+                                      </span>
+                                    )}
+                                  </div>
+
+                                  <p className={`mt-2 truncate text-sm font-semibold ${isFocused ? "text-white" : "text-slate-900"}`}>{t.name}</p>
+                                  <p className={`mt-1 text-xs leading-relaxed ${isFocused ? "text-slate-300" : "text-slate-600"}`}>{t.style}</p>
+                                  <p className={`mt-2 line-clamp-2 text-xs leading-relaxed ${isFocused ? "text-slate-300" : "text-slate-500"}`}>{t.description}</p>
+
+                                  <div className="mt-2 flex flex-wrap gap-1">
+                                    {t.tags.slice(0, 2).map((tag) => (
+                                      <span
+                                        key={tag}
+                                        className={`rounded-full px-2 py-0.5 text-[10px] ${
+                                          isFocused ? "border border-white/10 bg-white/10 text-slate-200" : "border border-slate-200 bg-white text-slate-600"
+                                        }`}
+                                      >
+                                        {tag}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <div className="rounded-[30px] border border-slate-200 bg-slate-950 p-4 text-white shadow-[0_30px_80px_-44px_rgba(15,23,42,0.62)] md:p-6">
+                      <div className="flex flex-wrap items-center gap-2">
+                        {focusedTemplate.isPremium && (
+                          <span className="crp-premium-badge">{focusedTemplate.premiumBadgeType ?? "Premium"}</span>
+                        )}
+                        {focusedTemplate.atsScore != null && <span className="crp-ats-badge">ATS {focusedTemplate.atsScore}</span>}
+                        {recommendedTemplateIds.includes(focusedTemplate.id) && (
+                          <span className="crp-ai-pick-badge">
+                            <span className="text-[11px]">✨ Recommended</span>
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="mt-4 flex flex-col gap-3 md:items-start">
+                        <div>
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-cyan-200">Live preview</p>
+                          <h4 className="mt-2 text-3xl font-black tracking-tight text-white md:text-4xl">{focusedTemplate.name}</h4>
+                          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-300 md:text-base">{focusedTemplate.description}</p>
+                        </div>
+                      </div>
+
+                      <div key={focusedTemplate.id} className="crp-template-stage mt-5 rounded-[28px] border border-white/10 bg-white/5 p-3 md:p-4">
+                        <div className="rounded-[22px] border border-white/10 bg-white p-2 shadow-[0_32px_70px_-52px_rgba(15,23,42,0.6)] transition-transform duration-500 ease-out">
+                          <TemplatePreviewCard template={focusedTemplate} />
+                        </div>
+                      </div>
+
+                      <div className="mt-5 flex flex-wrap gap-1.5">
+                        <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-200">
+                          {focusedTemplate.style}
+                        </span>
+                        {focusedTemplate.tags.slice(0, 4).map((tag) => (
+                          <span key={tag} className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] text-slate-300">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+
+                      {!!focusedTemplate.recommendedFor?.length && (
+                        <div className="mt-3 flex flex-wrap gap-1.5">
+                          {focusedTemplate.recommendedFor.slice(0, 3).map((role) => (
+                            <span key={role} className="rounded-full bg-white/10 px-2.5 py-1 text-[10px] font-medium text-cyan-100">
+                              {role}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      <div className="mt-6 border-t border-white/10 pt-5">
+                        <button
+                          type="button"
+                          onClick={() => askStartPath(focusedTemplate.id)}
+                          className="crp-btn-primary min-h-[48px] w-full px-5 py-3 text-sm"
+                        >
+                          Select this template
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            )}
 
           {visibleTemplates.length === 0 && (
             <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-sm text-slate-600">
@@ -820,6 +983,10 @@ function CreatePageContent() {
               <p className="mt-0.5 text-xs text-slate-600">You can change your template anytime. Your content remains safe.</p>
             </div>
           )}
+
+          {fileInput}
+        </ScrollReveal>
+        </main>
 
           {uploading && (
             <div className="fixed inset-0 z-30 flex items-center justify-center bg-slate-900/30 px-4 backdrop-blur-sm">
@@ -954,9 +1121,6 @@ function CreatePageContent() {
               </div>
             </div>
           )}
-        </div>
-
-        {fileInput}
 
         <SiteFooter />
       </div>
@@ -970,93 +1134,157 @@ function CreatePageContent() {
 
       <FlowStrip activeStep={currentStep === "preview" ? 2 : 1} />
 
-      <div className="mx-auto w-full max-w-7xl px-4 pt-6 sm:px-6">
-        <div className="crp-card crp-module-accent crp-soft-radial p-4 md:p-6">
-          <span className="crp-badge">Resume Tailoring</span>
-          <h1 className="crp-section-title mt-3 text-[28px] leading-tight md:text-[36px]">Resume Tailoring</h1>
-          <p className="crp-section-copy mt-2 max-w-3xl break-words text-sm leading-relaxed md:text-base">
-            Upload your resume and paste a job description to receive targeted improvements.
-          </p>
-        </div>
-      </div>
+      <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 pb-10 pt-6 sm:px-6">
+        <ScrollReveal delayMs={60}>
+          <section className="overflow-hidden rounded-[36px] border border-slate-200 bg-[radial-gradient(circle_at_top_left,_rgba(99,102,241,0.16),_transparent_28%),linear-gradient(180deg,#ffffff_0%,#f7fbff_100%)] p-6 shadow-[0_28px_70px_-46px_rgba(15,23,42,0.32)] md:p-8">
+            <div className="grid gap-8 xl:grid-cols-[1.08fr_0.92fr] xl:items-start">
+              <div>
+                <span className="crp-badge">Resume Builder</span>
+                <h1 className="mt-4 text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">A cleaner editing workspace with the same workflow underneath.</h1>
+                <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-600">
+                  Your step flow, parsing, and template logic stay the same. This shell just makes the editing workspace easier to scan and use.
+                </p>
 
-      {/* Steps (centered) and upload CTA */}
-      <div className="mx-auto w-full max-w-7xl px-4 pt-4 sm:px-6">
-        <div className="mx-auto max-w-2xl">
-          <StepIndicator />
+                <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                  <div className="rounded-2xl border border-slate-200 bg-white/90 p-4">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Current step</p>
+                    <p className="mt-2 text-sm font-semibold text-slate-900">{currentStepMeta.title}</p>
+                  </div>
+                  <div className="rounded-2xl border border-slate-200 bg-white/90 p-4">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Template</p>
+                    <p className="mt-2 text-sm font-semibold capitalize text-slate-900">{selectedTemplate}</p>
+                  </div>
+                  <div className="rounded-2xl border border-slate-200 bg-white/90 p-4">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Quality checks</p>
+                    <p className="mt-2 text-sm font-semibold text-slate-900">{completedChecks}/5 completed</p>
+                  </div>
+                </div>
+              </div>
 
-          {!prefilled && (
-            <div className="mt-4 flex justify-center">
-              <button
-                type="button"
-                onClick={() => document.getElementById("resume-upload-input")?.click()}
-                disabled={uploading}
-                aria-busy={uploading}
-                className={`w-full rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 text-lg font-semibold text-white shadow-lg focus:outline-none focus:ring-4 focus:ring-indigo-200 ${
-                  uploading ? "opacity-90 cursor-wait" : "hover:opacity-95"
-                }`}
-              >
-                {uploading ? (
-                  <span className="flex items-center justify-center gap-3">
-                    <svg className="h-5 w-5 animate-spin text-white" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-                    </svg>
-                    <span>{UPLOAD_MESSAGES[uploadMsgIdx] ?? "Reading your resume..."}</span>
-                  </span>
-                ) : (
-                  "Upload resume"
-                )}
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
+              <div className="rounded-[30px] border border-slate-200 bg-slate-950 p-5 text-white shadow-[0_32px_70px_-42px_rgba(15,23,42,0.65)] md:p-6">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-cyan-200">Workspace status</p>
+                <div className="mt-4 space-y-4">
+                  <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">What you are editing</p>
+                    <p className="mt-2 text-lg font-semibold text-white">{currentStepMeta.title}</p>
+                    <p className="mt-1 text-sm text-slate-300">{currentStepMeta.helper}</p>
+                  </div>
 
-      {/* Main form — always wide, left sidebar nav + right content */}
-      <div className="mx-auto flex max-w-7xl flex-col gap-5 px-4 py-6 sm:py-10 lg:flex-row lg:gap-8">
+                  {!prefilled && (
+                    <button
+                      type="button"
+                      onClick={() => document.getElementById("resume-upload-input")?.click()}
+                      disabled={uploading}
+                      aria-busy={uploading}
+                      className={`min-h-[48px] w-full rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition ${
+                        uploading ? "opacity-90 cursor-wait" : "hover:bg-slate-100"
+                      }`}
+                    >
+                      {uploading ? (UPLOAD_MESSAGES[uploadMsgIdx] ?? "Reading your resume...") : "Upload resume into this workspace"}
+                    </button>
+                  )}
 
-        {/* ── Left sidebar: vertical step navigator ── */}
-        <div className="lg:w-44 lg:flex-shrink-0 lg:pt-1">
-          <p className="mb-2 px-1 text-[10px] font-bold uppercase tracking-widest text-slate-400 lg:mb-3 lg:px-3">Steps</p>
-          <div className="hidden">
-            <StepIndicator />
-          </div>
-          <div className="hidden lg:block">
-            <StepIndicator variant="vertical" />
-          </div>
-        </div>
-
-        {/* ── Right: form content ── */}
-        <div className="flex-1 min-w-0">
-          {/* ── Prefill banner (shown only after upload) ── */}
-          {showPrefillBanner && (
-            <div className="relative mb-6 rounded-xl border border-green-200 bg-green-50/95 p-4 text-sm">
-              <button
-                onClick={() => setShowPrefillBanner(false)}
-                aria-label="Dismiss"
-                className="absolute right-3 top-3 inline-flex h-7 w-7 items-center justify-center rounded-md text-green-700 hover:bg-green-100"
-              >
-                ✕
-              </button>
-
-              <div className="flex items-start gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-green-100 text-green-700">✓</div>
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-green-800">Resume imported — fields pre-filled.</p>
-                  <p className="mt-1 text-sm text-green-700">Review and edit below.</p>
+                  <div className="flex flex-wrap gap-2">
+                    {qualityChecks.slice(0, 4).map((item) => (
+                      <div key={item.label} className={`rounded-full px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] ${item.done ? "bg-emerald-50 text-emerald-700" : "bg-white/10 text-slate-300"}`}>
+                        {item.label}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
-          )}
+          </section>
+        </ScrollReveal>
 
-          {fileInput}
+        <ScrollReveal delayMs={130}>
+          <section className="grid gap-6 xl:grid-cols-[290px_minmax(0,1fr)] xl:items-start">
+            <aside className="space-y-4 xl:sticky xl:top-28 xl:self-start">
+              <div className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-[0_24px_60px_-46px_rgba(15,23,42,0.24)]">
+                <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">Step navigator</p>
+                <div className="hidden xl:block">
+                  <StepIndicator variant="vertical" />
+                </div>
+                <div className="xl:hidden">
+                  <StepIndicator />
+                </div>
+              </div>
 
-          <div key={uploadKey} className={currentStep === "preview" ? "max-w-full overflow-x-hidden" : "app-panel max-w-full overflow-x-hidden rounded-2xl p-4 md:p-6 lg:p-8"}>
-            {renderStep()}
-          </div>
-        </div>
-      </div>
+              <div className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-[0_24px_60px_-46px_rgba(15,23,42,0.24)]">
+                <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+                  <BriefcaseBusiness className="h-4 w-4 text-indigo-600" />
+                  Job context
+                </div>
+                <p className="mt-3 text-sm font-semibold text-slate-900">{resumeData.targetRole?.trim() || "No target role selected yet"}</p>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                  {(jobDescription || pendingAnalysis?.jobDescription || "Add a job description to enable tighter alignment, stronger suggestions, and better score signals.")
+                    .toString()
+                    .slice(0, 260)}
+                  {(jobDescription || pendingAnalysis?.jobDescription) && (jobDescription || pendingAnalysis?.jobDescription)!.toString().length > 260 ? "..." : ""}
+                </p>
+              </div>
+
+              <div className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-[0_24px_60px_-46px_rgba(15,23,42,0.24)]">
+                <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+                  <Wand2 className="h-4 w-4 text-cyan-600" />
+                  AI suggestions
+                </div>
+                <div className="mt-3 space-y-3">
+                  {builderSuggestions.slice(0, 2).map((item) => (
+                    <div key={item} className="rounded-2xl border border-slate-200 bg-slate-50 p-3 text-sm leading-relaxed text-slate-600">
+                      {item}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </aside>
+
+            <section className="min-w-0 space-y-4">
+              {showPrefillBanner && (
+                <div className="relative rounded-2xl border border-green-200 bg-green-50/95 p-4 text-sm">
+                  <button
+                    onClick={() => setShowPrefillBanner(false)}
+                    aria-label="Dismiss"
+                    className="absolute right-3 top-3 inline-flex h-7 w-7 items-center justify-center rounded-md text-green-700 hover:bg-green-100"
+                  >
+                    ✕
+                  </button>
+
+                  <div className="flex items-start gap-3">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-green-100 text-green-700">✓</div>
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold text-green-800">Resume imported — fields pre-filled.</p>
+                      <p className="mt-1 text-sm text-green-700">Review and edit below.</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {fileInput}
+
+              <div className="rounded-[30px] border border-slate-200 bg-white p-4 shadow-[0_24px_60px_-46px_rgba(15,23,42,0.24)] md:p-5">
+                <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-indigo-600">{currentStepMeta.title}</p>
+                    <p className="mt-2 text-sm text-slate-600">{currentStepMeta.helper}</p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {qualityChecks.map((item) => (
+                      <div key={item.label} className={`rounded-full px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] ${item.done ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>
+                        {item.label}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className={currentStep === "preview" ? "max-w-full overflow-x-hidden" : "app-panel max-w-full overflow-x-hidden rounded-[30px] p-4 md:p-6 lg:p-8"} key={uploadKey}>
+                {renderStep()}
+              </div>
+            </section>
+          </section>
+        </ScrollReveal>
+      </main>
 
       {/* Roadmap / Coming Soon section removed per design — kept page focused on resume creation */}
       <SiteFooter />

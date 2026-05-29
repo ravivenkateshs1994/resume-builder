@@ -39,8 +39,8 @@ export default function LoginPage() {
       <main className="mx-auto max-w-2xl px-4 py-12">
         <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <p className="text-xs font-bold uppercase tracking-widest text-indigo-600">Account</p>
-          <h1 className="mt-2 text-3xl font-extrabold text-slate-900">Admin Login</h1>
-          <p className="mt-2 text-sm text-slate-600">Use the single admin account for now. Signup will come later.</p>
+          <h1 className="mt-2 text-3xl font-extrabold text-slate-900">Sign in</h1>
+          <p className="mt-2 text-sm text-slate-600">Sign in to your account. Signup will be available later.</p>
 
           {!supabase && (
             <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700">
@@ -78,7 +78,7 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter admin password"
+                placeholder="Enter your password"
                 className="crp-input w-full"
               />
               <button
@@ -87,7 +87,7 @@ export default function LoginPage() {
                 disabled={loading || !email.trim() || !password || !supabase}
                 className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
               >
-                {loading ? "Logging in..." : "Login"}
+                {loading ? "Signing in..." : "Sign in"}
               </button>
             </div>
           )}

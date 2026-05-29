@@ -1,5 +1,3 @@
-import { NextResponse as _NextResponse } from "next/server";
-
 const BASE = process.env.NEXT_PUBLIC_BASE_URL || process.env.PUPPETEER_BASE_URL || "https://example.com";
 const LAST_MOD = new Date().toISOString().split("T")[0];
 

@@ -122,7 +122,7 @@ export default function TermsPage() {
             Terms of Service
           </span>
           <h1 className="max-w-3xl text-5xl font-extrabold leading-[1.08] tracking-tight text-slate-900 sm:text-6xl">
-            The rules for using the app
+            Terms of use
           </h1>
           <p className="mt-6 max-w-2xl text-xl leading-relaxed text-slate-500">
             These terms explain what the service does, what you are responsible for, and the limits that apply when
@@ -152,7 +152,7 @@ export default function TermsPage() {
             <LegalSection key={section.title} title={section.title} items={section.items} />
           ))}
           <div className="rounded-3xl border border-slate-100 bg-slate-900 px-6 py-8 text-white shadow-xl shadow-slate-200 sm:px-8">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-300">Short version</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-300">Short summary</p>
             <p className="mt-3 max-w-3xl text-lg leading-8 text-slate-200">
               You can use the app to build and improve your resume, but you are responsible for checking the results,
               using the service lawfully, and making sure the content you submit is yours to share.

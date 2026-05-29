@@ -31,7 +31,7 @@ const TemplatePreviewCardInner = ({
       : getDefaultTemplateAccent(template.id);
 
   return (
-    <div className="max-w-full overflow-hidden rounded-xl bg-white shadow-sm">
+    <div className="max-w-full overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-2 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.32)]">
       <TemplateThumbnail
         templateId={template.id as TemplateId}
         accentColor={accentColor}
@@ -95,12 +95,12 @@ export function TemplateGalleryCard({
       <div
         onClick={onSelect}
         className={[
-          "crp-template-card flex h-full max-w-full cursor-pointer flex-col overflow-hidden rounded-xl p-2.5 transition-all",
+          "crp-template-card flex h-full max-w-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-3 transition-all duration-200 hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-[0_24px_45px_-28px_rgba(99,102,241,0.28)]",
           premium ? "crp-premium-card" : "",
           selectedState
             ? "ring-2 ring-indigo-500 shadow-md shadow-indigo-100"
             : recommended
-              ? "ring-1 ring-violet-300 shadow-[0_18px_38px_-24px_rgba(99,102,241,0.55)] scale-[1.01]"
+              ? "ring-1 ring-violet-300 shadow-[0_18px_38px_-24px_rgba(99,102,241,0.3)]"
               : "ring-0",
         ].join(" ")}
       >
@@ -121,7 +121,7 @@ export function TemplateGalleryCard({
         )}
 
         {/* Preview — fills available flex space */}
-        <div className="min-h-0 flex-1">
+        <div className="min-h-0 flex-1 rounded-xl border border-slate-200/80 bg-white p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
           <TemplateThumbnail
             templateId={template.id as TemplateId}
             accentColor={accentColor}
@@ -133,59 +133,61 @@ export function TemplateGalleryCard({
         </div>
 
         {/* Footer */}
-        <div className="mt-2 shrink-0">
-          <div className="flex flex-wrap items-center gap-1">
+        <div className="mt-3 shrink-0">
+          <div className="flex flex-wrap items-center gap-1.5">
             {premium && (
               <span className="crp-premium-badge">{badgeType || template.premiumBadgeType || "Premium"}</span>
             )}
             {score > 0 && <span className="crp-ats-badge">ATS {score}</span>}
+            {selectedState && (
+              <span className="rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-semibold text-indigo-700">Selected</span>
+            )}
           </div>
-          <p className="mt-1.5 break-words text-sm font-semibold tracking-tight text-slate-900">
+          <p className="mt-2 break-words text-sm font-semibold tracking-tight text-slate-900">
             {template.name}
           </p>
           <p className="mt-0.5 break-words text-xs leading-relaxed text-slate-600">{template.style}</p>
-          <div className="mt-1.5 flex flex-wrap gap-1" aria-label="Template strengths">
-            {template.tags.map((tag) => (
+          <div className="mt-2 flex flex-wrap gap-1" aria-label="Template strengths">
+            {template.tags.slice(0, 2).map((tag) => (
               <span
                 key={tag}
-                className="rounded-full border border-slate-200 bg-white/85 px-1.5 py-0.5 text-[10px] text-slate-600"
+                className="rounded-full border border-slate-200 bg-white/85 px-2 py-0.5 text-[10px] text-slate-600"
               >
                 {tag}
               </span>
             ))}
           </div>
           {!!roles.length && (
-            <div className="mt-1.5 flex flex-wrap gap-1">
+            <div className="mt-2 flex flex-wrap gap-1">
               {roles.slice(0, 2).map((role) => (
                 <span
                   key={role}
-                  className="rounded-full bg-indigo-50 px-1.5 py-0.5 text-[10px] text-indigo-700"
+                  className="rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] text-indigo-700"
                 >
                   {role}
                 </span>
               ))}
             </div>
           )}
-          {selectedState && (
-            <div className="mt-1.5 text-[10px] font-semibold text-indigo-700">✓ Selected</div>
-          )}
-          {onPreview && (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onPreview();
-              }}
-              className="mt-2 min-h-[44px] w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-            >
-              Preview
-            </button>
-          )}
           {cardLocked && (
             <div className="mt-1 text-[10px] text-amber-700">Premium access coming soon</div>
           )}
-          <div className="mt-2" onClick={(e) => e.stopPropagation()}>
-            <AccentColorPicker templateId={template.id as TemplateId} />
+          <div className="mt-3 flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+            {onPreview && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onPreview();
+                }}
+                className="min-h-[40px] flex-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+              >
+                Preview
+              </button>
+            )}
+            <div className="min-w-0 flex-1">
+              <AccentColorPicker templateId={template.id as TemplateId} />
+            </div>
           </div>
         </div>
       </div>
@@ -197,12 +199,12 @@ export function TemplateGalleryCard({
     <div
       onClick={onSelect}
       className={[
-        "crp-template-card flex h-full max-w-full cursor-pointer flex-col overflow-hidden rounded-xl p-3 text-left transition-all",
+        "crp-template-card flex h-full max-w-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-3 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-[0_24px_48px_-30px_rgba(15,23,42,0.22)]",
         premium ? "crp-premium-card" : "",
         selectedState
           ? "ring-2 ring-indigo-500 shadow-md shadow-indigo-100"
           : recommended
-            ? "ring-1 ring-violet-300 shadow-[0_20px_42px_-22px_rgba(99,102,241,0.58)] scale-[1.02]"
+            ? "ring-1 ring-violet-300 shadow-[0_20px_42px_-22px_rgba(99,102,241,0.32)]"
             : "ring-0",
       ].join(" ")}
     >
@@ -239,29 +241,38 @@ export function TemplateGalleryCard({
       </div>
 
       {/* Preview — A4 aspect ratio, fills card width */}
-      <TemplateThumbnail
-        templateId={template.id as TemplateId}
-        accentColor={accentColor}
-        className={[
-          "rounded-lg shadow-sm",
-          selectedState ? "ring-2 ring-inset ring-indigo-400" : "",
-        ].join(" ")}
-      />
+      <div className="rounded-xl border border-slate-200/80 bg-white p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
+        <TemplateThumbnail
+          templateId={template.id as TemplateId}
+          accentColor={accentColor}
+          className={[
+            "rounded-lg shadow-sm",
+            selectedState ? "ring-2 ring-inset ring-indigo-400" : "",
+          ].join(" ")}
+        />
+      </div>
 
       {/* Footer */}
-      <div className="mt-2 shrink-0">
-        <p className="break-words text-sm font-semibold tracking-tight text-slate-900">
-          {template.name}
-        </p>
-        <p className="mt-0.5 break-words text-xs leading-relaxed text-slate-500">
-          {template.description}
-        </p>
+      <div className="mt-3 shrink-0">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="break-words text-sm font-semibold tracking-tight text-slate-900">
+              {template.name}
+            </p>
+            <p className="mt-0.5 break-words text-xs leading-relaxed text-slate-500">
+              {template.description}
+            </p>
+          </div>
+          {selectedState && (
+            <span className="rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-semibold text-indigo-700">Selected</span>
+          )}
+        </div>
         {!!roles.length && (
           <div className="mt-2 flex flex-wrap gap-1">
-            {roles.slice(0, 3).map((role) => (
+            {roles.slice(0, 2).map((role) => (
               <span
                 key={role}
-                className="rounded-full bg-indigo-50 px-1.5 py-0.5 text-[10px] text-indigo-700"
+                className="rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] text-indigo-700"
               >
                 {role}
               </span>
@@ -269,40 +280,39 @@ export function TemplateGalleryCard({
           </div>
         )}
         <div className="mt-1.5 flex flex-wrap gap-1" aria-label="Template strengths">
-          {template.tags.map((tag) => (
+          {template.tags.slice(0, 2).map((tag) => (
             <span
               key={tag}
-              className="rounded-full border border-slate-200 bg-white/85 px-1.5 py-0.5 text-[10px] text-slate-600"
+              className="rounded-full border border-slate-200 bg-white/85 px-2 py-0.5 text-[10px] text-slate-600"
             >
               {tag}
             </span>
           ))}
         </div>
-        {selectedState && (
-          <div className="mt-1.5 text-[10px] font-semibold text-indigo-700">✓ Selected</div>
-        )}
-        {onPreview && (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onPreview();
-            }}
-            className={[
-              "mt-2 min-h-[44px] w-full rounded-lg border bg-white px-2.5 py-1.5 text-xs font-semibold transition-colors",
-              premium
-                ? "border-amber-200 text-amber-700 hover:bg-amber-50"
-                : "border-slate-200 text-slate-700 hover:bg-slate-50",
-            ].join(" ")}
-          >
-            Preview
-          </button>
-        )}
         {cardLocked && (
           <div className="mt-1 text-xs text-amber-700">Premium locking will be enabled soon.</div>
         )}
-        <div className="mt-2" onClick={(e) => e.stopPropagation()}>
-          <AccentColorPicker templateId={template.id as TemplateId} />
+        <div className="mt-3 flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+          {onPreview && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onPreview();
+              }}
+              className={[
+                "min-h-[40px] flex-1 rounded-xl border bg-white px-3 py-2 text-xs font-semibold transition-colors",
+                premium
+                  ? "border-amber-200 text-amber-700 hover:bg-amber-50"
+                  : "border-slate-200 text-slate-700 hover:bg-slate-50",
+              ].join(" ")}
+            >
+              Preview
+            </button>
+          )}
+          <div className="min-w-0 flex-1">
+            <AccentColorPicker templateId={template.id as TemplateId} />
+          </div>
         </div>
       </div>
     </div>

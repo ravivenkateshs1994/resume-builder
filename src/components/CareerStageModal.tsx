@@ -21,7 +21,7 @@ export default function CareerStageModal({ onComplete }: { onComplete?: (stage: 
       }
       setCareerStageLocal(selection);
       onComplete?.(selection);
-    } catch (err) {
+    } catch {
       // ignore — best-effort
     } finally {
       setSaving(false);
@@ -41,7 +41,7 @@ export default function CareerStageModal({ onComplete }: { onComplete?: (stage: 
             className={`rounded-lg border p-4 text-left ${selection === "FRESHER" ? "border-indigo-500 bg-indigo-50" : "border-slate-200"}`}
           >
             <p className="font-semibold">Fresher / Student</p>
-            <p className="text-sm text-slate-600 mt-1">I'm starting my career and want entry-level guidance.</p>
+            <p className="mt-1 text-sm text-slate-600">I&apos;m starting my career and want entry-level guidance.</p>
           </button>
 
           <button
@@ -50,7 +50,7 @@ export default function CareerStageModal({ onComplete }: { onComplete?: (stage: 
             className={`rounded-lg border p-4 text-left ${selection === "EXPERIENCED" ? "border-teal-500 bg-teal-50" : "border-slate-200"}`}
           >
             <p className="font-semibold">Experienced Professional</p>
-            <p className="text-sm text-slate-600 mt-1">I have work experience and want growth & senior role guidance.</p>
+            <p className="mt-1 text-sm text-slate-600">I have work experience and want growth and senior role guidance.</p>
           </button>
         </div>
 

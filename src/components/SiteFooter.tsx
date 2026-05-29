@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 
 export function SiteFooter() {
   const currentYear = new Date().getFullYear();
@@ -12,24 +13,29 @@ export function SiteFooter() {
           {/* Brand Section */}
           <div className="space-y-6">
             <Link href="/" className="flex items-center gap-2.5" aria-label="Career Readiness">
-            <div className="h-9 sm:h-10 max-w-[140px] sm:max-w-[220px] flex items-center">
-              <img
-                src="/career-readiness-desktop-logo.png"
-                alt="Career Readiness"
-                className="max-h-full max-w-full object-contain"
-              />
-            </div>
-            <span className="sr-only">Career Readiness</span>
-          </Link>
+              <div className="flex h-9 max-w-[140px] items-center sm:h-10 sm:max-w-[220px]">
+                <Image
+                  src="/career-readiness-desktop-logo.png"
+                  alt="Career Readiness"
+                  width={220}
+                  height={40}
+                  className="h-auto max-h-full w-auto max-w-full object-contain"
+                />
+              </div>
+              <span className="sr-only">Career Readiness</span>
+            </Link>
             <p className="max-w-xs text-sm leading-relaxed text-slate-500">
-              The AI-powered platform designed to help you land your dream role with tailored resumes and deep skill-gap analysis.
+              Your career execution workspace for role-targeted resumes, skill-gap intelligence, and interview readiness.
+            </p>
+            <p className="text-xs font-medium uppercase tracking-[0.12em] text-slate-400">
+              Analyze. Prioritize. Improve. Repeat.
             </p>
           </div>
 
           <div className="mt-12 xl:col-span-2 xl:mt-0">
-            <div className="grid grid-cols-2 gap-8">
+            <div className="grid grid-cols-2 gap-8 md:grid-cols-3">
               <div>
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Product</h3>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Platform</h3>
                 <ul className="mt-4 space-y-3">
                   <li>
                     <Link href="/create" className="text-sm text-slate-500 hover:text-indigo-600 transition-colors inline-flex items-center gap-1.5">
@@ -41,10 +47,25 @@ export function SiteFooter() {
                       Gap Analysis
                     </Link>
                   </li>
+                  <li>
+                    <Link href="/dashboard" className="text-sm text-slate-500 hover:text-indigo-600 transition-colors">
+                      Career Dashboard
+                    </Link>
+                  </li>
                 </ul>
               </div>
-              <div className="">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Company</h3>
+
+              <div>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Use Cases</h3>
+                <ul className="mt-4 space-y-3">
+                  <li className="text-sm text-slate-500">Students and Freshers</li>
+                  <li className="text-sm text-slate-500">Career Switchers</li>
+                  <li className="text-sm text-slate-500">Experienced Professionals</li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Legal</h3>
                 <ul className="mt-4 space-y-3">
                   <li>
                     <Link href="/privacy" className="text-sm text-slate-500 hover:text-indigo-600 transition-colors">
@@ -65,7 +86,7 @@ export function SiteFooter() {
         {/* Bottom Bar */}
         <div className="mt-12 border-t border-slate-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-slate-600">
-            &copy; {currentYear} Career Readiness Platform. All rights reserved.
+            &copy; {currentYear} Career Readiness Platform. Built for high-intent job seekers.
           </p>
           <div className="flex items-center gap-6">
             <span className="flex items-center gap-1.5 text-xs text-slate-600">

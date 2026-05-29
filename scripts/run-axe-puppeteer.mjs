@@ -31,15 +31,14 @@ const outFile = process.argv[3] || './axe-report.json';
     try {
       const axePath = require.resolve('axe-core/axe.min.js');
       await page.addScriptTag({ path: axePath });
-    } catch (err) {
+    } catch {
       // Fallback to CDN if local package isn't available
       await page.addScriptTag({ url: 'https://cdnjs.cloudflare.com/ajax/libs/axe-core/4.11.4/axe.min.js' });
     }
 
     console.log('Running axe...');
     const results = await page.evaluate(async () => {
-      // eslint-disable-next-line no-undef
-      return await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa'] } });
+      return await globalThis.axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa'] } });
     });
 
     fs.writeFileSync(outFile, JSON.stringify(results, null, 2));
@@ -48,7 +47,7 @@ const outFile = process.argv[3] || './axe-report.json';
     await browser.close();
     try {
       fs.rmSync(userDataDir, { recursive: true, force: true });
-    } catch (err) {
+    } catch {
       // ignore cleanup errors
     }
   }

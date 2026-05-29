@@ -12,7 +12,7 @@ export async function getCareerStage(supabase: any): Promise<CareerStage | null>
     const { data: profile, error } = await supabase.from("profiles").select("career_stage").eq("id", userId).single();
     if (error) return null;
     return (profile?.career_stage as CareerStage) ?? null;
-  } catch (err) {
+  } catch {
     return null;
   }
 }
@@ -29,7 +29,7 @@ export async function setCareerStage(supabase: any, stage: CareerStage): Promise
       .upsert({ id: userId, career_stage: stage, updated_at: new Date().toISOString() }, { returning: "minimal" });
 
     return !error;
-  } catch (err) {
+  } catch {
     return false;
   }
 }

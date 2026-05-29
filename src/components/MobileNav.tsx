@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { createPortal } from "react-dom";
 import Link from "next/link";
@@ -79,8 +80,15 @@ export default function MobileNav() {
       {/* Top bar */}
       <div className="flex h-16 shrink-0 items-center justify-between border-b border-slate-100 px-4 md:px-6">
         <div className="flex items-center gap-2.5">
-          <div className="h-9 sm:h-10 max-w-[140px] sm:max-w-[220px] flex items-center">
-            <img src="/career-readiness-desktop-logo.png" alt="Career Readiness" className="max-h-full max-w-full object-contain" />
+          <div className="flex h-9 max-w-[140px] items-center sm:h-10 sm:max-w-[220px]">
+            <Image
+              src="/career-readiness-desktop-logo.png"
+              alt="Career Readiness"
+              width={220}
+              height={40}
+              className="h-auto max-h-full w-auto max-w-full object-contain"
+              priority
+            />
           </div>
         </div>
         {/* Close button inside overlay */}

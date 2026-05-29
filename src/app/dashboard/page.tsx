@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { BriefcaseBusiness } from "lucide-react";
 import { SiteFooter } from "@/components/SiteFooter";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { useResumeStore } from "@/store/resumeStore";
 import { useRouter } from "next/navigation";
 import { SiteHeader } from "@/components/SiteHeader";
-import HeroCard from "@/components/dashboard/HeroCard";
-import StatCards from "@/components/dashboard/StatCards";
 import ResumeList from "@/components/dashboard/ResumeList";
 import ResumePreview from "@/components/dashboard/ResumePreview";
 import ActivityTimeline from "@/components/dashboard/ActivityTimeline";
@@ -15,8 +15,145 @@ import EmptyState from "@/components/dashboard/EmptyState";
 import type { ResumeData } from "@/types/resume";
 import CareerStageModal from "@/components/CareerStageModal";
 import { getCareerStage } from "@/lib/careerStage";
-import { getDashboardExperience } from "@/lib/personalization";
-import computeCareerScore from "@/lib/career-score";
+
+function SideNav({
+  name,
+  email,
+  tab,
+  setTab,
+  resumesCount = 0,
+  analysisCount = 0,
+  priorityActions = [],
+  onDismissAction,
+}: {
+  name?: string | null;
+  email?: string | null;
+  tab: string;
+  setTab: (t: any) => void;
+  resumesCount?: number;
+  analysisCount?: number;
+  priorityActions?: { title: string; detail: string; cta: string; onClick: () => void }[];
+  onDismissAction?: (title: string) => void;
+}) {
+  const initials = (name ?? email ?? "U").split(" ").map((n) => n[0] || "").join("").slice(0, 2).toUpperCase();
+
+  return (
+    <aside className="hidden md:flex md:flex-col w-64 shrink-0 gap-6">
+      <div className="rounded-2xl border border-slate-200 bg-white p-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-600 text-white font-semibold">{initials}</div>
+          <div>
+            <p className="text-sm font-semibold text-slate-900">{name ?? (email ? email.split("@")[0] : "User")}</p>
+            <p className="text-xs text-slate-500">Workspace</p>
+          </div>
+        </div>
+
+        <div className="mt-4 flex flex-col gap-2">
+          <button onClick={() => setTab('resumes')} className={`w-full flex items-center justify-between gap-3 px-3 py-2 rounded ${tab === 'resumes' ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-slate-600'}`}>
+            <span>Resumes</span>
+            <span className="inline-flex items-center justify-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700">{resumesCount}</span>
+          </button>
+          <button onClick={() => setTab('analysis')} className={`w-full flex items-center justify-between gap-3 px-3 py-2 rounded ${tab === 'analysis' ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-slate-600'}`}>
+            <span>Analysis</span>
+            <span className="inline-flex items-center justify-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700">{analysisCount}</span>
+          </button>
+        </div>
+      </div>
+
+      {priorityActions.length > 0 && (
+        <div className="rounded-2xl border border-slate-200 bg-white p-3">
+          <p className="text-xs font-semibold uppercase text-slate-500">Priority</p>
+          <div className="mt-3 flex flex-col gap-2">
+            {priorityActions.map((a, i) => (
+              <div key={`${a.title}-${i}`} className="rounded-md border border-slate-100 p-2">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900">{a.title}</p>
+                    <p className="mt-1 text-xs text-slate-500">{a.detail}</p>
+                    <div className="mt-2">
+                      <button onClick={a.onClick} className="crp-btn-primary px-3 py-1 text-xs">{a.cta}</button>
+                      <button onClick={() => onDismissAction?.(a.title)} className="crp-btn-ghost ml-2 px-3 py-1 text-xs">Dismiss</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </aside>
+  );
+}
+
+function MobileNav({
+  name,
+  email,
+  tab,
+  setTab,
+  resumesCount = 0,
+  analysisCount = 0,
+  priorityActions = [],
+  onDismissAction,
+}: {
+  name?: string | null;
+  email?: string | null;
+  tab: string;
+  setTab: (t: any) => void;
+  resumesCount?: number;
+  analysisCount?: number;
+  priorityActions?: { title: string; detail: string; cta: string; onClick: () => void }[];
+  onDismissAction?: (title: string) => void;
+}) {
+  const initials = (name ?? email ?? "U").split(" ").map((n) => n[0] || "").join("").slice(0, 2).toUpperCase();
+
+  return (
+    <section className="md:hidden space-y-3 rounded-3xl border border-slate-200 bg-white/95 p-4 shadow-sm backdrop-blur">
+        <div className="rounded-2xl border border-slate-200 bg-white p-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-600 text-white font-semibold">{initials}</div>
+            <div>
+              <p className="text-sm font-semibold text-slate-900">{name ?? (email ? email.split("@")[0] : "User")}</p>
+              <p className="text-xs text-slate-500">Workspace</p>
+            </div>
+          </div>
+
+          <div className="mt-4 grid grid-cols-2 gap-2">
+            <button onClick={() => setTab('resumes')} className={`flex items-center justify-between gap-3 rounded-2xl px-3 py-3 ${tab === 'resumes' ? 'bg-indigo-50 text-indigo-700 font-semibold ring-1 ring-indigo-100' : 'bg-slate-50 text-slate-600'}`}>
+              <span>Resumes</span>
+              <span className="inline-flex items-center justify-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700">{resumesCount}</span>
+            </button>
+            <button onClick={() => setTab('analysis')} className={`flex items-center justify-between gap-3 rounded-2xl px-3 py-3 ${tab === 'analysis' ? 'bg-indigo-50 text-indigo-700 font-semibold ring-1 ring-indigo-100' : 'bg-slate-50 text-slate-600'}`}>
+              <span>Analysis</span>
+              <span className="inline-flex items-center justify-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700">{analysisCount}</span>
+            </button>
+          </div>
+        </div>
+
+        {priorityActions.length > 0 && (
+          <div className="rounded-2xl border border-slate-200 bg-white p-3">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-xs font-semibold uppercase text-slate-500">Priority</p>
+              <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-400">Navigation</span>
+            </div>
+            <div className="mt-3 flex snap-x gap-3 overflow-x-auto pb-1">
+              {priorityActions.map((a, i) => (
+                <div key={`${a.title}-${i}`} className="min-w-[240px] snap-start rounded-2xl border border-slate-100 bg-slate-50 p-3">
+                  <p className="text-sm font-semibold text-slate-900">{a.title}</p>
+                  <p className="mt-1 text-xs text-slate-500">{a.detail}</p>
+                  <div className="mt-3 flex items-center gap-2">
+                    <button onClick={a.onClick} className="crp-btn-primary px-3 py-1 text-xs">{a.cta}</button>
+                    <button onClick={() => onDismissAction?.(a.title)} className="crp-btn-ghost px-3 py-1 text-xs">Dismiss</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+    </section>
+  );
+}
+
+// Score helper functions removed — metrics are computed elsewhere when needed
 
 export default function DashboardPage() {
   const { accessToken, userEmail, isLoggedIn, userFullName, supabase, authReady } = useSupabaseAuth();
@@ -62,6 +199,7 @@ export default function DashboardPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [toast, setToast] = useState<{ message: string; type?: "info" | "success" | "error" } | null>(null);
   const [confirm, setConfirm] = useState<null | { id?: string; type: "import-resume" | "delete-resume" | "delete-analysis"; message: string }>(null);
+  const [dismissedActions, setDismissedActions] = useState<string[]>([]);
   useEffect(() => {
     if (!isLoggedIn) return;
     // load both lists independently so errors show per-tab
@@ -135,43 +273,55 @@ export default function DashboardPage() {
     };
   }, [isLoggedIn, accessToken]);
 
-  const careerStage = useResumeStore((s) => s.careerStage);
-  const dashboardExp = getDashboardExperience(careerStage);
+  
 
-  // Map configured widgets to small KPI cards
-  const stageStats = dashboardExp.widgets.map((w) => {
-    switch (w) {
-      case "Resume Score": {
-        const avg = analysis.length > 0 ? Math.round((analysis.reduce((s, a) => s + (a.result?.overallScore ?? a.result?.score ?? 0), 0) / Math.max(1, analysis.length))) : null;
-        return { label: w, value: avg != null ? `${avg}%` : "—" };
-      }
-      case "ATS Score": {
-        const avg = analysis.length > 0 ? Math.round((analysis.reduce((s, a) => s + (a.result?.atsCompatibilityScore ?? a.result?.score ?? 0), 0) / Math.max(1, analysis.length))) : null;
-        return { label: w, value: avg != null ? `${avg}%` : "—" };
-      }
-      case "Skill Gap Analysis": {
-        const missing = analysis.reduce((acc, a) => acc + ((a.result?.missingSkills ?? []).length || 0), 0);
-        return { label: w, value: missing };
-      }
-      case "Interview Readiness": {
-        const avg = analysis.length > 0 ? Math.round((analysis.reduce((s, a) => s + (a.result?.interviewReadiness ?? 0), 0) / Math.max(1, analysis.length))) : null;
-        return { label: w, value: avg != null ? `${avg}%` : "—" };
-      }
-      case "Resume Completion": {
-        return { label: w, value: resumes.length };
-      }
-      case "Career Growth Score": {
-        const score = computeCareerScore(careerStage, { skillDepth: 60, leadership: 50, marketRelevance: 55, certifications: 40, interviewReadiness: 60 });
-        return { label: w, value: `${score}%` };
-      }
-      case "Leadership Readiness":
-      case "Promotion Readiness":
-      case "Market Demand Score":
-        return { label: w, value: "—" };
-      default:
-        return { label: w, value: "—" };
-    }
-  });
+  // overallScore removed (readiness panel hidden)
+
+  const latestAnalysis = [...analysis]
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
+  const latestMissingSkills: string[] = Array.isArray(latestAnalysis?.result?.missingSkills)
+    ? latestAnalysis.result.missingSkills.slice(0, 3)
+    : [];
+  const latestRecommendations: string[] = Array.isArray(latestAnalysis?.result?.recommendations)
+    ? latestAnalysis.result.recommendations.slice(0, 2)
+    : [];
+
+  const actionQueue = [
+    !resumes.length
+      ? {
+          title: "Create your first tailored resume",
+          detail: "Start a resume draft so your score and action plan can update from live data.",
+          cta: "Create resume",
+          onClick: () => router.push("/create"),
+        }
+      : null,
+    latestMissingSkills[0]
+      ? {
+          title: `Add missing skill: ${latestMissingSkills[0]}`,
+          detail: "Your latest analysis found a role-relevant gap that should be reflected in experience or skills.",
+          cta: "Open analysis",
+          onClick: () => router.push("/gap-analysis/analysis"),
+        }
+      : null,
+    latestRecommendations[0]
+      ? {
+          title: "Apply your latest recommendation",
+          detail: latestRecommendations[0],
+          cta: "Review",
+          onClick: () => router.push("/gap-analysis/analysis"),
+        }
+      : null,
+    {
+      title: "Keep your workspace current",
+      detail: "Run a new analysis after each major edit so your ATS and readiness scores stay aligned.",
+      cta: "New analysis",
+      onClick: () => router.push("/gap-analysis/analysis"),
+    },
+  ].filter((item): item is NonNullable<typeof item> => item != null).slice(0, 4);
+
+  const visibleActions = actionQueue.filter((a) => !dismissedActions.includes(a.title));
+
+  // (stageStats removed — KPI cards were taken out per design)
 
 
   useEffect(() => {
@@ -179,20 +329,23 @@ export default function DashboardPage() {
   }, [isLoggedIn]);
 
   useEffect(() => {
-    // Auto-select the latest item for the active tab when none is selected
-    if (selectedId) return;
+    // When the active tab changes or the lists load, auto-select the newest item
     if (tab === 'resumes') {
       if (resumes.length > 0) {
         const latest = [...resumes].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
-        if (latest) setSelectedId(latest.id);
+        setSelectedId(latest.id);
+      } else {
+        setSelectedId(null);
       }
     } else {
       if (analysis.length > 0) {
         const latest = [...analysis].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
-        if (latest) setSelectedId(latest.id);
+        setSelectedId(latest.id);
+      } else {
+        setSelectedId(null);
       }
     }
-  }, [resumes, analysis, tab, selectedId]);
+  }, [tab, resumes, analysis]);
 
   function openResumeInBuilder(id: string) {
     const r = resumes.find((x) => x.id === id);
@@ -229,21 +382,33 @@ export default function DashboardPage() {
       >
         {toast?.message ?? ""}
       </div>
-      <main className="mx-auto max-w-7xl space-y-6 px-4 py-8">
+      <main className="mx-auto max-w-7xl px-4 py-6 md:py-8">
+        <div className="space-y-4 md:hidden">
+          <MobileNav
+            name={userFullName ?? null}
+            email={userEmail ?? null}
+            tab={tab}
+            setTab={setTab}
+            resumesCount={resumes.length}
+            analysisCount={analysis.length}
+            priorityActions={visibleActions}
+            onDismissAction={(title) => setDismissedActions((s) => [...s, title])}
+          />
+        </div>
 
-        {/* Hero */}
-        <HeroCard userName={userFullName ?? userEmail?.split("@")[0]} />
-
-        {/* KPI Row */}
-        <StatCards
-          stats={[
-            ...stageStats,
-            { label: "Analysis Done", value: analysis.length, trend: analysis.length > 0 ? { direction: "up", value: analysis.length } : undefined },
-            { label: "Total Resumes", value: resumes.length, trend: resumes.length > 0 ? { direction: "up", value: resumes.length } : undefined },
-          ]}
-        />
-
-        {/* Confirm modal */}
+        <div className="mt-5 flex flex-col gap-6 md:mt-0 md:flex-row">
+          <SideNav
+            name={userFullName ?? null}
+            email={userEmail ?? null}
+            tab={tab}
+            setTab={setTab}
+            resumesCount={resumes.length}
+            analysisCount={analysis.length}
+            priorityActions={visibleActions}
+            onDismissAction={(title) => setDismissedActions((s) => [...s, title])}
+          />
+          <div className="flex-1 space-y-6">
+        {/* Stats cards removed per request */}
         {confirm && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
             <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
@@ -312,146 +477,180 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Main 2-column layout */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
-
-          {/* Left — Resumes list */}
-          <div className="lg:col-span-2">
-            <div className="mb-4 flex items-center gap-3">
-              <button type="button" onClick={() => setTab('resumes')} className={`rounded-full px-3 py-1 text-sm ${tab === 'resumes' ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-slate-600'}`}>
-                Resumes
-              </button>
-              <button type="button" onClick={() => setTab('analysis')} className={`rounded-full px-3 py-1 text-sm ${tab === 'analysis' ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-slate-600'}`}>
-                Analysis
-              </button>
-            </div>
-
-            <ResumeList
-              resumes={resumes}
-              analyses={analysis}
-              mode={tab}
-              query={query}
-              setQuery={setQuery}
-              selectedId={selectedId}
-              onSelect={(id) => setSelectedId(id)}
-              loading={loading}
-            />
-
-            {/* Auth / load errors */}
-            {resumesError && (
-              <div className="mt-3 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">
-                {resumesError}
-                {authRequired && (
-                    <button
-                      type="button"
-                      onClick={() => router.push("/login")}
-                      className="ml-3 underline"
-                    >
-                      Sign in
-                    </button>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Right — AI Insights / Resume Preview + Activity */}
-          <div className="flex flex-col gap-6 lg:col-span-3">
-            {tab === 'resumes' ? (
-              resumes.length === 0 && !loading ? (
-                <EmptyState onCreate={() => router.push("/create")} />
-              ) : (
-                <ResumePreview
-                  item={selectedId ? resumes.find((r) => r.id === selectedId) : undefined}
-                  onOpen={() => {
-                    const id = selectedId;
-                    if (!id) return;
-                    openResumeInBuilder(id);
-                  }}
-                />
-              )
-            ) : (
-              // Analysis tab
-              analysis.length === 0 && !loading ? (
-                <div className="crp-card-soft p-8 text-center">
-                  <h3 className="mb-2 text-lg font-semibold text-slate-900">No saved analysis yet</h3>
-                  <p className="mb-4 text-sm text-slate-600">Analyze a job description to get AI-driven recommendations and ATS scores.</p>
-                    <div className="flex justify-center">
-                    <button type="button" onClick={() => router.push('/gap-analysis/analysis')} className="crp-btn-primary px-4 py-2">Create Analysis</button>
-                  </div>
+        <ScrollReveal delayMs={180}>
+          {tab === 'resumes' ? (
+            <section className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Saved Resumes</p>
+                  <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">Saved resumes</h2>
+                  <p className="mt-1 text-sm text-slate-600">Manage saved resumes and open them in the builder.</p>
                 </div>
-              ) : (
-                // show selected analysis details or prompt to select
-                (selectedId == null) ? (
-                  <div className="crp-card p-6 text-center text-slate-600">Select an analysis to view details.</div>
-                ) : (() => {
-                  const item = analysis.find(a => a.id === selectedId);
-                  if (!item) return <div className="crp-card p-6 text-sm text-slate-500">Analysis not found.</div>;
+                <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-slate-600">
+                  <BriefcaseBusiness className="h-3.5 w-3.5 text-slate-500" />
+                  {resumes.length} resumes
+                </div>
+              </div>
 
-                  const score = item.result?.score != null ? Math.round(item.result.score * 100) : null;
-                  const missing: string[] = item.result?.missingSkills ?? [];
-                  const recommendations: string[] = item.result?.recommendations ?? [];
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
+                <div className="lg:col-span-2">
+                  <ResumeList
+                    resumes={resumes}
+                    analyses={analysis}
+                    mode={'resumes'}
+                    query={query}
+                    setQuery={setQuery}
+                    selectedId={selectedId}
+                    onSelect={(id) => setSelectedId(id)}
+                    loading={loading}
+                  />
 
-                  return (
-                    <div className="crp-card p-6">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <h3 className="text-lg font-semibold">{item.targetRole || "Analysis"}</h3>
-                          <p className="text-xs text-slate-500">{new Date(item.createdAt).toLocaleString()}</p>
-                        </div>
-                        <div className="flex gap-2">
-                          <button type="button" onClick={() => {
-                            try {
-                              setUploadedResume({ label: `Cloud snapshot - ${new Date(item.createdAt).toLocaleDateString()}`, resumeData: item.resumeSnapshot });
-                              setPendingAnalysis({ jobDescription: item.jobDescription, result: item.result });
-                              router.push('/gap-analysis/analysis');
-                            } catch {
-                              setToast({ message: 'Failed to open analysis.', type: 'error' });
-                              setTimeout(() => setToast(null), 3000);
-                            }
-                          }} className="crp-btn-primary px-3 py-1">Open</button>
-                          <button type="button" onClick={() => setConfirm({ id: item.id, type: 'delete-analysis', message: 'Delete this analysis? This cannot be undone.' })} className="crp-btn-ghost px-3 py-1">Delete</button>
-                        </div>
-                      </div>
+                  {resumesError && (
+                    <div className="mt-3 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">
+                      {resumesError}
+                      {authRequired && (
+                          <button
+                            type="button"
+                            onClick={() => router.push("/login")}
+                            className="ml-3 underline"
+                          >
+                            Sign in
+                          </button>
+                      )}
+                    </div>
+                  )}
+                </div>
 
-                      <div className="mt-4">
-                        <p className="mb-2 font-semibold">Job description</p>
-                        <div className="rounded-md border bg-slate-50 p-3 text-sm whitespace-pre-wrap max-h-56 overflow-auto">{item.jobDescription || "(none)"}</div>
-                      </div>
+                <div className="flex flex-col gap-6 lg:col-span-3">
+                  {resumes.length === 0 && !loading ? (
+                    <EmptyState onCreate={() => router.push("/create")} />
+                  ) : (
+                    <ResumePreview
+                      item={selectedId ? resumes.find((r) => r.id === selectedId) : undefined}
+                      onOpen={() => {
+                        const id = selectedId;
+                        if (!id) return;
+                        openResumeInBuilder(id);
+                      }}
+                    />
+                  )}
 
-                      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        {score != null && (
-                          <div className="crp-score-card p-4">
-                            <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Match score</p>
-                            <p className={`mt-1 text-3xl font-extrabold ${score >= 70 ? 'text-emerald-600' : score >= 45 ? 'text-amber-600' : 'text-rose-500'}`}>{score}%</p>
-                          </div>
-                        )}
+                  <ActivityTimeline items={resumes.slice(0, 8)} />
+                </div>
+              </div>
+            </section>
+          ) : (
+            <section className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Saved analysis</p>
+                  <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">Saved analysis</h2>
+                  <p className="mt-1 text-sm text-slate-600">Open previous analysis, re-run, or export them.</p>
+                </div>
+                <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-slate-600">
+                  <BriefcaseBusiness className="h-3.5 w-3.5 text-slate-500" />
+                  {analysis.length} analysis
+                </div>
+              </div>
 
-                        {missing.length > 0 && (
-                          <div className="rounded-2xl border border-amber-100 bg-amber-50 p-4">
-                            <p className="mb-2 text-xs font-bold uppercase tracking-wide text-amber-700">Missing skills</p>
-                            <div className="flex flex-wrap gap-2">
-                              {missing.map((sk, i) => <span key={i} className="rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-800">{sk}</span>)}
-                            </div>
-                          </div>
-                        )}
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
+                <div className="lg:col-span-2">
+                  <ResumeList
+                    resumes={resumes}
+                    analyses={analysis}
+                    mode={'analysis'}
+                    query={query}
+                    setQuery={setQuery}
+                    selectedId={selectedId}
+                    onSelect={(id) => setSelectedId(id)}
+                    loading={loading}
+                  />
+                </div>
 
-                        {recommendations.length > 0 && (
-                          <div className="rounded-2xl border border-indigo-100 bg-indigo-50 p-4 sm:col-span-2">
-                            <p className="mb-2 text-xs font-bold uppercase tracking-wide text-indigo-700">Recommendations</p>
-                            <ul className="space-y-1 text-sm text-slate-700">
-                              {recommendations.map((r: any, i: number) => <li key={i}>→ {r}</li>)}
-                            </ul>
-                          </div>
-                        )}
+                <div className="flex flex-col gap-6 lg:col-span-3">
+                  {analysis.length === 0 && !loading ? (
+                    <div className="crp-card-soft p-8 text-center">
+                      <h3 className="mb-2 text-lg font-semibold text-slate-900">No saved analysis yet</h3>
+                      <p className="mb-4 text-sm text-slate-600">Analyze a job description to get AI-driven recommendations and ATS scores.</p>
+                        <div className="flex justify-center">
+                        <button type="button" onClick={() => router.push('/gap-analysis/analysis')} className="crp-btn-primary px-4 py-2">Create Analysis</button>
                       </div>
                     </div>
-                  );
-                })()
-              )
-            )}
+                  ) : (
+                    (selectedId == null) ? (
+                      <div className="crp-card p-6 text-center text-slate-600">Select an analysis to view details.</div>
+                    ) : (() => {
+                      const item = analysis.find(a => a.id === selectedId);
+                      if (!item) return <div className="crp-card p-6 text-sm text-slate-500">Analysis not found.</div>;
 
-            {/* Activity timeline (changes with active tab) */}
-            <ActivityTimeline items={(tab === 'analysis' ? analysis : resumes).slice(0, 8)} />
+                      const score = item.result?.score != null ? Math.round(item.result.score * 100) : null;
+                      const missing: string[] = item.result?.missingSkills ?? [];
+                      const recommendations: string[] = item.result?.recommendations ?? [];
+
+                      return (
+                        <div className="crp-card p-6">
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <h3 className="text-lg font-semibold">{item.targetRole || "Analysis"}</h3>
+                              <p className="text-xs text-slate-500">{new Date(item.createdAt).toLocaleString()}</p>
+                            </div>
+                            <div className="flex gap-2">
+                              <button type="button" onClick={() => {
+                                try {
+                                  setUploadedResume({ label: `Cloud snapshot - ${new Date(item.createdAt).toLocaleDateString()}`, resumeData: item.resumeSnapshot });
+                                  setPendingAnalysis({ jobDescription: item.jobDescription, result: item.result });
+                                  router.push('/gap-analysis/analysis');
+                                } catch {
+                                  setToast({ message: 'Failed to open analysis.', type: 'error' });
+                                  setTimeout(() => setToast(null), 3000);
+                                }
+                              }} className="crp-btn-primary px-3 py-1">Open</button>
+                              <button type="button" onClick={() => setConfirm({ id: item.id, type: 'delete-analysis', message: 'Delete this analysis? This cannot be undone.' })} className="crp-btn-ghost px-3 py-1">Delete</button>
+                            </div>
+                          </div>
+
+                          <div className="mt-4">
+                            <p className="mb-2 font-semibold">Job description</p>
+                            <div className="rounded-md border bg-slate-50 p-3 text-sm whitespace-pre-wrap max-h-56 overflow-auto">{item.jobDescription || "(none)"}</div>
+                          </div>
+
+                          <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                            {score != null && (
+                              <div className="crp-score-card p-4">
+                                <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Match score</p>
+                                <p className={`mt-1 text-3xl font-extrabold ${score >= 70 ? 'text-emerald-600' : score >= 45 ? 'text-amber-600' : 'text-rose-500'}`}>{score}%</p>
+                              </div>
+                            )}
+
+                            {missing.length > 0 && (
+                              <div className="rounded-2xl border border-amber-100 bg-amber-50 p-4">
+                                <p className="mb-2 text-xs font-bold uppercase tracking-wide text-amber-700">Missing skills</p>
+                                <div className="flex flex-wrap gap-2">
+                                  {missing.map((sk, i) => <span key={i} className="rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-800">{sk}</span>)}
+                                </div>
+                              </div>
+                            )}
+
+                            {recommendations.length > 0 && (
+                              <div className="rounded-2xl border border-indigo-100 bg-indigo-50 p-4 sm:col-span-2">
+                                <p className="mb-2 text-xs font-bold uppercase tracking-wide text-indigo-700">Recommendations</p>
+                                <ul className="space-y-1 text-sm text-slate-700">
+                                  {recommendations.map((r: any, i: number) => <li key={i}>→ {r}</li>)}
+                                </ul>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })()
+                  )}
+
+                  <ActivityTimeline items={analysis.slice(0, 8)} />
+                </div>
+              </div>
+            </section>
+          )}
+        </ScrollReveal>
           </div>
         </div>
       </main>
