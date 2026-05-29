@@ -65,6 +65,11 @@ export const metadata: Metadata = {
   description: SITE_DESCRIPTION,
   applicationName: SITE_TITLE,
   manifest: "/manifest.webmanifest",
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/career-readiness-desktop-logo.png",
+  },
   metadataBase: new URL(BASE_URL),
   alternates: {
     canonical: "/",
@@ -115,6 +120,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="/career-readiness-favicon.png" sizes="32x32" type="image/png" />
+        <link rel="shortcut icon" href="/career-readiness-favicon.png" />
+        <link rel="apple-touch-icon" href="/career-readiness-desktop-logo.png" sizes="180x180" />
+      </head>
       <body className={`${jakarta.variable} ${playfair.variable} bg-gray-50 text-gray-900 antialiased`}>
         <a href="#content" className="skip-link">
           Skip to main content

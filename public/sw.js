@@ -1,10 +1,16 @@
-const CACHE_NAME = "ai-resume-builder-v1";
+const CACHE_NAME = "ai-resume-builder-v2";
 const OFFLINE_URL = "/";
+const PRECACHE = [
+  "/",
+  "/favicon.ico",
+  "/career-readiness-favicon.png",
+  "/career-readiness-desktop-logo.png",
+];
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll([OFFLINE_URL]))
-  );
+    event.waitUntil(
+      caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE))
+    );
   self.skipWaiting();
 });
 

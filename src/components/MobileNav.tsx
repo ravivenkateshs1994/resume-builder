@@ -77,12 +77,11 @@ export default function MobileNav() {
       aria-modal={open}
     >
       {/* Top bar */}
-      <div className="flex h-16 shrink-0 items-center justify-between border-b border-slate-100 px-6">
+      <div className="flex h-16 shrink-0 items-center justify-between border-b border-slate-100 px-4 md:px-6">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 to-cyan-500 text-xs font-bold text-white">
-            CR
+          <div className="h-9 sm:h-10 max-w-[140px] sm:max-w-[220px] flex items-center">
+            <img src="/career-readiness-desktop-logo.png" alt="Career Readiness" className="max-h-full max-w-full object-contain" />
           </div>
-          <span className="text-sm font-bold tracking-wide text-slate-900">Career Readiness</span>
         </div>
         {/* Close button inside overlay */}
         <button

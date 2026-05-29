@@ -9,6 +9,11 @@ img {
   height: auto;
 }
 
+/* Reserve scrollbar gutter to avoid layout/ breakpoint shifts when toggling overflow (mobile menu) */
+html {
+  scrollbar-gutter: stable;
+}
+
 /* Skip link - visible on keyboard focus */
 .skip-link {
   position: absolute;
