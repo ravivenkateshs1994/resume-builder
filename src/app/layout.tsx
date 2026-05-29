@@ -119,6 +119,7 @@ export default function RootLayout({
         <a href="#content" className="skip-link">
           Skip to main content
         </a>
+        {/* SVG sharpen filter removed per user request */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

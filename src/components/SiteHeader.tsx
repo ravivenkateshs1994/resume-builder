@@ -27,11 +27,15 @@ function SiteHeaderImpl() {
     <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 backdrop-blur-md">
       <div className="mx-auto w-full max-w-7xl px-4 md:px-6">
         <div className="flex h-16 items-center gap-4">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-cyan-500 text-sm font-bold text-white shadow-sm shadow-indigo-300/40">
-              CR
+          <Link href="/" className="flex items-center gap-2.5" aria-label="Career Readiness">
+            <div className="h-9 sm:h-10 max-w-[140px] sm:max-w-[220px] flex items-center">
+              <img
+                src="/career-readiness-desktop-logo.png"
+                alt="Career Readiness"
+                className="max-h-full max-w-full object-contain"
+              />
             </div>
-            <span className="text-sm font-bold tracking-tight text-slate-900 sm:text-base md:text-lg">Career Readiness</span>
+            <span className="sr-only">Career Readiness</span>
           </Link>
 
           <div className="flex-1" />
