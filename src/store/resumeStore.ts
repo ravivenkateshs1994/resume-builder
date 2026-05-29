@@ -7,6 +7,8 @@ import type {
   Education,
   Certification,
 } from "@/types/resume";
+import type { CareerStage } from "@/types/careerStage";
+import { DEFAULT_CAREER_STAGE } from "@/types/careerStage";
 import { getDefaultTemplateAccent } from "@/lib/templateTheme";
 
 const newId = () => Math.random().toString(36).slice(2, 10);
@@ -88,6 +90,8 @@ interface ResumeStore {
   removeCertification: (id: string) => void;
 
   reset: () => void;
+  careerStage: CareerStage;
+  setCareerStage: (stage: CareerStage) => void;
 }
 
 export const useResumeStore = create<ResumeStore>()((set, get) => ({
@@ -98,6 +102,7 @@ export const useResumeStore = create<ResumeStore>()((set, get) => ({
       isGenerating: false,
       uploadedResume: null,
       resumeHistory: [],
+      careerStage: DEFAULT_CAREER_STAGE,
 
       nextStep: () => {
         const idx = STEPS.indexOf(get().currentStep);
@@ -130,6 +135,8 @@ export const useResumeStore = create<ResumeStore>()((set, get) => ({
       setResumeData: (data) => set((s) => ({ resumeData: { ...s.resumeData, ...data } })),
 
       setIsGenerating: (v) => set({ isGenerating: v }),
+
+  setCareerStage: (stage: CareerStage) => set({ careerStage: stage }),
 
       addResumeRecord: ({ title, resumeSnapshot }) =>
         set((s) => {

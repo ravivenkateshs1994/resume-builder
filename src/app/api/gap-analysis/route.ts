@@ -9,6 +9,7 @@ export async function POST(req: Request) {
       resumeData?: ResumeData;
       resumeText?: string;
       jobDescription?: string;
+      careerStage?: string;
     };
 
     if (!body.jobDescription?.trim()) {
@@ -23,6 +24,7 @@ export async function POST(req: Request) {
       resumeData: body.resumeData,
       resumeText: body.resumeText,
       jobDescription: body.jobDescription,
+      careerStage: body.careerStage,
     });
 
     return NextResponse.json({

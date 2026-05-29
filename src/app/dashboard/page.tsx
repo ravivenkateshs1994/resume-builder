@@ -13,11 +13,38 @@ import ResumePreview from "@/components/dashboard/ResumePreview";
 import ActivityTimeline from "@/components/dashboard/ActivityTimeline";
 import EmptyState from "@/components/dashboard/EmptyState";
 import type { ResumeData } from "@/types/resume";
+import CareerStageModal from "@/components/CareerStageModal";
+import { getCareerStage } from "@/lib/careerStage";
+import { getDashboardExperience } from "@/lib/personalization";
+import computeCareerScore from "@/lib/career-score";
 
 export default function DashboardPage() {
-  const { accessToken, userEmail, isLoggedIn, userFullName } = useSupabaseAuth();
+  const { accessToken, userEmail, isLoggedIn, userFullName, supabase, authReady } = useSupabaseAuth();
   const router = useRouter();
   const { setResumeData, setUploadedResume, setPendingAnalysis } = useResumeStore();
+
+  const [showCareerModal, setShowCareerModal] = useState(false);
+
+  useEffect(() => {
+    if (!authReady) return;
+    if (!isLoggedIn) return;
+    if (!supabase) return;
+
+    let cancelled = false;
+    (async () => {
+      const stage = await getCareerStage(supabase);
+      if (cancelled) return;
+      if (!stage) {
+        setShowCareerModal(true);
+      } else {
+        useResumeStore.getState().setCareerStage(stage);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [authReady, isLoggedIn, supabase]);
 
   const [tab, setTab] = useState<'resumes' | 'analysis'>('resumes');
 
@@ -108,6 +135,44 @@ export default function DashboardPage() {
     };
   }, [isLoggedIn, accessToken]);
 
+  const careerStage = useResumeStore((s) => s.careerStage);
+  const dashboardExp = getDashboardExperience(careerStage);
+
+  // Map configured widgets to small KPI cards
+  const stageStats = dashboardExp.widgets.map((w) => {
+    switch (w) {
+      case "Resume Score": {
+        const avg = analysis.length > 0 ? Math.round((analysis.reduce((s, a) => s + (a.result?.overallScore ?? a.result?.score ?? 0), 0) / Math.max(1, analysis.length))) : null;
+        return { label: w, value: avg != null ? `${avg}%` : "—" };
+      }
+      case "ATS Score": {
+        const avg = analysis.length > 0 ? Math.round((analysis.reduce((s, a) => s + (a.result?.atsCompatibilityScore ?? a.result?.score ?? 0), 0) / Math.max(1, analysis.length))) : null;
+        return { label: w, value: avg != null ? `${avg}%` : "—" };
+      }
+      case "Skill Gap Analysis": {
+        const missing = analysis.reduce((acc, a) => acc + ((a.result?.missingSkills ?? []).length || 0), 0);
+        return { label: w, value: missing };
+      }
+      case "Interview Readiness": {
+        const avg = analysis.length > 0 ? Math.round((analysis.reduce((s, a) => s + (a.result?.interviewReadiness ?? 0), 0) / Math.max(1, analysis.length))) : null;
+        return { label: w, value: avg != null ? `${avg}%` : "—" };
+      }
+      case "Resume Completion": {
+        return { label: w, value: resumes.length };
+      }
+      case "Career Growth Score": {
+        const score = computeCareerScore(careerStage, { skillDepth: 60, leadership: 50, marketRelevance: 55, certifications: 40, interviewReadiness: 60 });
+        return { label: w, value: `${score}%` };
+      }
+      case "Leadership Readiness":
+      case "Promotion Readiness":
+      case "Market Demand Score":
+        return { label: w, value: "—" };
+      default:
+        return { label: w, value: "—" };
+    }
+  });
+
 
   useEffect(() => {
     if (!isLoggedIn) return;
@@ -139,6 +204,14 @@ export default function DashboardPage() {
   return (
     <div className="crp-shell min-h-screen">
       <SiteHeader />
+      {showCareerModal && (
+        <CareerStageModal
+          onComplete={(stage) => {
+            useResumeStore.getState().setCareerStage(stage);
+            setShowCareerModal(false);
+          }}
+        />
+      )}
       {/* Toast — always-present region so screen readers announce changes */}
       <div
         aria-live={toast?.type === "error" ? "assertive" : "polite"}
@@ -164,35 +237,9 @@ export default function DashboardPage() {
         {/* KPI Row */}
         <StatCards
           stats={[
-            {
-              label: "Total Resumes",
-              value: resumes.length,
-              trend: resumes.length > 0 ? { direction: "up", value: resumes.length } : undefined,
-            },
-            {
-              label: "Avg ATS Score",
-              value:
-                analysis.length > 0
-                  ? `${Math.round(
-                      (analysis
-                        .filter((a) => a.result?.score != null)
-                        .reduce((s, a) => s + (a.result?.score ?? 0), 0) /
-                        Math.max(1, analysis.filter((a) => a.result?.score != null).length)) * 100
-                    )}%`
-                  : "—",
-            },
-            {
-              label: "Analysis Done",
-              value: analysis.length,
-              trend: analysis.length > 0 ? { direction: "up", value: analysis.length } : undefined,
-            },
-            {
-              label: "Skills Missing",
-              value: analysis.reduce(
-                (acc, a) => acc + ((a.result?.missingSkills ?? []).length || 0),
-                0
-              ),
-            },
+            ...stageStats,
+            { label: "Analysis Done", value: analysis.length, trend: analysis.length > 0 ? { direction: "up", value: analysis.length } : undefined },
+            { label: "Total Resumes", value: resumes.length, trend: resumes.length > 0 ? { direction: "up", value: resumes.length } : undefined },
           ]}
         />
 

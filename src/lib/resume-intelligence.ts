@@ -791,9 +791,16 @@ function extractResponsibilities(text: string): string[] {
   );
 }
 
-async function extractResumeSkillSignals(text: string, useAi: boolean): Promise<NormalizedSkill[]> {
+async function extractResumeSkillSignals(text: string, useAi: boolean, careerStage?: string): Promise<NormalizedSkill[]> {
   const deterministicSignals = findSkillsInText(text).map((skill) => skill.canonicalName);
+  const stageInstruction = careerStage === "FRESHER"
+    ? "When extracting skills, prioritize foundational and core technical skills useful for entry-level roles."
+    : careerStage === "EXPERIENCED"
+    ? "When extracting skills, also surface leadership, architecture, and specialization keywords relevant to senior roles."
+    : "";
+
   const aiPayload = useAi ? await generateJson<AiSkillPayload>([
+    stageInstruction,
     "Extract only skill-like terms from this resume.",
     "Return ONLY valid JSON with this exact shape:",
     '{"skills":[],"technologies":[],"tools":[],"frameworks":[],"certifications":[],"methodologies":[]}',
@@ -809,9 +816,16 @@ async function extractResumeSkillSignals(text: string, useAi: boolean): Promise<
   return normalizeSkillCollection(candidateSkills, useAi);
 }
 
-async function extractJobDescriptionSkillSignals(text: string, useAi: boolean): Promise<NormalizedSkill[]> {
+async function extractJobDescriptionSkillSignals(text: string, useAi: boolean, careerStage?: string): Promise<NormalizedSkill[]> {
   const fallbackSkills = findSkillsInText(text).map((skill) => skill.canonicalName);
+  const stageInstruction = careerStage === "FRESHER"
+    ? "When extracting requirements, emphasize foundational skills and entry-level requirements."
+    : careerStage === "EXPERIENCED"
+    ? "When extracting requirements, emphasize leadership, specialization, and seniority expectations."
+    : "";
+
   const aiPayload = useAi ? await generateJson<AiJobDescriptionPayload>([
+    stageInstruction,
     "Extract the skill requirements from this job description.",
     "Return ONLY valid JSON with this exact shape:",
     '{"requiredSkills":[],"preferredSkills":[],"tools":[],"frameworks":[],"certifications":[],"yearsExperience":null,"seniority":"unknown","responsibilities":[]}',
@@ -1017,6 +1031,7 @@ export async function extractResumeSignals(input: {
   resumeText?: string;
   resumeData?: ResumeSignalSource;
   useAi?: boolean;
+  careerStage?: string;
 }): Promise<ResumeSignalExtraction> {
   const useAi = input.useAi ?? Boolean(process.env.GEMINI_API_KEY);
   const source = input.resumeData ?? (input.resumeText ? parseResume(input.resumeText) : null);
@@ -1036,13 +1051,20 @@ export async function extractResumeSignals(input: {
   }
 
   const textSource = normalizeWhitespace(input.resumeText ?? composeResumeText(source ?? {}));
-  const normalizedSkills = await extractResumeSkillSignals(textSource, useAi);
+  const normalizedSkills = await extractResumeSkillSignals(textSource, useAi, input.careerStage);
   const signalSource = source ?? parseResume(textSource);
 
   return buildResumeSignalExtraction(signalSource, normalizedSkills, textSource);
 }
 
-export async function extractJobDescriptionSignals(jobDescription: string, options?: { useAi?: boolean }): Promise<JobDescriptionSignalExtraction> {
+export async function extractJobDescriptionSignals(jobDescription: string, options?: { useAi?: boolean; careerStage?: string }): Promise<JobDescriptionSignalExtraction> {
+  const careerStage = options?.careerStage;
+  const stageInstruction = careerStage === "FRESHER"
+    ? "Tailor this analysis for an entry-level candidate: focus on fundamentals, missing fundamentals, and resume quality."
+    : careerStage === "EXPERIENCED"
+    ? "Tailor this analysis for an experienced professional: focus on leadership, specialization, career progression, and senior role alignment."
+    : "";
+
   const useAi = options?.useAi ?? Boolean(process.env.GEMINI_API_KEY);
   const text = normalizeWhitespace(jobDescription);
   if (!text) {
@@ -1058,9 +1080,10 @@ export async function extractJobDescriptionSignals(jobDescription: string, optio
     };
   }
 
-  const fallbackSkills = await extractJobDescriptionSkillSignals(text, useAi);
+  const fallbackSkills = await extractJobDescriptionSkillSignals(text, useAi, careerStage);
   const aiPayload = useAi
     ? await generateJson<AiJobDescriptionPayload>([
+        stageInstruction,
         "Parse this job description into structured requirements.",
         "Return ONLY valid JSON with this exact shape:",
         '{"requiredSkills":[],"preferredSkills":[],"tools":[],"frameworks":[],"certifications":[],"yearsExperience":null,"seniority":"unknown","responsibilities":[]}',
@@ -1168,13 +1191,14 @@ export async function buildResumeIntelligenceReport(input: {
   resumeText?: string;
   jobDescription: string;
   useAi?: boolean;
+  careerStage?: string;
 }): Promise<ResumeIntelligenceReport> {
   const useAi = input.useAi ?? Boolean(process.env.GEMINI_API_KEY);
   const resumeTextSource = normalizeWhitespace(input.resumeText ?? composeResumeText(input.resumeData ?? {}));
 
   const [resumeSignals, jobDescriptionSignals] = await Promise.all([
-    extractResumeSignals({ resumeText: resumeTextSource, resumeData: input.resumeData, useAi }),
-    extractJobDescriptionSignals(input.jobDescription, { useAi }),
+    extractResumeSignals({ resumeText: resumeTextSource, resumeData: input.resumeData, useAi, careerStage: input.careerStage }),
+    extractJobDescriptionSignals(input.jobDescription, { useAi, careerStage: input.careerStage }),
   ]);
 
   const scoringResumeData = buildScoringResumeData(input.resumeData, resumeSignals);

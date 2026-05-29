@@ -1,17 +1,23 @@
 "use client";
 
 import React from "react";
+import { useResumeStore } from "@/store/resumeStore";
+import { getDashboardExperience, getPrimaryCTA } from "@/lib/personalization";
 
 interface Props {
   userName?: string;
 }
 
 export default function HeroCard({ userName }: Props) {
+  const careerStage = useResumeStore((s) => s.careerStage);
+  const exp = getDashboardExperience(careerStage);
+  const cta = getPrimaryCTA(careerStage);
+
   return (
-    <div className="crp-card-soft crp-module-accent p-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className={`crp-card-soft crp-module-accent p-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between`}>
       <div className="flex-1">
-        <h2 className="crp-section-title">Welcome back, {userName ?? "User"} <span className="ml-2 inline">👋</span></h2>
-        <p className="crp-section-copy mt-2 max-w-2xl">Build ATS-optimized resumes, identify skill gaps, and improve interview readiness with AI.</p>
+        <h2 className="crp-section-title">{exp.heroTitle} {userName ? `— ${userName}` : ""}</h2>
+        <p className="crp-section-copy mt-2 max-w-2xl">{exp.heroSubtitle}</p>
       </div>
 
       <div className="flex items-center gap-3">
@@ -33,7 +39,11 @@ export default function HeroCard({ userName }: Props) {
           </svg>
         </div>
 
-        {/* No CTA buttons here by design */}
+        <div className="hidden sm:block">
+          <button type="button" className="crp-btn-primary px-4 py-2">
+            {cta}
+          </button>
+        </div>
       </div>
     </div>
   );
