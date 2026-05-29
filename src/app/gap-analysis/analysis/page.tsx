@@ -23,7 +23,9 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { parseResumeFile } from "@/lib/resumeFileParser";
-import { useResumeStore, type SavedAnalysisRecord } from "@/store/resumeStore";
+import { useResumeStore } from "@/store/resumeStore";
+import { useAnalysisStore } from "@/store/analysisStore";
+import type { SavedAnalysisRecord } from "@/types/analysis";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import Link from "next/link";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
@@ -163,7 +165,8 @@ const categoryIcon: Record<string, LucideIcon> = {
 };
 
 export default function AnalysisWorkspacePage() {
-  const { resumeData, uploadedResume, setUploadedResume, pendingAnalysis, setPendingAnalysis } = useResumeStore();
+  const { resumeData, uploadedResume, setUploadedResume } = useResumeStore();
+  const { pendingAnalysis, setPendingAnalysis } = useAnalysisStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [jobDescription, setJobDescription] = useState(resumeData.jobDescription || "");

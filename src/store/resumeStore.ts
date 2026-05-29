@@ -34,15 +34,6 @@ const defaultResume: ResumeData = {
 
 const STEPS: FormStep[] = ["personal", "experience", "education", "skills", "preview"];
 
-export interface SavedAnalysisRecord {
-  id: string;
-  createdAt: string;
-  targetRole: string;
-  jobDescription: string;
-  resumeSnapshot: ResumeData;
-  result: unknown;
-}
-
 interface ResumeStore {
   currentStep: FormStep;
   resumeData: ResumeData;
@@ -58,8 +49,6 @@ interface ResumeStore {
 
   setUploadedResume: (val: { label: string; resumeData: ResumeData } | null) => void;
   setPersonalInfo: (info: ResumeData["personalInfo"]) => void;
-  setTargetRole: (role: string) => void;
-  setJobDescription: (jd: string) => void;
   setSummary: (summary: string) => void;
   setSkills: (skills: string[]) => void;
   setSelectedTemplate: (id: TemplateId) => void;
@@ -73,9 +62,7 @@ interface ResumeStore {
 
   // Cloud sync helpers
   syncLocalResumesToCloud: (token: string) => Promise<void>;
-  // Transient analysis payload used to pass cloud analysis into the workspace without persisting
-  pendingAnalysis: { jobDescription?: string; result?: unknown } | null;
-  setPendingAnalysis: (val: { jobDescription?: string; result?: unknown } | null) => void;
+  // (moved) transient analysis payload is now managed in a dedicated analysis store
 
   addWorkExperience: () => void;
   updateWorkExperience: (id: string, data: Partial<WorkExperience>) => void;
@@ -120,9 +107,8 @@ export const useResumeStore = create<ResumeStore>()((set, get) => ({
 
       setPersonalInfo: (info) => set((s) => ({ resumeData: { ...s.resumeData, personalInfo: info } })),
 
-      setTargetRole: (role) => set((s) => ({ resumeData: { ...s.resumeData, targetRole: role } })),
-
-      setJobDescription: (jd) => set((s) => ({ resumeData: { ...s.resumeData, jobDescription: jd } })),
+      /* targetRole / jobDescription are analysis-specific inputs and are managed
+        via the analysis store now; avoid exposing dedicated setters here. */
 
       setSummary: (summary) => set((s) => ({ resumeData: { ...s.resumeData, summary } })),
 
@@ -173,8 +159,7 @@ export const useResumeStore = create<ResumeStore>()((set, get) => ({
         }
       },
 
-      pendingAnalysis: null,
-      setPendingAnalysis: (val) => set({ pendingAnalysis: val }),
+      // pendingAnalysis moved to analysisStore
 
       addWorkExperience: () =>
         set((s) => ({

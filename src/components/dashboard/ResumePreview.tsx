@@ -48,8 +48,8 @@ export default function ResumePreview({ item, onOpen }: { item?: { id: string; t
       </div>
 
       {/* Summary */}
-      {(r?.summary || r?.targetRole) && (
-        <p className="mt-4 text-sm leading-relaxed text-slate-600">{r.summary || r.targetRole}</p>
+      {r?.summary && (
+        <p className="mt-4 text-sm leading-relaxed text-slate-600">{r.summary}</p>
       )}
 
       {/* Skills & Experience */}

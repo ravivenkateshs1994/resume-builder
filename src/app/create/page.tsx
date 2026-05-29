@@ -1251,8 +1251,7 @@ function CreatePageContent() {
           </section>
         </ScrollReveal>
 
-        <ScrollReveal delayMs={130}>
-          <section className="grid gap-6 xl:grid-cols-[290px_minmax(0,1fr)] xl:items-start">
+        <section className="grid gap-6 xl:grid-cols-[290px_minmax(0,1fr)] xl:items-start">
             <aside className="space-y-4 xl:sticky xl:top-28 xl:self-start">
               <div className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-[0_24px_60px_-46px_rgba(15,23,42,0.24)]">
                 <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">Step navigator</p>
@@ -1279,6 +1278,7 @@ function CreatePageContent() {
               </div>
             </aside>
 
+            <ScrollReveal delayMs={130}>
             <section className="min-w-0 space-y-4">
               {showPrefillBanner && (
                 <div className="relative rounded-2xl border border-green-200 bg-green-50/95 p-4 text-sm">
@@ -1322,8 +1322,8 @@ function CreatePageContent() {
                 {renderStep()}
               </div>
             </section>
+            </ScrollReveal>
           </section>
-        </ScrollReveal>
       </main>
 
       {/* Roadmap / Coming Soon section removed per design — kept page focused on resume creation */}

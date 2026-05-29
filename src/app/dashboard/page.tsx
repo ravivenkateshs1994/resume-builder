@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { useResumeStore } from "@/store/resumeStore";
+import { useAnalysisStore } from "@/store/analysisStore";
 import { useRouter } from "next/navigation";
 import { SiteHeader } from "@/components/SiteHeader";
 import ResumeList from "@/components/dashboard/ResumeList";
@@ -158,7 +159,8 @@ function MobileNav({
 export default function DashboardPage() {
   const { accessToken, userEmail, isLoggedIn, userFullName, supabase, authReady } = useSupabaseAuth();
   const router = useRouter();
-  const { setResumeData, setUploadedResume, setPendingAnalysis } = useResumeStore();
+  const { setResumeData, setUploadedResume } = useResumeStore();
+  const { setPendingAnalysis } = useAnalysisStore();
 
   const [showCareerModal, setShowCareerModal] = useState(false);
 
