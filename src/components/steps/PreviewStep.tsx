@@ -4,7 +4,7 @@ import { useResumeStore } from "@/store/resumeStore";
 import Link from "next/link";
 import AccentColorPicker from "@/components/AccentColorPicker";
 import ResumeRenderer from "@/components/templates/ResumeRenderer";
-import { TEMPLATE_CATALOG } from "@/lib/templateCatalog";
+import { TEMPLATE_CATALOG, getTemplateById } from "@/lib/templateCatalog";
 import { useRef, useState } from "react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
@@ -106,10 +106,18 @@ export default function PreviewStep() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
+        // Attach template metadata so cloud copies include the chosen template name and accent color
         body: JSON.stringify({
-          title: resumeData.personalInfo.fullName || resumeData.personalInfo.jobTitle || "Resume Draft",
-          resumeData,
-        }),
+            title: resumeData.personalInfo.fullName || resumeData.personalInfo.jobTitle || "Resume Draft",
+            resumeData: {
+              ...resumeData,
+              template: {
+                id: selectedTemplate,
+                name: getTemplateById(selectedTemplate)?.name || selectedTemplate,
+                accentColor: templateAccentColor,
+              },
+            },
+          }),
       });
       const payload = await response.json();
       if (!response.ok) throw new Error(payload?.error || "Failed to save resume.");

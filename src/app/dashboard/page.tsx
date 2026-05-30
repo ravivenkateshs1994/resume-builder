@@ -8,6 +8,7 @@ import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { useResumeStore } from "@/store/resumeStore";
 import { useAnalysisStore } from "@/store/analysisStore";
 import { useRouter } from "next/navigation";
+import { TEMPLATE_CATALOG } from "@/lib/templateCatalog";
 import { SiteHeader } from "@/components/SiteHeader";
 import ResumeList from "@/components/dashboard/ResumeList";
 import ResumePreview from "@/components/dashboard/ResumePreview";
@@ -188,6 +189,7 @@ export default function DashboardPage() {
   const [tab, setTab] = useState<'resumes' | 'analysis'>('resumes');
 
   const [query, setQuery] = useState("");
+  const [templateFilter, setTemplateFilter] = useState("");
   const [resumes, setResumes] = useState<{
     id: string;
     title: string;
@@ -212,7 +214,8 @@ export default function DashboardPage() {
 
     (async () => {
       try {
-        const rRes = await fetch("/api/cloud/resumes", { headers: { Authorization: `Bearer ${accessToken}` } });
+        const q = templateFilter ? `?templateId=${encodeURIComponent(templateFilter)}` : "";
+        const rRes = await fetch(`/api/cloud/resumes${q}`, { headers: { Authorization: `Bearer ${accessToken}` } });
         if (cancelled) return;
         if (!rRes.ok) {
           if (rRes.status === 401) {
@@ -273,7 +276,7 @@ export default function DashboardPage() {
     return () => {
       cancelled = true;
     };
-  }, [isLoggedIn, accessToken]);
+  }, [isLoggedIn, accessToken, templateFilter]);
 
   
 
@@ -488,9 +491,24 @@ export default function DashboardPage() {
                   <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">Saved resumes</h2>
                   <p className="mt-1 text-sm text-slate-600">Manage saved resumes and open them in the builder.</p>
                 </div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-slate-600">
-                  <BriefcaseBusiness className="h-3.5 w-3.5 text-slate-500" />
-                  {resumes.length} resumes
+                <div className="flex items-center gap-3">
+                  <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-slate-600">
+                    <BriefcaseBusiness className="h-3.5 w-3.5 text-slate-500" />
+                    {resumes.length} resumes
+                  </div>
+                  <select
+                    value={templateFilter}
+                    onChange={(e) => setTemplateFilter(e.target.value)}
+                    className="rounded-md border border-slate-200 bg-white px-2 py-1 text-sm"
+                    aria-label="Filter by template"
+                  >
+                    <option value="">All templates</option>
+                    {TEMPLATE_CATALOG.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
@@ -504,6 +522,7 @@ export default function DashboardPage() {
                     setQuery={setQuery}
                     selectedId={selectedId}
                     onSelect={(id) => setSelectedId(id)}
+                    onDelete={(id) => setConfirm({ id, type: 'delete-resume', message: 'Delete this resume? This cannot be undone.' })}
                     loading={loading}
                   />
 

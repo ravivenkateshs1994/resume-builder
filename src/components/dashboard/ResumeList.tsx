@@ -20,7 +20,7 @@ interface AnalysisRow {
   result?: any;
 }
 
-export default function ResumeList({ resumes = [], analyses = [], mode = "resumes", query, setQuery, onSelect, loading, selectedId }: {
+export default function ResumeList({ resumes = [], analyses = [], mode = "resumes", query, setQuery, onSelect, loading, selectedId, onDelete }: {
   resumes?: ResumeRow[];
   analyses?: AnalysisRow[];
   mode?: "resumes" | "analysis";
@@ -29,6 +29,7 @@ export default function ResumeList({ resumes = [], analyses = [], mode = "resume
   onSelect: (id: string) => void;
   loading?: boolean;
   selectedId?: string | null;
+  onDelete?: (id: string) => void;
 }) {
   const isAnalysis = mode === "analysis";
   const items = isAnalysis ? analyses : resumes;
@@ -90,6 +91,7 @@ export default function ResumeList({ resumes = [], analyses = [], mode = "resume
                 compact
                 selected={selectedId === it.id}
                 onClick={() => onSelect(it.id)}
+                onDelete={() => onDelete && onDelete(it.id)}
               />
             );
           }
@@ -102,6 +104,7 @@ export default function ResumeList({ resumes = [], analyses = [], mode = "resume
               compact
               selected={selectedId === it.id}
               onClick={() => onSelect(it.id)}
+              onDelete={() => onDelete && onDelete(it.id)}
             />
           );
         })}

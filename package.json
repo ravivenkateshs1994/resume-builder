@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:ci": "PUPPETEER_SKIP_DOWNLOAD=1 next build",
+    "build:render": "PUPPETEER_SKIP_DOWNLOAD=1 next build",
     "start": "next start",
     "lint": "eslint .",
     "test": "vitest run",

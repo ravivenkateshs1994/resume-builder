@@ -13,13 +13,20 @@ if (shouldSkip) {
   process.exit(0);
 }
 
+// Only install the browser when explicitly requested (opt-in).
+// This avoids downloading large browser binaries on hosting providers (e.g., Render)
+// unless you set `INSTALL_PUPPETEER=1` or `ELECTRON_BUILD=1` in the environment.
 const shouldInstall =
-  process.env.RENDER === "true" ||
-  process.env.CI === "true" ||
-  process.env.NODE_ENV === "production";
+  process.env.INSTALL_PUPPETEER === "true" ||
+  process.env.INSTALL_PUPPETEER === "1" ||
+  process.env.ELECTRON_BUILD === "true" ||
+  process.env.ELECTRON_BUILD === "1";
 
 if (!shouldInstall) {
-  console.log("[postinstall] Skipping Puppeteer browser install outside production/CI environment.");
+  console.log(
+    "[postinstall] Skipping Puppeteer browser install (not explicitly enabled).",
+    "Set INSTALL_PUPPETEER=1 to enable."
+  );
   process.exit(0);
 }
 

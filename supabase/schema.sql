@@ -108,6 +108,21 @@ update public.profiles set career_stage = 'FRESHER' where career_stage is null;
 alter table public.user_resumes
   add column if not exists content_hash text;
 
+-- Template metadata columns for easier querying and filtering
+alter table public.user_resumes
+  add column if not exists template_id text;
+
+alter table public.user_resumes
+  add column if not exists template_name text;
+
+alter table public.user_resumes
+  add column if not exists template_accent_color text;
+
+alter table public.user_resumes
+  add column if not exists template_color_name text;
+
+create index if not exists user_resumes_template_id_idx on public.user_resumes(template_id);
+
 alter table public.user_analysis
   add column if not exists content_hash text;
 

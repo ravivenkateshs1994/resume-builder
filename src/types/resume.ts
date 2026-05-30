@@ -52,6 +52,11 @@ export interface ResumeData {
   education: Education[];
   skills: string[];
   certifications: Certification[];
+  template?: {
+    id: TemplateId;
+    name: string;
+    accentColor: string;
+  };
 }
 
 // ─── Template Types ───────────────────────────────────────────────────────────

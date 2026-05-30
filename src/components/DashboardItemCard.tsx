@@ -48,24 +48,34 @@ export default function DashboardItemCard({ title, meta, excerpt, primaryLabel =
         </div>
       </div>
 
-      {!compact && (
-        <div className="flex items-center gap-2">
-          {onView && (
-            <button type="button" onClick={onView} className="text-sm text-indigo-600 underline">View</button>
-          )}
-          {onPrimary && (
-            <button type="button" onClick={onPrimary} className="crp-btn-primary px-3 py-1 text-sm font-semibold">{primaryLabel}</button>
-          )}
-          {onDelete && (
-            <button type="button" onClick={onDelete} className="crp-btn-ghost px-3 py-1 text-sm font-semibold text-slate-700">
-              <span className="sr-only">Delete</span>
-              <svg xmlns="http://www.w3.org/2000/svg" className="inline h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 7h12M10 11v6m4-6v6M9 7V6a2 2 0 012-2h2a2 2 0 012 2v1" />
-              </svg>
-            </button>
-          )}
-        </div>
-      )}
+      <div className="flex items-center gap-2">
+        {!compact && (
+          <>
+            {onView && (
+              <button type="button" onClick={onView} className="text-sm text-indigo-600 underline">View</button>
+            )}
+            {onPrimary && (
+              <button type="button" onClick={onPrimary} className="crp-btn-primary px-3 py-1 text-sm font-semibold">{primaryLabel}</button>
+            )}
+          </>
+        )}
+
+        {onDelete && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete();
+            }}
+            className={`crp-btn-ghost px-3 py-1 text-sm font-semibold text-slate-700 ${compact ? "ml-2" : ""}`}
+          >
+            <span className="sr-only">Delete</span>
+            <svg xmlns="http://www.w3.org/2000/svg" className="inline h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 7h12M10 11v6m4-6v6M9 7V6a2 2 0 012-2h2a2 2 0 012 2v1" />
+            </svg>
+          </button>
+        )}
+      </div>
     </div>
   );
 }

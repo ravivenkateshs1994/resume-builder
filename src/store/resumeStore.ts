@@ -10,6 +10,7 @@ import type {
 import type { CareerStage } from "@/types/careerStage";
 import { DEFAULT_CAREER_STAGE } from "@/types/careerStage";
 import { getDefaultTemplateAccent } from "@/lib/templateTheme";
+import { getTemplateById } from "@/lib/templateCatalog";
 
 const newId = () => Math.random().toString(36).slice(2, 10);
 
@@ -145,10 +146,19 @@ export const useResumeStore = create<ResumeStore>()((set, get) => ({
         const locals = [...state.resumeHistory];
         for (const rec of locals) {
           try {
+            // Ensure template metadata is present in the snapshot saved to cloud
+            const snapshot: any = rec.resumeSnapshot ?? {};
+            const templateMeta = snapshot.template ?? {
+              id: state.selectedTemplate,
+              name: getTemplateById(state.selectedTemplate)?.name || state.selectedTemplate,
+              accentColor: state.templateAccentColor,
+            };
+            const resumeToUpload = { ...snapshot, template: templateMeta };
+
             const res = await fetch("/api/cloud/resumes", {
               method: "POST",
               headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-              body: JSON.stringify({ title: rec.title, resumeData: rec.resumeSnapshot }),
+              body: JSON.stringify({ title: rec.title, resumeData: resumeToUpload }),
             });
             if (res.ok) {
               set((s) => ({ resumeHistory: s.resumeHistory.filter((r) => r.id !== rec.id) }));
