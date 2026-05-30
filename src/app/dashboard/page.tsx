@@ -134,8 +134,7 @@ function MobileNav({
         {priorityActions.length > 0 && (
           <div className="rounded-2xl border border-slate-200 bg-white p-3">
             <div className="flex items-center justify-between gap-3">
-              <p className="text-xs font-semibold uppercase text-slate-500">Priority</p>
-              <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-400">Navigation</span>
+              <p className="text-xs font-semibold uppercase text-slate-500">Alerts</p>
             </div>
             <div className="mt-3 flex snap-x gap-3 overflow-x-auto pb-1">
               {priorityActions.map((a, i) => (
@@ -355,8 +354,12 @@ export default function DashboardPage() {
   function openResumeInBuilder(id: string) {
     const r = resumes.find((x) => x.id === id);
     if (!r) return;
+    // Populate the main resume data immediately so the builder always has
+    // the snapshot available, and also set the uploadedResume slot so the
+    // create page can show the prefill banner and run any prefill logic.
     setResumeData(r.resumeData);
-    router.push("/create");
+    setUploadedResume({ label: `Saved resume - ${new Date(r.createdAt).toLocaleDateString()}`, resumeData: r.resumeData });
+    router.push("/create?step=preview");
   }
 
   return (
@@ -413,7 +416,6 @@ export default function DashboardPage() {
             onDismissAction={(title) => setDismissedActions((s) => [...s, title])}
           />
           <div className="flex-1 space-y-6">
-        {/* Stats cards removed per request */}
         {confirm && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
             <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
@@ -548,6 +550,7 @@ export default function DashboardPage() {
                   ) : (
                     <ResumePreview
                       item={selectedId ? resumes.find((r) => r.id === selectedId) : undefined}
+                      analyses={analysis}
                       onOpen={() => {
                         const id = selectedId;
                         if (!id) return;
@@ -620,7 +623,7 @@ export default function DashboardPage() {
                                 try {
                                   setUploadedResume({ label: `Cloud snapshot - ${new Date(item.createdAt).toLocaleDateString()}`, resumeData: item.resumeSnapshot });
                                   setPendingAnalysis({ jobDescription: item.jobDescription, result: item.result });
-                                  router.push('/gap-analysis/analysis');
+                                  router.push('/gap-analysis/analysis#analysis-results');
                                 } catch {
                                   setToast({ message: 'Failed to open analysis.', type: 'error' });
                                   setTimeout(() => setToast(null), 3000);

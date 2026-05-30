@@ -141,7 +141,7 @@ export default function LandingPage() {
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link href="/create" className="crp-btn-primary inline-flex items-center justify-center gap-2 px-6 py-3 text-sm">
-                Start analysis
+                Start your journey
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <a href="#how-it-works" className="crp-btn-secondary inline-flex items-center justify-center px-6 py-3 text-sm">
@@ -351,7 +351,7 @@ export default function LandingPage() {
 
             <div className="space-y-3">
               <Link href="/create" className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-100">
-                Start analysis
+                Start your journey
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <div className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/25 bg-white/10 px-4 py-3 text-xs font-medium text-cyan-100">

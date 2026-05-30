@@ -3,6 +3,7 @@
 export const dynamic = "force-dynamic";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   ArrowRight,
   BadgeCheck,
@@ -16,6 +17,7 @@ import {
   GraduationCap,
   Loader2,
   PlayCircle,
+  Eye,
   ShieldCheck,
   Sparkles,
   Trophy,
@@ -26,6 +28,7 @@ import { parseResumeFile } from "@/lib/resumeFileParser";
 import { useResumeStore } from "@/store/resumeStore";
 import { useAnalysisStore } from "@/store/analysisStore";
 import type { SavedAnalysisRecord } from "@/types/analysis";
+import type { ResumeData } from "@/types/resume";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import Link from "next/link";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
@@ -177,6 +180,20 @@ export default function AnalysisWorkspacePage() {
   const [resumeUploading, setResumeUploading] = useState(false);
   const [generatingSampleJD, setGeneratingSampleJD] = useState(false);
 
+  const resultsRef = useRef<HTMLElement | null>(null);
+  const optimizedRef = useRef<HTMLDivElement | null>(null);
+  const [optimizedHtml, setOptimizedHtml] = useState<string | null>(null);
+  const [optimizing, setOptimizing] = useState(false);
+  const router = useRouter();
+
+  const [savedResumes, setSavedResumes] = useState<{ id: string; title?: string; createdAt: string; resumeData: ResumeData }[] | null>(null);
+  const [loadingSavedResumes, setLoadingSavedResumes] = useState(false);
+  const [showSavedList, setShowSavedList] = useState(false);
+  const [savedFilter, setSavedFilter] = useState("");
+  const [previewResume, setPreviewResume] = useState<{ id: string; title?: string; createdAt: string; resumeData: ResumeData } | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [isMobileView, setIsMobileView] = useState(false);
+
   const [gapStatus, setGapStatus] = useState<Record<string, GapStatus>>({});
   const [expandedResources, setExpandedResources] = useState<Record<string, boolean>>({});
   const [statusAnnouncement, setStatusAnnouncement] = useState("");
@@ -187,6 +204,64 @@ export default function AnalysisWorkspacePage() {
   const hasActiveResume = Boolean(activeResumeData && (activeResumeData.personalInfo?.fullName || activeResumeData.skills?.length));
   const usingUploadedResume = Boolean(uploadedResume);
   const roleForSampleJD = activeResumeData?.targetRole || activeResumeData?.personalInfo?.jobTitle || resumeData.targetRole || resumeData.personalInfo?.jobTitle || DEFAULT_SAMPLE_ROLE;
+
+  // Load saved resumes for users who are signed in so they can pick one for analysis
+  useEffect(() => {
+    let cancelled = false;
+    if (!accessToken) {
+      setSavedResumes(null);
+      return;
+    }
+    setLoadingSavedResumes(true);
+    (async () => {
+      try {
+        const res = await fetch("/api/cloud/resumes", { headers: { Authorization: `Bearer ${accessToken}` } });
+        if (!res.ok) {
+          setSavedResumes([]);
+          return;
+        }
+        const json = await res.json();
+        if (cancelled) return;
+        setSavedResumes(Array.isArray(json.resumes) ? json.resumes : []);
+      } catch {
+        if (!cancelled) setSavedResumes([]);
+      } finally {
+        if (!cancelled) setLoadingSavedResumes(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [accessToken]);
+
+  // Track whether the viewport is mobile-sized so the saved-resumes control
+  // can render as a bottom-sheet on phones instead of an absolute popover.
+  useEffect(() => {
+    function update() {
+      setIsMobileView(window.innerWidth < 768);
+    }
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  // Close saved list with Escape key for accessibility
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape" && showSavedList) setShowSavedList(false);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [showSavedList]);
+
+  function selectSavedResume(item: { id: string; title?: string; createdAt: string; resumeData: ResumeData }) {
+    setUploadedResume({ label: item.title || `Saved - ${new Date(item.createdAt).toLocaleDateString()}`, resumeData: item.resumeData });
+    setResult(null);
+    setGapStatus({});
+    setExpandedResources({});
+    setShowSavedList(false);
+  }
 
 
   // cloud history UI has been removed; server-side saving still occurs
@@ -284,6 +359,8 @@ export default function AnalysisWorkspacePage() {
       if (!res.ok) throw new Error((await res.json()).error || "Analysis failed");
       const data: GapResult = await res.json();
       setResult(data);
+      // Clear any previous optimization state when a new analysis arrives
+      setOptimizedHtml(null);
       const localRecord = {
         targetRole: roleForSampleJD,
         jobDescription,
@@ -305,6 +382,116 @@ export default function AnalysisWorkspacePage() {
     } finally {
       setAnalyzing(false);
     }
+  }
+
+  // Auto-scroll to results when analysis completes. Retry until the element has layout
+  useEffect(() => {
+    if (!result || analyzing) return;
+
+    let attempts = 0;
+    const maxAttempts = 14;
+
+    const findScrollableParent = (node: HTMLElement | null): HTMLElement | null => {
+      let parent = node?.parentElement ?? null;
+      while (parent && parent !== document.body) {
+        const style = getComputedStyle(parent);
+        const overflowY = style.overflowY;
+        if ((overflowY === "auto" || overflowY === "scroll") && parent.scrollHeight > parent.clientHeight) return parent;
+        parent = parent.parentElement;
+      }
+      return (document.scrollingElement as HTMLElement) || document.documentElement;
+    };
+
+    const tryScroll = () => {
+      const el = resultsRef.current;
+      if (el && document.body.contains(el)) {
+        const rect = el.getBoundingClientRect();
+        if (rect.height > 0 || rect.width > 0) {
+          try {
+            // Primary attempt: native scrollIntoView
+            el.scrollIntoView({ behavior: "smooth", block: "start" });
+
+            // Fallback: attempt to scroll the nearest scrollable ancestor or window
+            const scroller = findScrollableParent(el);
+            if (scroller && scroller !== (document.scrollingElement as HTMLElement)) {
+              // Compute offset of el relative to scroller
+              let offset = 0;
+              let node: HTMLElement | null = el as HTMLElement;
+              while (node && node !== scroller && node.offsetParent) {
+                offset += node.offsetTop;
+                node = node.offsetParent as HTMLElement | null;
+              }
+              scroller.scrollTo({ top: Math.max(0, offset - 72), behavior: "smooth" });
+            } else {
+              window.scrollTo({ top: window.scrollY + rect.top - 72, behavior: "smooth" });
+            }
+            return;
+          } catch {
+            // fallthrough to retry
+          }
+        }
+      }
+      attempts += 1;
+      if (attempts < maxAttempts) {
+        setTimeout(tryScroll, 120);
+      }
+    };
+
+    // initial delay to allow React/ScrollReveal to mount and animate
+    setTimeout(tryScroll, 120);
+  }, [result, analyzing]);
+
+  async function optimizeResume() {
+    if (!hasActiveResume) {
+      setError("Upload a resume or use the in-app draft before optimizing.");
+      return;
+    }
+    setOptimizing(true);
+    setError(null);
+    setOptimizedHtml(null);
+    try {
+      // Build a simple HTML content blob from the resume to send to the optimizer
+      const bullets: string[] = [];
+      if (activeResumeData.summary) bullets.push(activeResumeData.summary);
+      if (activeResumeData.workExperience?.length) {
+        activeResumeData.workExperience.forEach((we) => {
+          bullets.push((we.description || "").replace(/<[^>]+>/g, "\n"));
+        });
+      }
+      if (activeResumeData.skills?.length) bullets.push(activeResumeData.skills.join(", "));
+
+      const htmlContent = `<ul>${bullets.map((b) => `<li>${b}</li>`).join("")}</ul>`;
+
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ field: "optimize", resumeData: activeResumeData, htmlContent }),
+      });
+      if (!res.ok) throw new Error((await res.json()).error || "Optimization failed");
+      const payload = await res.json();
+      const resultHtml = payload?.resultHtml || payload?.result || null;
+      if (!resultHtml) throw new Error("AI returned no optimized content.");
+      setOptimizedHtml(resultHtml as string);
+      setTimeout(() => optimizedRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 80);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Optimization failed.");
+    } finally {
+      setOptimizing(false);
+    }
+  }
+
+  function applyOptimizedToBuilder() {
+    if (!optimizedHtml) return;
+    const newResume = { ...activeResumeData } as typeof activeResumeData;
+    if (newResume.workExperience?.length) {
+      // Apply the optimized HTML to the first work experience description as a simple MVP
+      const copy = newResume.workExperience.map((we, i) => (i === 0 ? { ...we, description: optimizedHtml } : we));
+      newResume.workExperience = copy;
+    } else {
+      newResume.summary = optimizedHtml.replace(/<[^>]+>/g, " ");
+    }
+    setUploadedResume({ label: "Optimized resume", resumeData: newResume });
+    router.push("/create?step=preview");
   }
 
   async function handleResumeUpload(file: File) {
@@ -466,7 +653,7 @@ export default function AnalysisWorkspacePage() {
                     <button
                       type="button"
                       onClick={openResumePicker}
-                      disabled={resumeUploading}
+                      disabled={resumeUploading || analyzing}
                       className={`inline-flex items-center gap-2 rounded-xl py-2.5 text-sm font-semibold transition-all ${
                         hasActiveResume
                           ? "border border-slate-200 bg-white px-4 text-blue-600 shadow-sm hover:border-slate-300 hover:text-blue-700"
@@ -499,6 +686,251 @@ export default function AnalysisWorkspacePage() {
                       >
                         Use app draft
                       </button>
+                    )}
+
+                    {accessToken && (
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={() => setShowSavedList((s) => !s)}
+                          aria-haspopup="menu"
+                          aria-expanded={showSavedList}
+                          className="ml-2 inline-flex items-center gap-2 rounded-md border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-800 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                        >
+                          Saved resumes
+                          <ChevronDown className="h-4 w-4 text-slate-600" />
+                        </button>
+
+                        {showSavedList && (
+                          isMobileView ? (
+                            <div className="z-50 mt-2 w-full max-h-[60vh] overflow-auto rounded-lg border bg-white p-3 text-sm text-slate-800 shadow-lg">
+                                <div className="mb-3 flex items-center justify-between gap-3">
+                                  <div className="flex items-center gap-2">
+                                    <h4 className="text-sm font-semibold">Saved resumes</h4>
+                                    <span className="text-xs text-slate-500">{savedResumes?.length ?? 0}</span>
+                                  </div>
+                                  <input
+                                    aria-label="Filter saved resumes"
+                                    placeholder="Filter by name or title"
+                                    value={savedFilter}
+                                    onChange={(e) => setSavedFilter(e.target.value)}
+                                    className="ml-2 w-44 rounded-md border border-slate-200 px-2 py-1 text-xs text-slate-700"
+                                  />
+                                </div>
+
+                                {loadingSavedResumes ? (
+                                  <div className="py-4 text-center text-slate-500">Loading saved resumes...</div>
+                                ) : savedResumes && savedResumes.length ? (
+                                  <div className="space-y-2">
+                                    {savedResumes
+                                      .filter((r) => {
+                                        const q = savedFilter.trim().toLowerCase();
+                                        if (!q) return true;
+                                        const name = (r.title || r.resumeData.personalInfo?.fullName || "").toLowerCase();
+                                        const job = (r.resumeData.personalInfo?.jobTitle || "").toLowerCase();
+                                        const skills = (r.resumeData.skills || []).join(" ").toLowerCase();
+                                        return name.includes(q) || job.includes(q) || skills.includes(q);
+                                      })
+                                      .map((r) => {
+                                        const displayName = r.title || r.resumeData.personalInfo?.fullName || r.id;
+                                        const jobTitle = r.resumeData.personalInfo?.jobTitle || "";
+                                        const initials = (displayName || "")
+                                          .split(" ")
+                                          .filter(Boolean)
+                                          .slice(0, 2)
+                                          .map((s) => s[0]?.toUpperCase())
+                                          .join("") || "—";
+                                        return (
+                                          <div key={r.id} className="flex items-start gap-3 rounded-lg border p-3 hover:shadow-md hover:border-indigo-200">
+                                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-50 text-indigo-700 font-semibold">{initials}</div>
+                                            <div className="min-w-0 flex-1">
+                                              <div className="flex items-start justify-between gap-3">
+                                                <div className="min-w-0">
+                                                  <div className="font-semibold truncate">{displayName}</div>
+                                                  <div className="text-xs text-slate-500 truncate">{jobTitle}</div>
+                                                </div>
+                                                <div className="text-xs text-slate-400">{new Date(r.createdAt).toLocaleDateString()}</div>
+                                              </div>
+
+                                              <div className="mt-2 flex flex-wrap items-center gap-2">
+                                                {(r.resumeData.skills ?? []).length > 0 && (
+                                                  <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">{(r.resumeData.skills || []).length} skills</span>
+                                                )}
+                                                {r.resumeData.template?.id && (
+                                                  <span className="rounded-full border border-slate-200 bg-white/90 px-2 py-0.5 text-xs text-slate-600">{r.resumeData.template?.name ?? r.resumeData.template?.id}</span>
+                                                )}
+                                              </div>
+                                            </div>
+
+                                            <div className="flex flex-col items-end gap-2">
+                                              <button
+                                                type="button"
+                                                onClick={() => {
+                                                  selectSavedResume(r);
+                                                }}
+                                                className="crp-btn-primary px-3 py-1 text-xs"
+                                              >
+                                                Use
+                                              </button>
+                                            </div>
+                                          </div>
+                                        );
+                                      })}
+                                  </div>
+                                ) : (
+                                  <div className="py-4 text-slate-500">No saved resumes available.</div>
+                                )}
+
+                                <div className="mt-3 flex justify-end">
+                                  <button onClick={() => setShowSavedList(false)} className="rounded-md px-3 py-1 text-sm text-slate-600 hover:bg-slate-100">Close</button>
+                                </div>
+                              </div>
+                          ) : (
+                            <div className="absolute right-0 z-50 mt-2 w-96 max-h-[60vh] overflow-auto rounded-lg border bg-white p-3 text-sm text-slate-800 shadow-lg">
+                              <div className="mb-3 flex items-center justify-between gap-3">
+                                <div className="flex items-center gap-2">
+                                  <h4 className="text-sm font-semibold">Saved resumes</h4>
+                                  <span className="text-xs text-slate-500">{savedResumes?.length ?? 0}</span>
+                                </div>
+                                <input
+                                  aria-label="Filter saved resumes"
+                                  placeholder="Filter by name or title"
+                                  value={savedFilter}
+                                  onChange={(e) => setSavedFilter(e.target.value)}
+                                  className="ml-2 w-44 rounded-md border border-slate-200 px-2 py-1 text-xs text-slate-700"
+                                />
+                              </div>
+
+                              {loadingSavedResumes ? (
+                                <div className="py-4 text-center text-slate-500">Loading saved resumes...</div>
+                              ) : savedResumes && savedResumes.length ? (
+                                <div className="space-y-2">
+                                  {savedResumes
+                                    .filter((r) => {
+                                      const q = savedFilter.trim().toLowerCase();
+                                      if (!q) return true;
+                                      const name = (r.title || r.resumeData.personalInfo?.fullName || "").toLowerCase();
+                                      const job = (r.resumeData.personalInfo?.jobTitle || "").toLowerCase();
+                                      const skills = (r.resumeData.skills || []).join(" ").toLowerCase();
+                                      return name.includes(q) || job.includes(q) || skills.includes(q);
+                                    })
+                                    .map((r) => {
+                                      const displayName = r.title || r.resumeData.personalInfo?.fullName || r.id;
+                                      const jobTitle = r.resumeData.personalInfo?.jobTitle || "";
+                                      const initials = (displayName || "")
+                                        .split(" ")
+                                        .filter(Boolean)
+                                        .slice(0, 2)
+                                        .map((s) => s[0]?.toUpperCase())
+                                        .join("") || "—";
+                                      return (
+                                        <div key={r.id} className="flex items-start gap-3 rounded-lg border p-3 hover:shadow-md hover:border-indigo-200">
+                                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-50 text-indigo-700 font-semibold">{initials}</div>
+                                          <div className="min-w-0 flex-1">
+                                            <div className="flex items-start justify-between gap-3">
+                                              <div className="min-w-0">
+                                                <div className="font-semibold truncate">{displayName}</div>
+                                                <div className="text-xs text-slate-500 truncate">{jobTitle}</div>
+                                              </div>
+                                              <div className="text-xs text-slate-400">{new Date(r.createdAt).toLocaleDateString()}</div>
+                                            </div>
+
+                                            <div className="mt-2 flex flex-wrap items-center gap-2">
+                                              {(r.resumeData.skills ?? []).length > 0 && (
+                                                <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">{(r.resumeData.skills || []).length} skills</span>
+                                              )}
+                                              {r.resumeData.template?.id && (
+                                                <span className="rounded-full border border-slate-200 bg-white/90 px-2 py-0.5 text-xs text-slate-600">{r.resumeData.template?.name ?? r.resumeData.template?.id}</span>
+                                              )}
+                                            </div>
+                                          </div>
+
+                                          <div className="flex flex-col items-end gap-2">
+                                            <button
+                                              type="button"
+                                              onClick={() => {
+                                                selectSavedResume(r);
+                                              }}
+                                              className="crp-btn-primary px-3 py-1 text-xs"
+                                            >
+                                              Use
+                                            </button>
+                                          </div>
+                                        </div>
+                                      );
+                                    })}
+                                </div>
+                              ) : (
+                                <div className="py-4 text-slate-500">No saved resumes available.</div>
+                              )}
+                            </div>
+                          )
+                        )}
+                      </div>
+                    )}
+                    {previewOpen && previewResume && (
+                      <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/40 p-4">
+                        <div className="max-h-[90vh] w-full max-w-3xl overflow-auto rounded-2xl bg-white p-6 text-slate-900 shadow-2xl">
+                          <div className="flex items-start justify-between gap-3">
+                            <div>
+                              <h3 className="text-lg font-bold">{previewResume.title || previewResume.resumeData.personalInfo?.fullName || "Saved resume"}</h3>
+                              <div className="text-xs text-slate-500">{new Date(previewResume.createdAt).toLocaleString()}</div>
+                            </div>
+                            <div className="flex gap-2">
+                              <button onClick={() => setPreviewOpen(false)} className="rounded-md px-3 py-1 text-sm text-slate-600 hover:bg-slate-100">Close</button>
+                            </div>
+                          </div>
+
+                          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                            <div>
+                              <p className="text-xs font-semibold uppercase text-slate-500">Summary</p>
+                              <p className="mt-1 text-sm text-slate-700">{previewResume.resumeData.summary || "No summary available."}</p>
+
+                              <p className="mt-3 text-xs font-semibold uppercase text-slate-500">Skills</p>
+                              <div className="mt-2 flex flex-wrap gap-2">
+                                {previewResume.resumeData.skills?.length ? (
+                                  previewResume.resumeData.skills.slice(0, 18).map((s) => (
+                                    <span key={s} className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">{s}</span>
+                                  ))
+                                ) : (
+                                  <p className="text-sm text-slate-500">No skills listed.</p>
+                                )}
+                              </div>
+                            </div>
+
+                            <div>
+                              <p className="text-xs font-semibold uppercase text-slate-500">Experience (preview)</p>
+                              <div className="mt-2 space-y-3">
+                                {previewResume.resumeData.workExperience?.length ? (
+                                  previewResume.resumeData.workExperience.slice(0, 3).map((we) => (
+                                    <div key={we.id} className="text-sm text-slate-700">
+                                      <div className="font-semibold">{we.title} {we.company ? `— ${we.company}` : ""}</div>
+                                      <div className="text-xs text-slate-500">{we.startDate} — {we.endDate}</div>
+                                      {we.description && <div className="mt-1 text-sm text-slate-700 line-clamp-3">{we.description}</div>}
+                                    </div>
+                                  ))
+                                ) : (
+                                  <p className="text-sm text-slate-500">No experience entries.</p>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="mt-6 flex justify-end gap-3">
+                            <button
+                              onClick={() => {
+                                selectSavedResume(previewResume);
+                                setPreviewOpen(false);
+                                setShowSavedList(false);
+                              }}
+                              className="crp-btn-primary px-4 py-2"
+                            >
+                              Use in analysis
+                            </button>
+                            <button onClick={() => setPreviewOpen(false)} className="crp-btn-secondary px-4 py-2">Close</button>
+                          </div>
+                        </div>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -534,6 +966,7 @@ export default function AnalysisWorkspacePage() {
                     rows={9}
                     placeholder="Paste the full job description here. More detail gives the analyzer better context, vocabulary coverage, and stronger recommendations."
                     className="crp-textarea resize-none"
+                    disabled={analyzing}
                   />
                 </div>
               </div>
@@ -554,7 +987,7 @@ export default function AnalysisWorkspacePage() {
                   <button
                     type="button"
                     onClick={() => void generateAiSampleJD()}
-                    disabled={generatingSampleJD}
+                    disabled={generatingSampleJD || analyzing}
                     className="inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-slate-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {generatingSampleJD ? (
@@ -616,7 +1049,7 @@ export default function AnalysisWorkspacePage() {
         )}
 
         {result && (
-          <section className="space-y-7">
+          <section id="analysis-results" className="space-y-7" ref={(el) => { resultsRef.current = el; }}>
             <ScrollReveal delayMs={130}>
               <div className="grid gap-5 xl:grid-cols-[0.95fr_1.05fr] xl:items-start">
                 <div className="rounded-[30px] border border-slate-200 bg-slate-950 p-5 text-white shadow-[0_30px_80px_-44px_rgba(15,23,42,0.62)] md:p-6">
@@ -670,6 +1103,27 @@ export default function AnalysisWorkspacePage() {
                 </div>
               </div>
             </ScrollReveal>
+            {optimizedHtml && (
+              <ScrollReveal delayMs={340}>
+                <div ref={optimizedRef} className="mt-6 rounded-[24px] border border-indigo-100 bg-white p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold text-indigo-700">Optimized resume preview</p>
+                      <p className="mt-1 text-xs text-slate-500">AI-suggested improvements based on the analysis.</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button type="button" onClick={applyOptimizedToBuilder} className="crp-btn-primary inline-flex items-center gap-2 px-4 py-2 text-sm">
+                        Apply optimized changes
+                      </button>
+                      <button type="button" onClick={() => setOptimizedHtml(null)} className="crp-btn-secondary inline-flex items-center gap-2 px-3 py-2 text-sm">
+                        Dismiss
+                      </button>
+                    </div>
+                  </div>
+                  <div className="mt-4 prose max-w-none text-sm text-slate-700" dangerouslySetInnerHTML={{ __html: optimizedHtml }} />
+                </div>
+              </ScrollReveal>
+            )}
 
             <ScrollReveal delayMs={185}>
               <div className="grid gap-5 xl:grid-cols-[0.82fr_1.18fr] xl:items-start">
@@ -753,7 +1207,9 @@ export default function AnalysisWorkspacePage() {
                   const status = gapStatus[gap.id] ?? "unknown";
                   const resourcesOpen = expandedResources[gap.id] ?? false;
                   return (
-                    <ScrollReveal key={gap.id} delayMs={250 + index * 45}>
+                    // Append index to the key to guarantee uniqueness in case
+                    // the analysis returns duplicate gap IDs (defensive).
+                    <ScrollReveal key={`${gap.id}-${index}`} delayMs={250 + index * 45}>
                       <article className="rounded-[30px] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-[0_24px_60px_-46px_rgba(15,23,42,0.2)] md:p-6">
                         <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
                           <div className="min-w-0">
@@ -848,10 +1304,31 @@ export default function AnalysisWorkspacePage() {
                     </p>
                   </div>
 
-                  <Link href="/create" className="crp-btn-secondary inline-flex min-h-[48px] items-center justify-center gap-2 px-6 py-3 text-sm text-indigo-700 hover:text-indigo-800">
-                    Apply in Resume Builder
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => void optimizeResume()}
+                      disabled={optimizing || analyzing}
+                      className="crp-btn-primary inline-flex min-h-[48px] items-center justify-center gap-2 px-4 py-3 text-sm disabled:opacity-50"
+                    >
+                      {optimizing ? (
+                        <span className="inline-flex items-center gap-2">
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Optimizing...
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-2">
+                          <BrainCircuit className="h-4 w-4" />
+                          Optimize with AI
+                        </span>
+                      )}
+                    </button>
+
+                    <Link href="/create" className="crp-btn-secondary inline-flex min-h-[48px] items-center justify-center gap-2 px-6 py-3 text-sm text-indigo-700 hover:text-indigo-800">
+                      Apply in Resume Builder
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </div>
                 </div>
               </div>
             </ScrollReveal>

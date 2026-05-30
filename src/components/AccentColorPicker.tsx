@@ -33,28 +33,33 @@ export default function AccentColorPicker({ templateId, onColorSelect }: Props) 
   return (
     <div className="flex items-center gap-1.5">
       {presets.map((color) => {
-        const isActive =
-          isCardSelected && templateAccentColor.toLowerCase() === color.toLowerCase();
+        const isActive = isCardSelected && templateAccentColor.toLowerCase() === color.toLowerCase();
         return (
-          <button
+          <div
             key={color}
-            type="button"
+            role="button"
+            tabIndex={0}
             onClick={(e) => {
               e.stopPropagation();
               setSelectedTemplate(templateId);
               setTemplateAccentColor(color);
               onColorSelect?.();
             }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                e.stopPropagation();
+                setSelectedTemplate(templateId);
+                setTemplateAccentColor(color);
+                onColorSelect?.();
+              }
+            }}
             className={`w-4 h-4 rounded-full border-2 transition-all ${
-              isActive
-                ? "border-slate-800 scale-110 shadow-sm"
-                : "border-slate-300 hover:border-slate-500 hover:scale-105"
+              isActive ? "border-slate-800 scale-110 shadow-sm" : "border-slate-300 hover:border-slate-500 hover:scale-105"
             }`}
             style={{
               backgroundColor: color,
-              boxShadow: isDarkSwatch(color)
-                ? "inset 0 0 0 1px rgba(255,255,255,0.35)"
-                : undefined,
+              boxShadow: isDarkSwatch(color) ? "inset 0 0 0 1px rgba(255,255,255,0.35)" : undefined,
             }}
             aria-label={`${color} accent`}
             title={color}

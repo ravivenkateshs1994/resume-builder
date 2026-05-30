@@ -3,7 +3,15 @@
 import React from "react";
 import type { ResumeData } from "@/types/resume";
 
-export default function ResumePreview({ item, onOpen }: { item?: { id: string; title?: string; createdAt?: string; resumeData?: ResumeData }; onOpen?: () => void }) {
+function deepSortedStringify(value: any): string {
+  if (value === null) return "null";
+  if (typeof value !== "object") return JSON.stringify(value);
+  if (Array.isArray(value)) return `[${value.map((v) => deepSortedStringify(v)).join(",")}]`;
+  const keys = Object.keys(value).sort();
+  return `{${keys.map((k) => `${JSON.stringify(k)}:${deepSortedStringify((value as any)[k])}`).join(",")}}`;
+}
+
+export default function ResumePreview({ item, analyses, onOpen }: { item?: { id: string; title?: string; createdAt?: string; resumeData?: ResumeData }; analyses?: any[]; onOpen?: () => void }) {
   if (!item) {
     return (
       <div className="crp-card-soft flex h-full min-h-[280px] flex-col items-center justify-center gap-3 p-8">
@@ -43,7 +51,22 @@ export default function ResumePreview({ item, onOpen }: { item?: { id: string; t
 
         <div className="flex flex-col items-center rounded-2xl border border-emerald-100 bg-emerald-50 px-5 py-3">
           <p className="text-xs font-bold uppercase tracking-wide text-emerald-600">ATS Score</p>
-          <p className="mt-1 text-3xl font-extrabold text-emerald-700">—</p>
+          {(() => {
+            const rData = r ?? {};
+            if (!analyses || analyses.length === 0) return <p className="mt-1 text-3xl font-extrabold text-emerald-700">—</p>;
+            const targetKey = deepSortedStringify(rData);
+            const match = analyses.find((a: any) => {
+              try {
+                return deepSortedStringify(a.resumeSnapshot ?? a.resume_snapshot ?? {}) === targetKey;
+              } catch {
+                return false;
+              }
+            });
+            const score = match?.result?.atsScore ?? match?.analysis_result?.atsScore ?? null;
+            if (score == null) return <p className="mt-1 text-3xl font-extrabold text-emerald-700">—</p>;
+            const color = score >= 70 ? "text-emerald-700" : score >= 45 ? "text-amber-600" : "text-rose-500";
+            return <p className={`mt-1 text-3xl font-extrabold ${color}`}>{score}</p>;
+          })()}
         </div>
       </div>
 

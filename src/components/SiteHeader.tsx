@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import MobileNav from "./MobileNav";
+import { User } from "lucide-react";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { useScrollDepth } from "@/hooks/useScrollDepth";
 import { useState, useRef, useEffect, memo } from "react";
@@ -35,15 +36,15 @@ function SiteHeaderImpl() {
       }`}
     >
       <div className="mx-auto w-full max-w-7xl px-4 md:px-6">
-        <div className={`flex items-center gap-4 transition-all duration-300 ${scrolled ? "h-[60px]" : "h-16"}`}>
+        <div className={`flex items-center gap-4 transition-all duration-300 h-16 ${scrolled ? "md:h-[60px]" : "md:h-16"}`}>
           <Link href="/" className="flex items-center gap-2.5" aria-label="Career Readiness">
-            <div className={`flex max-w-[140px] items-center transition-transform duration-300 sm:max-w-[220px] ${scrolled ? "scale-[0.96]" : "scale-100"}`}>
+            <div className="flex max-w-[140px] items-center sm:max-w-[220px]">
               <Image
                 src="/career-readiness-desktop-logo.png"
                 alt="Career Readiness"
                 width={220}
                 height={40}
-                className={`h-auto max-w-full object-contain transition-all duration-300 ${scrolled ? "max-h-9" : "max-h-10"}`}
+                className="h-auto max-w-full object-contain transition-all duration-300 max-h-10"
                 priority
               />
             </div>
@@ -81,15 +82,13 @@ function SiteHeaderImpl() {
                     type="button"
                     aria-haspopup="menu"
                     aria-expanded={profileOpen}
+                    aria-label={profileOpen ? "Close profile menu" : "Open profile menu"}
                     onClick={() => setProfileOpen((v) => !v)}
-                    className={`inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-300 hover:text-indigo-600 ${
+                    className={`inline-flex items-center justify-center rounded-full p-2 text-sm font-medium transition-all duration-300 hover:text-indigo-600 ${
                       scrolled ? "text-slate-800" : "text-slate-700"
                     }`}
                   >
-                    My Dashboard
-                    <svg className="h-4 w-4 text-slate-500" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                      <path d="M6 8l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
+                    <User className="h-5 w-5 text-slate-500" aria-hidden="true" />
                   </button>
 
                   {profileOpen && (
