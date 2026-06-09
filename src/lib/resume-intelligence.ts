@@ -184,6 +184,70 @@ function normalizeAiString(value: unknown): string {
   return typeof value === "string" ? normalizeWhitespace(value) : "";
 }
 
+const FULL_MONTHS: Record<string, string> = {
+  january: "Jan", february: "Feb", march: "Mar", april: "Apr",
+  may: "May", june: "Jun", july: "Jul", august: "Aug",
+  september: "Sep", october: "Oct", november: "Nov", december: "Dec",
+};
+const SHORT_MONTHS = new Set(["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"]);
+const MONTH_NUM_TO_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+function normalizeDateString(value: string): string {
+  const v = value.trim();
+  if (!v) return "";
+  if (/^(present|current|now|ongoing)$/i.test(v)) return "Present";
+
+  // Strip trailing punctuation that models sometimes add
+  const cleaned = v.replace(/[.,;]+$/, "").trim();
+
+  // Split on whitespace, comma, dash, slash (but not inside a word)
+  const parts = cleaned.split(/[\s,/]+/).filter(Boolean);
+  if (!parts.length) return v;
+
+  const first = parts[0].replace(/\.$/, ""); // strip trailing period e.g. "Jan."
+  const firstLower = first.toLowerCase();
+
+  // Case 1: starts with 4-digit year → "2020" or "2020-01" or "2020-01-15" or "2020/06"
+  if (/^\d{4}$/.test(first)) {
+    const year = first;
+    const second = parts[1];
+    if (second) {
+      const moNum = parseInt(second, 10);
+      if (!isNaN(moNum) && moNum >= 1 && moNum <= 12) {
+        return `${MONTH_NUM_TO_SHORT[moNum - 1]} ${year}`;
+      }
+      // second part might be a month name e.g. "2020 January"
+      const moShort = FULL_MONTHS[second.toLowerCase()] ?? (SHORT_MONTHS.has(second.toLowerCase()) ? second.charAt(0).toUpperCase() + second.slice(1).toLowerCase() : null);
+      if (moShort) return `${moShort} ${year}`;
+    }
+    return year;
+  }
+
+  // Case 2: starts with 1-2 digit number → MM/YYYY or M/YYYY
+  if (/^\d{1,2}$/.test(first)) {
+    const moNum = parseInt(first, 10);
+    const year = parts[1];
+    if (moNum >= 1 && moNum <= 12 && year && /^\d{4}$/.test(year)) {
+      return `${MONTH_NUM_TO_SHORT[moNum - 1]} ${year}`;
+    }
+  }
+
+  // Case 3: starts with full month name → "January 2020"
+  if (FULL_MONTHS[firstLower]) {
+    const year = parts[1] ?? "";
+    return year ? `${FULL_MONTHS[firstLower]} ${year}` : FULL_MONTHS[firstLower];
+  }
+
+  // Case 4: starts with abbreviated month name → "Jan 2020" or "Jan. 2020"
+  if (SHORT_MONTHS.has(firstLower)) {
+    const canonical = first.charAt(0).toUpperCase() + firstLower.slice(1);
+    const year = parts[1] ?? "";
+    return year ? `${canonical} ${year}` : canonical;
+  }
+
+  return v;
+}
+
 function escapeHtml(value: string): string {
   return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
@@ -306,8 +370,8 @@ function normalizeExperienceEntries(entries: unknown): ParsedResume["workExperie
       const title = normalizeAiString(candidate.title);
       const company = normalizeAiString(candidate.company);
       const location = normalizeAiString(candidate.location);
-      const startDate = normalizeAiString(candidate.startDate);
-      const endDate = normalizeAiString(candidate.endDate);
+      const startDate = normalizeDateString(normalizeAiString(candidate.startDate));
+      const endDate = normalizeDateString(normalizeAiString(candidate.endDate));
       const bullets = collectBullets(candidate.bullets).length > 0 ? collectBullets(candidate.bullets) : collectBullets(candidate.description);
 
       if (!title && !company && !location && !startDate && !endDate && bullets.length === 0) {
@@ -342,8 +406,8 @@ function normalizeEducationEntries(entries: unknown): ParsedResume["education"] 
       const institution = normalizeAiString(candidate.institution);
       const degree = normalizeAiString(candidate.degree);
       const field = normalizeAiString(candidate.field);
-      const startDate = normalizeAiString(candidate.startDate);
-      const endDate = normalizeAiString(candidate.endDate);
+      const startDate = normalizeDateString(normalizeAiString(candidate.startDate));
+      const endDate = normalizeDateString(normalizeAiString(candidate.endDate));
       const gpa = normalizeAiString(candidate.gpa);
       const honors = normalizeAiString(candidate.honors);
 
@@ -436,10 +500,22 @@ function mergeResumeStructure(fallback: ParsedResume, aiPayload: AiResumeStructu
   const aiSummary = normalizeAiString(aiPayload.summary);
   const aiTargetRole = normalizeAiString(aiPayload.targetRole);
 
+  // Patch missing dates from fallback using position-based matching.
+  // The AI may return correct company/title/bullets but miss dates in non-standard formats.
+  const patchedWorkExperience = aiWorkExperience.map((entry, i) => {
+    const fb = fallback.workExperience[i];
+    if (!fb) return entry;
+    return {
+      ...entry,
+      startDate: entry.startDate || fb.startDate,
+      endDate: entry.endDate || fb.endDate,
+    };
+  });
+
   return {
     personalInfo: aiPersonalInfo,
     summary: aiSummary || fallback.summary,
-    workExperience: aiWorkExperience.length > 0 ? aiWorkExperience : fallback.workExperience,
+    workExperience: patchedWorkExperience.length > 0 ? patchedWorkExperience : fallback.workExperience,
     education: aiEducation.length > 0 ? aiEducation : fallback.education,
     skills: dedupePreserveOrder([...aiSkills, ...fallback.skills]),
     certifications: mergeCertificationEntries(aiCertifications, fallback.certifications),
@@ -448,7 +524,21 @@ function mergeResumeStructure(fallback: ParsedResume, aiPayload: AiResumeStructu
 }
 
 function stripMarkdownFences(value: string): string {
-  return value.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
+  // Remove reasoning-model think blocks (Qwen3, DeepSeek-R1, etc.)
+  let stripped = value.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
+  // Remove markdown code fences
+  stripped = stripped.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
+  return stripped;
+}
+
+function extractJsonFromText(value: string): string {
+  // Try to pull out the first complete JSON object or array from surrounding text
+  const objMatch = value.match(/(\{[\s\S]*\})/);
+  const arrMatch = value.match(/(\[[\s\S]*\])/);
+  if (objMatch && arrMatch) {
+    return objMatch.index! <= arrMatch.index! ? objMatch[1] : arrMatch[1];
+  }
+  return objMatch?.[1] ?? arrMatch?.[1] ?? value;
 }
 
 function dedupePreserveOrder(values: string[]): string[] {
@@ -480,15 +570,21 @@ function toArrayOfStrings(value: unknown): string[] {
 }
 
 function parseJsonObject<T>(raw: string): T | null {
+  const cleaned = stripMarkdownFences(raw);
   try {
-    return JSON.parse(stripMarkdownFences(raw)) as T;
+    return JSON.parse(cleaned) as T;
   } catch {
-    return null;
+    // Second chance: extract first JSON object/array from text
+    try {
+      return JSON.parse(extractJsonFromText(cleaned)) as T;
+    } catch {
+      return null;
+    }
   }
 }
 
-async function generateJson<T>(prompt: string, imageDataUrls: string[] = []): Promise<T | null> {
-  if (!process.env.GEMINI_API_KEY) {
+async function generateJson<T>(prompt: string, imageDataUrls: string[] = [], system?: string): Promise<T | null> {
+  if (!process.env.OPENROUTER_API_KEY) {
     return null;
   }
 
@@ -496,8 +592,13 @@ async function generateJson<T>(prompt: string, imageDataUrls: string[] = []): Pr
     const { generate, generateWithImages } = await import("./openai");
     const raw =
       imageDataUrls.length > 0
-        ? await generateWithImages(prompt, imageDataUrls.filter((url) => typeof url === "string" && url.startsWith("data:image/")).slice(0, 3), 0)
-        : await generate(prompt, 0);
+        ? await generateWithImages(
+            prompt,
+            imageDataUrls.filter((url) => typeof url === "string" && url.startsWith("data:image/")).slice(0, 3),
+            0,
+            { task: "resumeIntelligence", fallbackTask: "fallback", disableReasoning: true, system }
+          )
+        : await generate(prompt, 0, { task: "resumeIntelligence", fallbackTask: "fallback", disableReasoning: true, system });
     return parseJsonObject<T>(raw);
   } catch (error) {
     console.warn("[resume-intelligence] AI request failed:", error);
@@ -510,7 +611,7 @@ export async function extractResumeStructure(input: {
   images?: string[];
   useAi?: boolean;
 }): Promise<ParsedResume> {
-  const useAi = input.useAi ?? Boolean(process.env.GEMINI_API_KEY);
+  const useAi = input.useAi ?? Boolean(process.env.OPENROUTER_API_KEY);
   const text = normalizeExtractedText(input.resumeText ?? "");
   const fallback = parseResume(text);
 
@@ -522,32 +623,71 @@ export async function extractResumeStructure(input: {
     .filter((image): image is string => typeof image === "string" && image.startsWith("data:image/"))
     .slice(0, 3);
 
-  const prompt = [
-    "You extract a resume into strict JSON.",
-    "Return ONLY valid JSON with this exact shape:",
-    "{",
-    '  "personalInfo": { "fullName": "", "email": "", "phone": "", "location": "", "linkedin": "", "website": "", "jobTitle": "" },',
-    '  "summary": "",',
-    '  "workExperience": [ { "company": "", "title": "", "location": "", "startDate": "", "endDate": "", "bullets": [] } ],',
-    '  "education": [ { "institution": "", "degree": "", "field": "", "startDate": "", "endDate": "", "gpa": "", "honors": "" } ],',
-    '  "skills": [],',
-    '  "certifications": [ { "name": "", "issuer": "", "date": "", "credentialId": "", "validFrom": "", "validTo": "", "neverExpires": false } ],',
-    '  "targetRole": ""',
-    "}",
-    "Rules:",
-    "- Use only information explicitly visible in the resume.",
-    "- Prefer the visual layout over raw line order when the document is multi-column.",
-    "- Keep fields empty when missing.",
-    "- Do not invent employers, degrees, dates, or skills.",
-    "- Preserve the original order of experience and education entries.",
-    "- For workExperience.bullets, capture only the bullet points that belong to that role.",
-    "- Normalize linkedin to a full URL when present.",
-    "- Do not include markdown fences.",
-    "Resume text:",
-    text.slice(0, 14000) || "(No text extraction available. Parse from the resume images only.)",
+  const SYSTEM = [
+    "You are a precise resume parser. Your only job is to extract data from a resume into valid JSON.",
+    "STRICT RULES:",
+    "- Return ONLY the JSON object. No explanation, no markdown fences, no commentary.",
+    "- Use ONLY information explicitly present in the resume text. Never invent or infer missing data.",
+    "- workExperience entries: each job is ONE object. bullets must be an array of strings — every bullet point, achievement, or responsibility that belongs to THAT specific role.",
+    "- Separate company from job title carefully: the title is the role the person held (e.g. 'Software Engineer'), the company is the organisation name (e.g. 'Google').",
+    "- startDate and endDate: use the format visible in the resume (e.g. 'Jan 2020', '2019', 'Present'). Use 'Present' for ongoing roles.",
+    "- skills: flat array of all skill terms mentioned anywhere in the resume.",
+    "- targetRole: the person's current or most recent job title, or their stated target role.",
+    "- Preserve the original chronological order of workExperience and education entries.",
+    "- Keep fields as empty strings '' or empty arrays [] when the data is absent.",
   ].join("\n");
 
-  const raw = await generateJson<AiResumeStructurePayload>(prompt, images);
+  const userPrompt = [
+    "Extract this resume into the following JSON shape. Keep the exact field names.",
+    "",
+    "{",
+    '  "personalInfo": {',
+    '    "fullName": "string",',
+    '    "email": "string",',
+    '    "phone": "string",',
+    '    "location": "string",',
+    '    "linkedin": "string (full URL)",',
+    '    "website": "string",',
+    '    "jobTitle": "string"',
+    "  },",
+    '  "summary": "string",',
+    '  "workExperience": [',
+    "    {",
+    '      "company": "string",',
+    '      "title": "string",',
+    '      "location": "string",',
+    '      "startDate": "string",',
+    '      "endDate": "string",',
+    '      "bullets": ["string", "string"]',
+    "    }",
+    "  ],",
+    '  "education": [',
+    "    {",
+    '      "institution": "string",',
+    '      "degree": "string",',
+    '      "field": "string",',
+    '      "startDate": "string",',
+    '      "endDate": "string",',
+    '      "gpa": "string",',
+    '      "honors": "string"',
+    "    }",
+    "  ],",
+    '  "skills": ["string"],',
+    '  "certifications": [',
+    "    {",
+    '      "name": "string",',
+    '      "issuer": "string",',
+    '      "date": "string"',
+    "    }",
+    "  ],",
+    '  "targetRole": "string"',
+    "}",
+    "",
+    "Resume text:",
+    text.slice(0, 14000) || "(No text extraction available — parse from the resume images only.)",
+  ].join("\n");
+
+  const raw = await generateJson<AiResumeStructurePayload>(userPrompt, images, SYSTEM);
   return mergeResumeStructure(fallback, raw);
 }
 
@@ -665,7 +805,7 @@ async function normalizeSkillCollection(values: string[], useAi: boolean): Promi
 }
 
 async function suggestSkillTaxonomyEntries(values: string[]): Promise<SkillTaxonomyEntry[]> {
-  if (values.length === 0 || !process.env.GEMINI_API_KEY) {
+  if (values.length === 0 || !process.env.OPENROUTER_API_KEY) {
     return [];
   }
 
@@ -1033,7 +1173,7 @@ export async function extractResumeSignals(input: {
   useAi?: boolean;
   careerStage?: string;
 }): Promise<ResumeSignalExtraction> {
-  const useAi = input.useAi ?? Boolean(process.env.GEMINI_API_KEY);
+  const useAi = input.useAi ?? Boolean(process.env.OPENROUTER_API_KEY);
   const source = input.resumeData ?? (input.resumeText ? parseResume(input.resumeText) : null);
   if (!source && !input.resumeText) {
     return {
@@ -1065,7 +1205,7 @@ export async function extractJobDescriptionSignals(jobDescription: string, optio
     ? "Tailor this analysis for an experienced professional: focus on leadership, specialization, career progression, and senior role alignment."
     : "";
 
-  const useAi = options?.useAi ?? Boolean(process.env.GEMINI_API_KEY);
+  const useAi = options?.useAi ?? Boolean(process.env.OPENROUTER_API_KEY);
   const text = normalizeWhitespace(jobDescription);
   if (!text) {
     return {
@@ -1193,7 +1333,7 @@ export async function buildResumeIntelligenceReport(input: {
   useAi?: boolean;
   careerStage?: string;
 }): Promise<ResumeIntelligenceReport> {
-  const useAi = input.useAi ?? Boolean(process.env.GEMINI_API_KEY);
+  const useAi = input.useAi ?? Boolean(process.env.OPENROUTER_API_KEY);
   const resumeTextSource = normalizeWhitespace(input.resumeText ?? composeResumeText(input.resumeData ?? {}));
 
   const [resumeSignals, jobDescriptionSignals] = await Promise.all([

@@ -67,6 +67,12 @@ function SiteHeaderImpl() {
               Resume Builder
             </Link>
             <Link
+              href="/jobs"
+              className={`transition-colors hover:text-indigo-600 ${pathname.startsWith("/jobs") ? "text-indigo-600 font-semibold" : ""}`}
+            >
+              Jobs
+            </Link>
+            <Link
               href="/gap-analysis"
               className={`transition-colors hover:text-indigo-600 ${pathname.startsWith("/gap-analysis") ? "text-indigo-600 font-semibold" : ""}`}
             >

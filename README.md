@@ -1,18 +1,20 @@
-# Career Readiness — AI-Powered Resume Builder
+# Career Readiness - AI-Powered Resume Builder
 
-A full-stack resume builder that uses Google Gemini AI to generate professional content, tailor resumes to job descriptions, and analyze skill gaps with personalized learning recommendations.
+A full-stack resume builder that uses OpenRouter free models to generate professional content, tailor resumes to job descriptions, analyze skill gaps, and recommend role-specific jobs.
 
 ---
 
 ## Features
 
-- **AI Content Generation** — Generates polished bullet points and professional summaries from your raw input
-- **Resume Upload** — Upload a PDF or DOCX and AI extracts and pre-fills all your information
-- **ATS Tailoring** — Paste a job description to get a keyword-optimized resume with an ATS match score
-- **Gap Analyzer** — Compare your resume to any job description, see missing skills by priority, and get curated learning resources for each gap
-- **12 Professional Templates** — Modern, Classic, Creative, Minimal, Executive, and more
-- **PDF & DOCX Export** — Download your finished resume in any format
-- **Persistent State** — Resume data is saved to localStorage so you never lose your work
+- AI content generation with OpenRouter using task-specific free models
+- Resume upload and parsing for PDF and DOCX files
+- ATS tailoring with keyword optimization and match scoring
+- Gap analysis with prioritized recommendations and learning paths
+- Role-based job feed for fresher and experienced users
+- Live location-aware job listings via Adzuna, with Supabase and bundled fallback data
+- 12 professional templates
+- PDF and DOCX export
+- Persistent local state
 
 ---
 
@@ -23,12 +25,13 @@ A full-stack resume builder that uses Google Gemini AI to generate professional 
 | Framework | Next.js 15 (App Router) |
 | Language | TypeScript |
 | Styling | Tailwind CSS |
-| State | Zustand (with persistence) |
-| AI | Google Gemini (`gemini-2.0-flash-lite`) |
+| State | Zustand |
+| AI | OpenRouter free models (`deepseek/deepseek-chat:free`, `qwen/qwen3-32b:free`, `meta-llama/llama-4-maverick:free`) |
 | Rich Text | Tiptap |
 | PDF Export | Puppeteer / jsPDF / html2canvas |
 | DOCX Export | docx.js |
 | Resume Parsing | pdf-parse + mammoth |
+| Backend | Supabase |
 
 ---
 
@@ -37,7 +40,7 @@ A full-stack resume builder that uses Google Gemini AI to generate professional 
 ### Prerequisites
 
 - Node.js 18+
-- A [Google Gemini API key](https://aistudio.google.com/app/apikey)
+- An [OpenRouter API key](https://openrouter.ai/settings/keys)
 
 ### Installation
 
@@ -52,12 +55,33 @@ npm install
 Create a `.env.local` file in the root:
 
 ```env
-GEMINI_API_KEY=your_gemini_api_key_here
+OPENROUTER_API_KEY=your_openrouter_api_key_here
+OPENROUTER_MODEL=qwen/qwen3-32b:free
 FEATURE_PREMIUM_TEMPLATES=off
 NEXT_PUBLIC_FEATURE_PREMIUM_TEMPLATES=off
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+OPENROUTER_ATS_MODEL=deepseek/deepseek-chat:free
+OPENROUTER_GAP_ANALYSIS_MODEL=deepseek/deepseek-chat:free
+OPENROUTER_RESUME_INTELLIGENCE_MODEL=deepseek/deepseek-chat:free
+OPENROUTER_CAREER_COPILOT_MODEL=qwen/qwen3-32b:free
+OPENROUTER_ROADMAP_MODEL=qwen/qwen3-32b:free
+OPENROUTER_INTERVIEW_MODEL=qwen/qwen3-32b:free
+OPENROUTER_FALLBACK_MODEL=meta-llama/llama-4-maverick:free
 ```
 
-Set both premium flags to `on` to enable Premium Templates UI and API output.
+The app now routes ATS analysis, gap analysis, and resume intelligence through DeepSeek V3, general career copilot content through Qwen 3 32B, and falls back to Llama 4 Maverick if the primary request fails. You can still override each role-specific model in `.env.local` if you want to test a different free variant later.
+
+To enable live job listings, add:
+
+```env
+ADZUNA_APP_ID=your_adzuna_app_id
+ADZUNA_APP_KEY=your_adzuna_app_key
+ADZUNA_DEFAULT_COUNTRY=us
+```
+
+When configured, the job feed searches Adzuna by keyword and location, then merges those live listings with your database and bundled fallback jobs. Adzuna listings should be acknowledged in the UI where they are displayed.
 
 ### Run the Development Server
 
@@ -74,50 +98,53 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ```
 src/
 ├── app/
-│   ├── page.tsx                  # Landing page
-│   ├── create/page.tsx           # Resume builder (multi-step form)
-│   ├── gap-analysis/page.tsx     # Gap analyzer page
+│   ├── page.tsx
+│   ├── create/page.tsx
+│   ├── jobs/page.tsx
+│   ├── gap-analysis/page.tsx
 │   └── api/
-│       ├── generate/route.ts     # AI content generation
-│       ├── tailor/route.ts       # ATS resume tailoring
-│       ├── parse/route.ts        # Resume file parsing
-│       ├── gap-analysis/route.ts # Gap analysis
-│       └── export/
-│           ├── pdf/route.ts      # PDF export
-│           └── docx/route.ts     # DOCX export
+│       ├── generate/route.ts
+│       ├── tailor/route.ts
+│       ├── parse/route.ts
+│       ├── gap-analysis/route.ts
+│       └── jobs/
+│           ├── recommendations/route.ts
+│           ├── saved/route.ts
+│           └── track/route.ts
 ├── components/
-│   ├── steps/                    # Form steps (Personal, Experience, Education, Skills, Preview)
-│   └── templates/                # Resume templates
-├── store/resumeStore.ts          # Zustand store
+│   ├── steps/
+│   ├── templates/
+│   └── jobs/
+├── data/
 ├── lib/
-│   ├── openai.ts                 # Gemini AI client
-│   └── templateTheme.ts         # Template accent colors
-└── types/resume.ts               # TypeScript types
+│   ├── openai.ts
+│   ├── candidate-profile.ts
+│   ├── job-feed.ts
+│   └── job-matching.ts
+├── store/
+└── types/
 ```
 
 ---
 
-## Gap Analyzer Flow
+## Database
 
-1. Paste a job description on the `/gap-analysis` page
-2. AI compares it against your resume and returns an ATS match score + prioritized gaps
-3. For each gap, choose:
-   - **"Yes, I know this"** → Prompted to add it to your resume (links directly to Skills or Experience step)
-   - **"Show me how to learn"** → AI-curated learning resources from Coursera, YouTube, Udemy, official docs, etc.
+The Supabase schema includes:
 
----
+- `profiles` for user metadata and career stage
+- `user_resumes` for saved resume snapshots
+- `user_analysis` for saved job analysis results
+- `job_listings` for job feed records
+- `saved_jobs` for saved job cards
+- `job_interactions` for job clicks and tailoring events
 
-## Template APIs
-
-- `GET /api/templates`
-   - Returns template metadata including `isPremium`, `priceModel`, `recommendedRoles`, `atsScore`, `premiumBadgeType`.
-- `GET /api/templates/recommend?jdId=<jobId>`
-   - Returns a deterministic list of recommended template IDs.
-- `POST /api/user/templates/select`
-   - Persists selected template (`{ templateId }`) for analytics/selection tracking.
+Run the migrations in `supabase/migrations/` to keep your database aligned.
 
 ---
 
-## License
+## Notes
 
-MIT
+- Freshers see internships, apprenticeships, and entry-level roles first.
+- Experienced users see full-time roles ranked by skill, experience, title, and location fit.
+- The job feed can use Adzuna live listings first, then database-backed listings, and finally the bundled seed listings as a fallback.
+- Job location auto-fill tries browser geolocation first, reverse-geocodes the coordinates, and falls back to an approximate IP-based lookup if needed.

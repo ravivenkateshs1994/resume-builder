@@ -76,6 +76,12 @@ const DATE_RANGE_RE = new RegExp(
   "i"
 );
 
+// Matches numeric month formats: "05/2021 – 10/2023" or "5/2021 - Present"
+const DATE_RANGE_NUMERIC_RE =
+  /\b(\d{1,2})[/\-.]((?:19|20)\d{2})\s*[-–—to]+\s*(?:(\d{1,2})[/\-.]((?:19|20)\d{2})|(present|current|now))\b/i;
+
+const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
 const YEAR_RE = /\b(19|20)\d{2}\b/;
 
 const DEGREE_RE =
@@ -160,11 +166,32 @@ function extractDateRange(text: string): { startDate: string; endDate: string } 
       endDate,
     };
   }
+
+  // Fallback: numeric month format "05/2021 – 10/2023" or "5/2021 - Present"
+  const n = DATE_RANGE_NUMERIC_RE.exec(text);
+  if (n) {
+    const startMoNum = parseInt(n[1], 10);
+    const startYr = n[2];
+    const endMoNum = n[3] ? parseInt(n[3], 10) : 0;
+    const endYr = n[4] ?? "";
+    const isPresent = /present|current|now/i.test(n[5] ?? "");
+    const startMo = startMoNum >= 1 && startMoNum <= 12 ? MONTH_NAMES[startMoNum - 1] : "";
+    const endMo = endMoNum >= 1 && endMoNum <= 12 ? MONTH_NAMES[endMoNum - 1] : "";
+    return {
+      startDate: startMo ? `${startMo} ${startYr}` : startYr,
+      endDate: isPresent ? "Present" : endMo ? `${endMo} ${endYr}` : endYr,
+    };
+  }
+
   return null;
 }
 
 function stripDates(text: string) {
-  return text.replace(DATE_RANGE_RE, "").replace(/\s{2,}/g, " ").trim();
+  return text
+    .replace(DATE_RANGE_RE, "")
+    .replace(DATE_RANGE_NUMERIC_RE, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
 }
 
 // ── Personal info ─────────────────────────────────────────────────────────────

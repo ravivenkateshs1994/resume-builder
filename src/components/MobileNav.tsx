@@ -11,6 +11,7 @@ import { Menu } from "lucide-react";
 const NAV_LINKS = [
   { label: "Home", href: "/" },
   { label: "Resume Builder", href: "/create" },
+  { label: "Jobs", href: "/jobs" },
   { label: "Gap Analysis", href: "/gap-analysis" },
 ];
 

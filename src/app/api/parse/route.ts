@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { parseResume } from "@/lib/parseResume";
 import { extractResumeSignals, extractResumeStructure } from "@/lib/resume-intelligence";
+import { normalizeSkillNames } from "@/lib/skill-taxonomy";
 
-// POST /api/parse — AI-powered (Gemini) resume parsing with regex fallback
+// POST /api/parse - AI-powered (OpenRouter) resume parsing with regex fallback
 // Body A (PDF):  JSON  { text: string, layoutText?: string, images?: string[] }
 //                — text extracted client-side with PDF.js (layoutText preserves multi-column order)
 // Body B (DOCX): FormData { resume: File } — server extracts text with mammoth
@@ -26,12 +27,16 @@ function cleanString(value: unknown): string {
 }
 
 function uniqueStrings(values: string[]): string[] {
-  return [...new Set(values.map((value) => value.trim()).filter((value) => value.length > 1 && value.length < 80))];
-}
-
-function normalizeSkillsList(items: unknown, fallback: string[]): string[] {
-  const aiItems = Array.isArray(items) ? items : [];
-  return uniqueStrings([...aiItems.map((item) => cleanString(item)), ...fallback]);
+  const seen = new Set<string>();
+  const result: string[] = [];
+  for (const raw of values) {
+    const v = raw.trim();
+    if (v.length > 1 && v.length < 80 && !seen.has(v.toLowerCase())) {
+      seen.add(v.toLowerCase());
+      result.push(v);
+    }
+  }
+  return result;
 }
 
 function mergeCertificationItems(
@@ -117,17 +122,14 @@ export async function POST(req: NextRequest) {
       summary: parsed.summary,
       workExperience: parsed.workExperience,
       education: parsed.education,
-      skills: normalizeSkillsList(
-        [
-          ...parsed.skills,
-          ...resumeSignals.skills,
-          ...resumeSignals.technologies,
-          ...resumeSignals.tools,
-          ...resumeSignals.frameworks,
-          ...resumeSignals.methodologies,
-        ],
-        []
-      ),
+      skills: normalizeSkillNames([
+        ...parsed.skills,
+        ...resumeSignals.skills,
+        ...resumeSignals.technologies,
+        ...resumeSignals.tools,
+        ...resumeSignals.frameworks,
+        ...resumeSignals.methodologies,
+      ]),
       certifications: mergeCertificationItems(parsed.certifications, resumeSignals.certifications),
       targetRole: parsed.targetRole || resumeSignals.jobTitles[0] || parsed.personalInfo.jobTitle,
     };

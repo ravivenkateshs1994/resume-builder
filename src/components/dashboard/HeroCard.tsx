@@ -1,8 +1,9 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { useResumeStore } from "@/store/resumeStore";
-import { getDashboardExperience, getPrimaryCTA } from "@/lib/personalization";
+import { getDashboardExperience, getPrimaryCTA, getPrimaryCTALink } from "@/lib/personalization";
 
 interface Props {
   userName?: string;
@@ -12,6 +13,7 @@ export default function HeroCard({ userName }: Props) {
   const careerStage = useResumeStore((s) => s.careerStage);
   const exp = getDashboardExperience(careerStage);
   const cta = getPrimaryCTA(careerStage);
+  const href = getPrimaryCTALink(careerStage);
 
   return (
     <div className={`crp-card-soft crp-module-accent p-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between`}>
@@ -40,9 +42,9 @@ export default function HeroCard({ userName }: Props) {
         </div>
 
         <div className="hidden sm:block">
-          <button type="button" className="crp-btn-primary px-4 py-2">
+          <Link href={href} className="crp-btn-primary inline-flex items-center justify-center px-4 py-2">
             {cta}
-          </button>
+          </Link>
         </div>
       </div>
     </div>

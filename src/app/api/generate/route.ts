@@ -3,16 +3,17 @@ import { generate } from "@/lib/openai";
 import type { ResumeData } from "@/types/resume";
 
 // POST /api/generate
-// Body: { field: "summary" | "bullets" | "optimize", resumeData, rawText?, htmlContent?, selectedText?, jobTitle? }
+// Body: { field: "summary" | "bullets" | "optimize", resumeData, rawText?, htmlContent?, selectedText?, selectedHtml?, jobTitle? }
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { field, resumeData, rawText, htmlContent, selectedText, jobTitle, role } = body as {
+    const { field, resumeData, rawText, htmlContent, selectedText, selectedHtml, jobTitle, role } = body as {
       field: "summary" | "bullets" | "optimize" | "suggest-skills" | "sample-jd";
       resumeData: ResumeData;
       rawText?: string;
       htmlContent?: string;
       selectedText?: string;
+      selectedHtml?: string;
       jobTitle?: string;
       role?: string;
     };
@@ -73,6 +74,50 @@ export async function POST(req: NextRequest) {
     }
 
     if (field === "optimize") {
+      if (selectedHtml?.trim()) {
+        const sourceHtml = selectedHtml;
+
+        const parts = [
+          "You are an experienced hiring manager and resume editor.",
+          "Rewrite the selected HTML so it sounds human, direct, and credible while still being strong for recruiters.",
+          "",
+          "CRITICAL — formatting rules:",
+          "- The input is HTML. You MUST output valid HTML that mirrors the exact same structure.",
+          "- Preserve every tag: <ul>, <ol>, <li>, <p>, <strong>, <em>, <u>, <s>, and any other inline tags.",
+          "- If the input has a list, keep it a list with the same number of items.",
+          "- If the input has paragraphs, keep them as paragraphs.",
+          "- Do NOT convert lists to paragraphs or paragraphs to lists.",
+          "- Do NOT add new tags that were not in the original.",
+          "- Do NOT drop, merge, or skip any item.",
+          "- If you cannot preserve the structure exactly, return the original HTML unchanged rather than flattening it.",
+          "",
+          "Content rules:",
+          "- Rewrite each item so it sounds specific, direct, and naturally human-written.",
+          "- Keep the original meaning and all facts — do not invent metrics.",
+          "- Vary sentence openings so items do not sound templated.",
+          "- Quantify impact only when numbers are already present or clearly implied.",
+          "- Avoid generic AI phrases like 'leveraged', 'spearheaded', 'utilized'.",
+          "",
+          "Output rules:",
+          "- Return ONLY the rewritten HTML — no explanations, no markdown fences, no JSON.",
+          "",
+          "Job title: " + (jobTitle || "Not specified"),
+          "Target role: " + (resumeData?.targetRole || "Not specified"),
+          "",
+          "HTML to optimize:",
+          sourceHtml,
+        ];
+
+        const content = await generate(parts.join("\n"), 0.75);
+        const raw = content
+          .replace(/^```(?:html)?\s*/i, "")
+          .replace(/\s*```$/i, "")
+          .trim();
+
+        const resultHtml = raw.includes("<") ? raw : sourceHtml;
+        return NextResponse.json({ resultHtml });
+      }
+
       if (selectedText?.trim()) {
         const selectedLines = selectedText
           .split(/\r?\n/)
@@ -151,73 +196,58 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ resultText });
       }
 
-      // Strip HTML tags to get plain text, then rephrase preserving every point
-      const plainText = (htmlContent || "")
-        .replace(/<li[^>]*>/gi, "\n- ")
-        .replace(/<\/li>/gi, "")
-        .replace(/<[^>]+>/g, "")
-        .replace(/&amp;/g, "&")
-        .replace(/&lt;/g, "<")
-        .replace(/&gt;/g, ">")
-        .replace(/&nbsp;/g, " ")
-        .split("\n")
-        .map((l) => l.trim())
-        .filter(Boolean);
-
-      const plainTextJoined = plainText.join("\n");
+      // Send the original HTML to the AI and ask it to return HTML with formatting preserved.
+      const sourceHtml = htmlContent || "";
 
       const parts = [
         "You are an experienced hiring manager and resume editor.",
-        "Rewrite each point below so it sounds human, direct, and credible while still being strong for recruiters.",
-        "Rules:",
-        "- Keep the same meaning and all original points.",
-        "- Keep one output bullet per input point, in the same order.",
-        "- Keep wording natural and specific; avoid repetitive AI-style phrasing.",
+        "Rewrite the content below to sound human, direct, and credible while still being strong for recruiters.",
+        "",
+        "CRITICAL — formatting rules:",
+        "- The input is HTML. You MUST output valid HTML that mirrors the exact same structure.",
+        "- Preserve every tag: <ul>, <ol>, <li>, <p>, <strong>, <em>, <u>, <s>, and any other inline tags.",
+        "- If the input has a <ul> with N <li> items, output a <ul> with exactly N <li> items.",
+        "- If the input has <p> paragraphs, output <p> paragraphs.",
+        "- Do NOT convert lists to paragraphs or paragraphs to lists.",
+        "- Do NOT add new tags that were not in the original.",
+        "- Do NOT drop, merge, or skip any item.",
+          "- If you cannot preserve the structure exactly, return the original HTML unchanged rather than flattening it.",
+        "",
+        "Content rules:",
+        "- Rewrite each item so it sounds specific, direct, and naturally human-written.",
+        "- Keep the original meaning and all facts — do not invent metrics.",
+        "- Vary sentence openings so items do not sound templated.",
         "- Quantify impact only when numbers are already present or clearly implied.",
-        "- Vary sentence openings so bullets do not sound templated.",
-        "- Keep ALL points — do NOT drop, merge, or skip any",
-        "- If the input has N points, output exactly N points",
-        "- Return ONLY a JSON array of strings — no explanations, no markdown fences",
+        "- Avoid generic AI phrases like 'leveraged', 'spearheaded', 'utilized'.",
+        "",
+        "Output rules:",
+        "- Return ONLY the rewritten HTML — no explanations, no markdown fences, no JSON.",
         "",
         "Job title: " + (jobTitle || "Not specified"),
         "Target role: " + (resumeData?.targetRole || "Not specified"),
         "",
-        "Bullet points to optimize:",
-        plainTextJoined,
+        "HTML to optimize:",
+        sourceHtml,
       ];
 
       const content = await generate(parts.join("\n"), 0.75);
-      const jsonStr = content
-        .replace(/^```(?:json)?\s*/i, "")
-        .replace(/\s*```$/, "")
+
+      // Strip markdown fences in case the model wrapped the response
+      const raw = content
+        .replace(/^```(?:html)?\s*/i, "")
+        .replace(/\s*```$/i, "")
         .trim();
-      let bullets: string[] = [];
-      try {
-        const parsed = JSON.parse(jsonStr);
-        bullets = Array.isArray(parsed) ? parsed : parsed.bullets || parsed.result || [];
-      } catch {
-        bullets = content
-          .split(/\n/)
-          .map((l: string) => l.replace(/^[-*\d.]+\s*/, "").trim())
-          .filter(Boolean);
+
+      let resultHtml: string;
+
+      if (raw.includes("<")) {
+        // AI returned HTML as requested — use directly
+        resultHtml = raw;
+      } else {
+        // Fallback: keep the original rich-text structure instead of flattening.
+        resultHtml = sourceHtml;
       }
 
-      bullets = bullets
-        .flatMap((line) => line.split(/\r?\n/))
-        .map((line) => line.replace(/^[-*•\d.)\s]+/, "").trim())
-        .filter(Boolean);
-
-      if (!bullets.length) bullets = plainText;
-
-      if (plainText.length > 0 && bullets.length !== plainText.length) {
-        if (bullets.length < plainText.length) {
-          bullets = [...bullets, ...plainText.slice(bullets.length)];
-        } else {
-          bullets = bullets.slice(0, plainText.length);
-        }
-      }
-
-      const resultHtml = `<ul>${bullets.map((b: string) => `<li><p>${b}</p></li>`).join("")}</ul>`;
       return NextResponse.json({ resultHtml });
     }
 
@@ -276,7 +306,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         error: isQuota
-          ? "AI quota exhausted. Please check your Gemini API key at aistudio.google.com."
+          ? "AI quota exhausted. Please check your OpenRouter API key and free model availability."
           : "AI generation failed: " + message,
       },
       { status: 500 }

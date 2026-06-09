@@ -32,3 +32,18 @@ export function getPrimaryCTA(stage?: CareerStage): string {
   const key = stage ?? "FRESHER";
   return careerStageConfig[key]?.primaryGoal ?? careerStageConfig.FRESHER.primaryGoal;
 }
+
+export function getPrimaryCTALink(stage?: CareerStage): string {
+  const key = stage ?? "FRESHER";
+  return careerStageConfig[key]?.primaryHref ?? careerStageConfig.FRESHER.primaryHref;
+}
+
+export function getJobFeedTitle(stage?: CareerStage): string {
+  const key = stage ?? "FRESHER";
+  return careerStageConfig[key]?.jobFeedTitle ?? careerStageConfig.FRESHER.jobFeedTitle;
+}
+
+export function getJobFeedSubtitle(stage?: CareerStage): string {
+  const key = stage ?? "FRESHER";
+  return careerStageConfig[key]?.jobFeedSubtitle ?? careerStageConfig.FRESHER.jobFeedSubtitle;
+}

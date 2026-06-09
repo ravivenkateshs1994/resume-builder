@@ -155,6 +155,7 @@ function CreatePageContent() {
     setResumeData,
     goToStep,
     reset,
+    careerStage,
   } = useResumeStore();
   const { resumeHistory } = useResumeStore();
   const { uploadedResume, setUploadedResume } = useResumeStore();
@@ -326,12 +327,22 @@ function CreatePageContent() {
   const builderSuggestions = [
     resumeData.summary?.trim()
       ? "Keep your summary concise and aligned with the strongest proof points in your experience."
-      : "Write a short summary that explains your value in two or three focused sentences.",
+      : careerStage === "FRESHER"
+      ? "Write a short summary that highlights your projects, strengths, and the role type you want next."
+      : "Write a short summary that highlights scope, impact, and the level of role you are targeting.",
     resumeData.workExperience.length > 0
-      ? "Add outcome-driven metrics to your strongest role for more recruiter signal."
+      ? careerStage === "FRESHER"
+        ? "Turn internship or project bullets into outcome-driven lines that show readiness."
+        : "Add outcome-driven metrics to your strongest role for more recruiter signal."
+      : careerStage === "FRESHER"
+      ? "Add project, internship, or campus experience entries to create a stronger first-job story."
       : "Add at least one experience entry to unlock stronger preview quality and export confidence.",
     resumeData.skills.length > 0
-      ? "Keep your skills section focused on the tools and capabilities you can defend in interviews."
+      ? careerStage === "FRESHER"
+        ? "Keep your skills section focused on the tools you can demonstrate through projects or internships."
+        : "Keep your skills section focused on the tools and capabilities you can defend in interviews."
+      : careerStage === "FRESHER"
+      ? "Add core tools, coursework skills, and portfolio technologies so the resume reads as complete."
       : "Add your strongest tools, platforms, and domain skills so the resume reads as complete.",
   ];
   useEffect(() => {
@@ -533,7 +544,7 @@ function CreatePageContent() {
 
   /**
    * Extract text AND render page images from a PDF.
-   * Images are used by Gemini vision to handle formatted/multi-column layouts.
+   * Images are used by OpenRouter vision models to handle formatted/multi-column layouts.
    * Text is included as a hint for text-selectable PDFs.
    */
   async function extractPdfData(file: File): Promise<{ text: string; layoutText: string; images: string[] }> {
@@ -1325,6 +1336,27 @@ function CreatePageContent() {
             </ScrollReveal>
           </section>
       </main>
+
+      {uploading && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4 backdrop-blur-sm"
+          aria-live="polite"
+          aria-busy="true"
+        >
+          <div className="flex w-[calc(100vw-32px)] max-w-sm flex-col items-center gap-4 rounded-2xl border border-slate-200 bg-white px-6 py-7 shadow-2xl">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-50">
+              <span className="inline-block animate-spin text-2xl text-indigo-600">⟳</span>
+            </div>
+            <div className="text-center">
+              <p className="text-sm font-semibold text-slate-800">Importing your resume</p>
+              <p className="mt-1 text-sm text-slate-500 transition-all">{UPLOAD_MESSAGES[uploadMsgIdx]}</p>
+            </div>
+            <div className="h-1 w-full overflow-hidden rounded-full bg-slate-100">
+              <div className="h-full animate-[pulse_1.8s_ease-in-out_infinite] rounded-full bg-gradient-to-r from-indigo-500 to-cyan-500" style={{ width: "60%" }} />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Roadmap / Coming Soon section removed per design — kept page focused on resume creation */}
       <SiteFooter />

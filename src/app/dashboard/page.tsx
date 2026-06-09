@@ -14,6 +14,7 @@ import ResumeList from "@/components/dashboard/ResumeList";
 import ResumePreview from "@/components/dashboard/ResumePreview";
 import ActivityTimeline from "@/components/dashboard/ActivityTimeline";
 import EmptyState from "@/components/dashboard/EmptyState";
+import HeroCard from "@/components/dashboard/HeroCard";
 import type { ResumeData } from "@/types/resume";
 import CareerStageModal from "@/components/CareerStageModal";
 import { getCareerStage } from "@/lib/careerStage";
@@ -160,6 +161,7 @@ export default function DashboardPage() {
   const { accessToken, userEmail, isLoggedIn, userFullName, supabase, authReady } = useSupabaseAuth();
   const router = useRouter();
   const { setResumeData, setUploadedResume } = useResumeStore();
+  const careerStage = useResumeStore((s) => s.careerStage);
   const { setPendingAnalysis } = useAnalysisStore();
 
   const [showCareerModal, setShowCareerModal] = useState(false);
@@ -299,6 +301,14 @@ export default function DashboardPage() {
           onClick: () => router.push("/create"),
         }
       : null,
+    {
+      title: careerStage === "FRESHER" ? "Browse internship openings" : "Browse matching jobs",
+      detail: careerStage === "FRESHER"
+        ? "See internship and entry-level roles ranked for your resume."
+        : "See full-time roles ranked by your current resume and seniority fit.",
+      cta: "Open jobs",
+      onClick: () => router.push("/jobs"),
+    },
     latestMissingSkills[0]
       ? {
           title: `Add missing skill: ${latestMissingSkills[0]}`,
@@ -416,6 +426,7 @@ export default function DashboardPage() {
             onDismissAction={(title) => setDismissedActions((s) => [...s, title])}
           />
           <div className="flex-1 space-y-6">
+            <HeroCard userName={userFullName ?? undefined} />
         {confirm && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
             <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">

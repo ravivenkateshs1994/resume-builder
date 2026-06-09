@@ -12,6 +12,7 @@ import Highlight from "@tiptap/extension-highlight";
 import TextAlign from "@tiptap/extension-text-align";
 import { useEffect, useState, type MouseEvent, type ReactNode } from "react";
 import type { WorkExperience } from "@/types/resume";
+import { DOMSerializer } from "@tiptap/pm/model";
 import {
   Bold,
   Italic,
@@ -109,7 +110,7 @@ function DescriptionEditor({
   id?: string;
   value: string;
   onChange: (html: string) => void;
-  onOptimize: (payload: { htmlContent: string; selectedText?: string }) => Promise<{ resultHtml?: string; resultText?: string; resultLines?: string[] } | null>;
+  onOptimize: (payload: { htmlContent: string; selectedText?: string; selectedHtml?: string }) => Promise<{ resultHtml?: string; resultText?: string; resultLines?: string[] } | null>;
   isOptimizing: boolean;
 }) {
   const [hasSelection, setHasSelection] = useState(false);
@@ -118,6 +119,17 @@ function DescriptionEditor({
     const { from, to, empty } = editorRef.state.selection;
     if (empty) return "";
     return editorRef.state.doc.textBetween(from, to, "\n").trim();
+  }
+
+  function selectedHtmlFromEditor(editorRef: NonNullable<typeof editor>) {
+    const { from, to, empty } = editorRef.state.selection;
+    if (empty) return "";
+
+    const fragment = editorRef.state.doc.slice(from, to).content;
+    const serializer = DOMSerializer.fromSchema(editorRef.schema);
+    const wrapper = document.createElement("div");
+    wrapper.appendChild(serializer.serializeFragment(fragment));
+    return wrapper.innerHTML.trim();
   }
 
   const editor = useEditor({
@@ -170,9 +182,11 @@ function DescriptionEditor({
 
     const { from, to } = editor.state.selection;
     const selectedText = selectedTextFromEditor(editor);
+    const selectedHtml = selectedHtmlFromEditor(editor);
     const result = await onOptimize({
       htmlContent: editor.getHTML(),
       selectedText: selectedText || undefined,
+      selectedHtml: selectedHtml || undefined,
     });
 
     if (!result) return;
@@ -200,8 +214,10 @@ function DescriptionEditor({
     }
 
     if (result.resultHtml) {
-      // Replace content via editor transaction so history (undo/redo) remains intact.
-      editor.chain().focus().selectAll().insertContent(result.resultHtml).run();
+      // setContent is the reliable API for full content replacement in Tiptap.
+      // selectAll().insertContent() can silently drop the insertion when the
+      // selection spans block nodes, leaving the editor empty.
+      editor.commands.setContent(result.resultHtml, false);
       onChange(editor.getHTML());
     }
   }

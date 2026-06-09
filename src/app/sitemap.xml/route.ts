@@ -4,6 +4,9 @@ const LAST_MOD = new Date().toISOString().split("T")[0];
 /** Only publicly indexable, non-auth-gated routes. */
 const ROUTES: { path: string; priority: string; changefreq: string }[] = [
   { path: "/",        priority: "1.0", changefreq: "weekly" },
+  { path: "/create",  priority: "0.8", changefreq: "weekly" },
+  { path: "/jobs",    priority: "0.8", changefreq: "weekly" },
+  { path: "/gap-analysis", priority: "0.7", changefreq: "weekly" },
   { path: "/privacy", priority: "0.3", changefreq: "monthly" },
   { path: "/terms",   priority: "0.3", changefreq: "monthly" },
 ];
