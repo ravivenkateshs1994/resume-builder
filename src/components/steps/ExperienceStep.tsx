@@ -217,7 +217,7 @@ function DescriptionEditor({
       // setContent is the reliable API for full content replacement in Tiptap.
       // selectAll().insertContent() can silently drop the insertion when the
       // selection spans block nodes, leaving the editor empty.
-      editor.commands.setContent(result.resultHtml, false);
+      editor.commands.setContent(result.resultHtml, { emitUpdate: false });
       onChange(editor.getHTML());
     }
   }
