@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, BriefcaseBusiness, Lock, Sparkles } from "lucide-react";
+import { ArrowRight, BriefcaseBusiness, Sparkles } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { AuthGateCard } from "@/components/AuthGateCard";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { useResumeStore } from "@/store/resumeStore";
 import { JobFeedPanel } from "@/components/jobs/JobFeedPanel";
@@ -25,24 +26,10 @@ export default function JobsPage() {
       <div className="crp-shell min-h-screen overflow-x-hidden text-sm md:text-base">
         <SiteHeader />
         <main className="mx-auto flex min-h-[calc(100vh-140px)] w-full max-w-7xl items-center justify-center px-4 py-8 sm:px-6">
-          <div className="w-full max-w-md rounded-[28px] border border-slate-200 bg-white p-8 text-center shadow-lg">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-indigo-50">
-              <Lock className="h-7 w-7 text-indigo-600" />
-            </div>
-            <h1 className="text-2xl font-black tracking-tight text-slate-900">Sign in to view jobs</h1>
-            <p className="mt-3 text-sm leading-relaxed text-slate-600">
-              Job listings are personalised to your resume and career stage. Sign in to unlock your matched feed.
-            </p>
-            <div className="mt-6 flex flex-col gap-3">
-              <Link href="/login" className="crp-btn-primary inline-flex w-full items-center justify-center gap-2 px-6 py-3 text-sm">
-                Sign in
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link href="/" className="crp-btn-secondary inline-flex w-full items-center justify-center gap-2 px-6 py-3 text-sm">
-                Back to home
-              </Link>
-            </div>
-          </div>
+          <AuthGateCard
+            title="Sign in to view jobs"
+            description="Job listings are personalised to your resume and career stage. Sign in to unlock your matched feed."
+          />
         </main>
         <SiteFooter />
       </div>

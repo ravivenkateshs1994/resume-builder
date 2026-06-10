@@ -31,6 +31,7 @@ import type { SavedAnalysisRecord } from "@/types/analysis";
 import type { ResumeData } from "@/types/resume";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import Link from "next/link";
+import { AuthGateCard } from "@/components/AuthGateCard";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 // Types
@@ -197,13 +198,24 @@ export default function AnalysisWorkspacePage() {
   const [gapStatus, setGapStatus] = useState<Record<string, GapStatus>>({});
   const [expandedResources, setExpandedResources] = useState<Record<string, boolean>>({});
   const [statusAnnouncement, setStatusAnnouncement] = useState("");
-  const { accessToken } = useSupabaseAuth();
+  const { accessToken, isLoggedIn, authReady } = useSupabaseAuth();
 
   const activeResumeData = uploadedResume?.resumeData ?? resumeData;
   
   const hasActiveResume = Boolean(activeResumeData && (activeResumeData.personalInfo?.fullName || activeResumeData.skills?.length));
   const usingUploadedResume = Boolean(uploadedResume);
   const roleForSampleJD = activeResumeData?.targetRole || activeResumeData?.personalInfo?.jobTitle || resumeData.targetRole || resumeData.personalInfo?.jobTitle || DEFAULT_SAMPLE_ROLE;
+
+  if (authReady && !isLoggedIn) {
+    return (
+      <div className="crp-shell flex min-h-[calc(100vh-140px)] items-center justify-center overflow-x-hidden px-4 py-8 text-sm md:text-base sm:px-6">
+        <AuthGateCard
+          title="Sign in to analyze gaps"
+          description="This workspace uses your saved resume data to generate a role-specific breakdown. Sign in to continue."
+        />
+      </div>
+    );
+  }
 
   // Load saved resumes for users who are signed in so they can pick one for analysis
   useEffect(() => {

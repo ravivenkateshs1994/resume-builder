@@ -10,6 +10,8 @@ import StepIndicator from "@/components/StepIndicator";
 import AccentColorPicker from "@/components/AccentColorPicker";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { AuthGateCard } from "@/components/AuthGateCard";
+import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import {
   TEMPLATE_CATALOG as TEMPLATE_OPTIONS,
   TemplatePreviewCard,
@@ -159,6 +161,7 @@ function CreatePageContent() {
   } = useResumeStore();
   const { resumeHistory } = useResumeStore();
   const { uploadedResume, setUploadedResume } = useResumeStore();
+  const { isLoggedIn, authReady } = useSupabaseAuth();
 
   // "gate" = upload/scratch choice screen, "form" = step form
   const [mode, setMode] = useState<"gate" | "form">("gate");
@@ -679,6 +682,21 @@ function CreatePageContent() {
       }}
     />
   );
+
+  if (authReady && !isLoggedIn) {
+    return (
+      <div className="crp-shell flex min-h-screen max-w-full flex-col overflow-x-hidden text-sm md:text-base">
+        <SiteHeader />
+        <main className="mx-auto flex w-full max-w-7xl flex-1 items-center justify-center px-4 py-8 sm:px-6">
+          <AuthGateCard
+            title="Sign in to use the builder"
+            description="Your resume workspace is tied to your account so you can save progress, import files, and keep edits in sync."
+          />
+        </main>
+        <SiteFooter />
+      </div>
+    );
+  }
 
   // ── Gate screen ──────────────────────────────────────────────────────────────
   if (mode === "gate") {
