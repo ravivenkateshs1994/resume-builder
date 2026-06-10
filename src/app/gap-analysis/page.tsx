@@ -11,8 +11,10 @@ import {
   Sparkles,
   Target,
 } from "lucide-react";
+import { AuthGateCard } from "@/components/AuthGateCard";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { useResumeStore } from "@/store/resumeStore";
+import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 
 const analysisSignals = [
   "Role match scoring",
@@ -80,8 +82,20 @@ const storyFrames = [
 
 export default function GapAnalysisPage() {
   const { resumeData } = useResumeStore();
+  const { isLoggedIn, authReady } = useSupabaseAuth();
   const hasBuilderResume = Boolean(resumeData && Object.keys(resumeData).length > 0 && resumeData.personalInfo?.fullName !== "");
   const activeName = resumeData.personalInfo?.fullName || "your resume";
+
+  if (authReady && !isLoggedIn) {
+    return (
+      <div className="crp-shell flex min-h-[calc(100vh-140px)] items-center justify-center overflow-x-hidden px-4 py-8 text-sm md:text-base sm:px-6">
+        <AuthGateCard
+          title="Sign in to start gap analysis"
+          description="Gap analysis is personalised to your resume and saved drafts. Sign in to unlock the analysis workspace."
+        />
+      </div>
+    );
+  }
 
   return (
     <main className="crp-shell min-h-screen overflow-x-hidden bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_26%,#f8fafc_100%)] text-sm md:text-base">
