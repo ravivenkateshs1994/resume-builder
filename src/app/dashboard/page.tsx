@@ -15,6 +15,7 @@ import ResumePreview from "@/components/dashboard/ResumePreview";
 import ActivityTimeline from "@/components/dashboard/ActivityTimeline";
 import EmptyState from "@/components/dashboard/EmptyState";
 import HeroCard from "@/components/dashboard/HeroCard";
+import StatCards from "@/components/dashboard/StatCards";
 import type { ResumeData } from "@/types/resume";
 import CareerStageModal from "@/components/CareerStageModal";
 import { getCareerStage } from "@/lib/careerStage";
@@ -119,38 +120,7 @@ function MobileNav({
               <p className="text-xs text-slate-500">Workspace</p>
             </div>
           </div>
-
-          <div className="mt-4 grid grid-cols-2 gap-2">
-            <button onClick={() => setTab('resumes')} className={`flex items-center justify-between gap-3 rounded-2xl px-3 py-3 ${tab === 'resumes' ? 'bg-indigo-50 text-indigo-700 font-semibold ring-1 ring-indigo-100' : 'bg-slate-50 text-slate-600'}`}>
-              <span>Resumes</span>
-              <span className="inline-flex items-center justify-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700">{resumesCount}</span>
-            </button>
-            <button onClick={() => setTab('analysis')} className={`flex items-center justify-between gap-3 rounded-2xl px-3 py-3 ${tab === 'analysis' ? 'bg-indigo-50 text-indigo-700 font-semibold ring-1 ring-indigo-100' : 'bg-slate-50 text-slate-600'}`}>
-              <span>Analysis</span>
-              <span className="inline-flex items-center justify-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700">{analysisCount}</span>
-            </button>
-          </div>
         </div>
-
-        {priorityActions.length > 0 && (
-          <div className="rounded-2xl border border-slate-200 bg-white p-3">
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-xs font-semibold uppercase text-slate-500">Alerts</p>
-            </div>
-            <div className="mt-3 flex snap-x gap-3 overflow-x-auto pb-1">
-              {priorityActions.map((a, i) => (
-                <div key={`${a.title}-${i}`} className="min-w-[240px] snap-start rounded-2xl border border-slate-100 bg-slate-50 p-3">
-                  <p className="text-sm font-semibold text-slate-900">{a.title}</p>
-                  <p className="mt-1 text-xs text-slate-500">{a.detail}</p>
-                  <div className="mt-3 flex items-center gap-2">
-                    <button onClick={a.onClick} className="crp-btn-primary px-3 py-1 text-xs">{a.cta}</button>
-                    <button onClick={() => onDismissAction?.(a.title)} className="crp-btn-ghost px-3 py-1 text-xs">Dismiss</button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
     </section>
   );
 }
@@ -334,6 +304,16 @@ export default function DashboardPage() {
   ].filter((item): item is NonNullable<typeof item> => item != null).slice(0, 4);
 
   const visibleActions = actionQueue.filter((a) => !dismissedActions.includes(a.title));
+  const dashboardStats = [
+    { label: "Total Resumes", value: resumes.length, hint: resumes.length === 1 ? "one saved draft" : "saved drafts" },
+    { label: "Analysis Done", value: analysis.length, hint: analysis.length === 1 ? "recent scan" : "scans" },
+    { label: "Priority Actions", value: visibleActions.length, hint: visibleActions[0]?.title ?? "next move" },
+    {
+      label: "Current Stage",
+      value: careerStage ? careerStage.toLowerCase().split("_").join(" ") : "unassigned",
+      hint: "career profile",
+    },
+  ];
 
   // (stageStats removed — KPI cards were taken out per design)
 
@@ -373,8 +353,11 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="crp-shell min-h-screen">
+    <div className="home-shell crp-shell relative isolate min-h-screen overflow-x-hidden">
       <SiteHeader />
+      <div aria-hidden="true" className="home-grid-overlay pointer-events-none absolute inset-0 opacity-50" />
+      <div aria-hidden="true" className="home-hero-deco pointer-events-none absolute inset-0 opacity-60" />
+      <div aria-hidden="true" className="dashboard-hero-scan pointer-events-none absolute inset-0" />
       {showCareerModal && (
         <CareerStageModal
           onComplete={(stage) => {
@@ -400,7 +383,7 @@ export default function DashboardPage() {
       >
         {toast?.message ?? ""}
       </div>
-      <main className="mx-auto max-w-7xl px-4 py-6 md:py-8">
+      <main className="relative z-10 mx-auto max-w-7xl px-4 py-3 md:py-4">
         <div className="space-y-4 md:hidden">
           <MobileNav
             name={userFullName ?? null}
@@ -414,7 +397,7 @@ export default function DashboardPage() {
           />
         </div>
 
-        <div className="mt-5 flex flex-col gap-6 md:mt-0 md:flex-row">
+        <div className="mt-4 flex flex-col gap-4 md:mt-0 md:flex-row">
           <SideNav
             name={userFullName ?? null}
             email={userEmail ?? null}
@@ -425,267 +408,297 @@ export default function DashboardPage() {
             priorityActions={visibleActions}
             onDismissAction={(title) => setDismissedActions((s) => [...s, title])}
           />
-          <div className="flex-1 space-y-6">
-            <HeroCard userName={userFullName ?? undefined} />
-        {confirm && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-            <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
-              <p className="mb-5 text-sm leading-relaxed text-slate-700">{confirm.message}</p>
-              <div className="flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setConfirm(null)}
-                  className="crp-btn-secondary px-4 py-2 text-sm"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    const id = confirm.id;
-                    const type = confirm.type;
-                    setConfirm(null);
-                    if (!id) return;
 
-                    if (type === "import-resume") {
-                      openResumeInBuilder(id);
-                      setToast({ message: "Resume imported into builder.", type: "success" });
-                      setTimeout(() => setToast(null), 3000);
-                      return;
-                    }
-
-                    try {
-                      if (type === "delete-resume") {
-                        const res = await fetch(`/api/cloud/resumes/${encodeURIComponent(id)}`, {
-                          method: "DELETE",
-                          headers: { Authorization: `Bearer ${accessToken}` },
-                        });
-                        if (res.ok) {
-                          setResumes((s) => s.filter((x) => x.id !== id));
-                          setToast({ message: "Saved resume deleted.", type: "success" });
-                        } else {
-                          const payload = await res.json().catch(() => null);
-                          setToast({ message: payload?.error || "Failed to delete resume.", type: "error" });
-                        }
-                      } else if (type === "delete-analysis") {
-                        const res = await fetch(`/api/cloud/analysis/${encodeURIComponent(id)}`, {
-                          method: "DELETE",
-                          headers: { Authorization: `Bearer ${accessToken}` },
-                        });
-                        if (res.ok) {
-                          setanalysis((s) => s.filter((x) => x.id !== id));
-                          setToast({ message: "Analysis deleted.", type: "success" });
-                          if (selectedId === id) setSelectedId(null);
-                        } else {
-                          const payload = await res.json().catch(() => null);
-                          setToast({ message: payload?.error || "Failed to delete analysis.", type: "error" });
-                        }
-                      }
-                    } catch {
-                      setToast({ message: "Failed to perform action.", type: "error" });
-                    }
-                    setTimeout(() => setToast(null), 3000);
-                  }}
-                  className="crp-btn-primary px-4 py-2 text-sm font-semibold"
-                >
-                  Confirm
-                </button>
+          <div className="flex-1 space-y-4">
+            <section className="relative overflow-hidden rounded-[38px] border border-slate-800/80 bg-slate-950/96 p-3 shadow-[0_34px_90px_-58px_rgba(15,23,42,0.92)] sm:p-4">
+              <div aria-hidden="true" className="dashboard-hero-deco pointer-events-none absolute inset-0 opacity-75" />
+              <div className="relative z-10 space-y-4">
+                <HeroCard userName={userFullName ?? undefined} />
               </div>
-            </div>
-          </div>
-        )}
+            </section>
 
-        <ScrollReveal delayMs={180}>
-          {tab === 'resumes' ? (
-            <section className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Saved Resumes</p>
-                  <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">Saved resumes</h2>
-                  <p className="mt-1 text-sm text-slate-600">Manage saved resumes and open them in the builder.</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-slate-600">
-                    <BriefcaseBusiness className="h-3.5 w-3.5 text-slate-500" />
-                    {resumes.length} resumes
+            {confirm && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+                <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
+                  <p className="mb-5 text-sm leading-relaxed text-slate-700">{confirm.message}</p>
+                  <div className="flex justify-end gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setConfirm(null)}
+                      className="crp-btn-secondary px-4 py-2 text-sm"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const id = confirm.id;
+                        const type = confirm.type;
+                        setConfirm(null);
+                        if (!id) return;
+
+                        if (type === "import-resume") {
+                          openResumeInBuilder(id);
+                          setToast({ message: "Resume imported into builder.", type: "success" });
+                          setTimeout(() => setToast(null), 3000);
+                          return;
+                        }
+
+                        try {
+                          if (type === "delete-resume") {
+                            const res = await fetch(`/api/cloud/resumes/${encodeURIComponent(id)}`, {
+                              method: "DELETE",
+                              headers: { Authorization: `Bearer ${accessToken}` },
+                            });
+                            if (res.ok) {
+                              setResumes((s) => s.filter((x) => x.id !== id));
+                              setToast({ message: "Saved resume deleted.", type: "success" });
+                            } else {
+                              const payload = await res.json().catch(() => null);
+                              setToast({ message: payload?.error || "Failed to delete resume.", type: "error" });
+                            }
+                          } else if (type === "delete-analysis") {
+                            const res = await fetch(`/api/cloud/analysis/${encodeURIComponent(id)}`, {
+                              method: "DELETE",
+                              headers: { Authorization: `Bearer ${accessToken}` },
+                            });
+                            if (res.ok) {
+                              setanalysis((s) => s.filter((x) => x.id !== id));
+                              setToast({ message: "Analysis deleted.", type: "success" });
+                              if (selectedId === id) setSelectedId(null);
+                            } else {
+                              const payload = await res.json().catch(() => null);
+                              setToast({ message: payload?.error || "Failed to delete analysis.", type: "error" });
+                            }
+                          }
+                        } catch {
+                          setToast({ message: "Failed to perform action.", type: "error" });
+                        }
+                        setTimeout(() => setToast(null), 3000);
+                      }}
+                      className="crp-btn-primary px-4 py-2 text-sm font-semibold"
+                    >
+                      Confirm
+                    </button>
                   </div>
-                  <select
-                    value={templateFilter}
-                    onChange={(e) => setTemplateFilter(e.target.value)}
-                    className="rounded-md border border-slate-200 bg-white px-2 py-1 text-sm"
-                    aria-label="Filter by template"
-                  >
-                    <option value="">All templates</option>
-                    {TEMPLATE_CATALOG.map((t) => (
-                      <option key={t.id} value={t.id}>
-                        {t.name}
-                      </option>
-                    ))}
-                  </select>
                 </div>
               </div>
+            )}
 
-              <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
-                <div className="lg:col-span-2">
-                  <ResumeList
-                    resumes={resumes}
-                    analyses={analysis}
-                    mode={'resumes'}
-                    query={query}
-                    setQuery={setQuery}
-                    selectedId={selectedId}
-                    onSelect={(id) => setSelectedId(id)}
-                    onDelete={(id) => setConfirm({ id, type: 'delete-resume', message: 'Delete this resume? This cannot be undone.' })}
-                    loading={loading}
-                  />
+            <ScrollReveal delayMs={180}>
+              {tab === "resumes" ? (
+                <section className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Saved Resumes</p>
+                      <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">Saved resumes</h2>
+                      <p className="mt-1 text-sm text-slate-600">Manage saved resumes and open them in the builder.</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-slate-600">
+                        <BriefcaseBusiness className="h-3.5 w-3.5 text-slate-500" />
+                        {resumes.length} resumes
+                      </div>
+                      <select
+                        value={templateFilter}
+                        onChange={(e) => setTemplateFilter(e.target.value)}
+                        className="rounded-md border border-slate-200 bg-white px-2 py-1 text-sm"
+                        aria-label="Filter by template"
+                      >
+                        <option value="">All templates</option>
+                        {TEMPLATE_CATALOG.map((t) => (
+                          <option key={t.id} value={t.id}>
+                            {t.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
 
-                  {resumesError && (
-                    <div className="mt-3 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">
-                      {resumesError}
-                      {authRequired && (
-                          <button
-                            type="button"
-                            onClick={() => router.push("/login")}
-                            className="ml-3 underline"
-                          >
-                            Sign in
-                          </button>
+                  <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
+                    <div className="lg:col-span-2">
+                      <ResumeList
+                        resumes={resumes}
+                        analyses={analysis}
+                        mode={"resumes"}
+                        query={query}
+                        setQuery={setQuery}
+                        selectedId={selectedId}
+                        onSelect={(id) => setSelectedId(id)}
+                        onDelete={(id) => setConfirm({ id, type: "delete-resume", message: "Delete this resume? This cannot be undone." })}
+                        loading={loading}
+                      />
+
+                      {resumesError && (
+                        <div className="mt-3 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">
+                          {resumesError}
+                          {authRequired && (
+                            <button type="button" onClick={() => router.push("/login")} className="ml-3 underline">
+                              Sign in
+                            </button>
+                          )}
+                        </div>
                       )}
                     </div>
-                  )}
-                </div>
 
-                <div className="flex flex-col gap-6 lg:col-span-3">
-                  {resumes.length === 0 && !loading ? (
-                    <EmptyState onCreate={() => router.push("/create")} />
-                  ) : (
-                    <ResumePreview
-                      item={selectedId ? resumes.find((r) => r.id === selectedId) : undefined}
-                      analyses={analysis}
-                      onOpen={() => {
-                        const id = selectedId;
-                        if (!id) return;
-                        openResumeInBuilder(id);
-                      }}
-                    />
-                  )}
+                    <div className="flex flex-col gap-6 lg:col-span-3">
+                      {resumes.length === 0 && !loading ? (
+                        <EmptyState onCreate={() => router.push("/create")} />
+                      ) : (
+                        <ResumePreview
+                          item={selectedId ? resumes.find((r) => r.id === selectedId) : undefined}
+                          analyses={analysis}
+                          onOpen={() => {
+                            const id = selectedId;
+                            if (!id) return;
+                            openResumeInBuilder(id);
+                          }}
+                        />
+                      )}
 
-                  <ActivityTimeline items={resumes.slice(0, 8)} />
-                </div>
-              </div>
-            </section>
-          ) : (
-            <section className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Saved analysis</p>
-                  <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">Saved analysis</h2>
-                  <p className="mt-1 text-sm text-slate-600">Open previous analysis, re-run, or export them.</p>
-                </div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-slate-600">
-                  <BriefcaseBusiness className="h-3.5 w-3.5 text-slate-500" />
-                  {analysis.length} analysis
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
-                <div className="lg:col-span-2">
-                  <ResumeList
-                    resumes={resumes}
-                    analyses={analysis}
-                    mode={'analysis'}
-                    query={query}
-                    setQuery={setQuery}
-                    selectedId={selectedId}
-                    onSelect={(id) => setSelectedId(id)}
-                    loading={loading}
-                  />
-                </div>
-
-                <div className="flex flex-col gap-6 lg:col-span-3">
-                  {analysis.length === 0 && !loading ? (
-                    <div className="crp-card-soft p-8 text-center">
-                      <h3 className="mb-2 text-lg font-semibold text-slate-900">No saved analysis yet</h3>
-                      <p className="mb-4 text-sm text-slate-600">Analyze a job description to get AI-driven recommendations and ATS scores.</p>
-                        <div className="flex justify-center">
-                        <button type="button" onClick={() => router.push('/gap-analysis/analysis')} className="crp-btn-primary px-4 py-2">Create Analysis</button>
-                      </div>
+                      <ActivityTimeline items={resumes.slice(0, 8)} />
                     </div>
-                  ) : (
-                    (selectedId == null) ? (
-                      <div className="crp-card p-6 text-center text-slate-600">Select an analysis to view details.</div>
-                    ) : (() => {
-                      const item = analysis.find(a => a.id === selectedId);
-                      if (!item) return <div className="crp-card p-6 text-sm text-slate-500">Analysis not found.</div>;
+                  </div>
+                </section>
+              ) : (
+                <section className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Saved analysis</p>
+                      <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">Saved analysis</h2>
+                      <p className="mt-1 text-sm text-slate-600">Open previous analysis, re-run, or export them.</p>
+                    </div>
+                    <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-slate-600">
+                      <BriefcaseBusiness className="h-3.5 w-3.5 text-slate-500" />
+                      {analysis.length} analysis
+                    </div>
+                  </div>
 
-                      const score = item.result?.score != null ? Math.round(item.result.score * 100) : null;
-                      const missing: string[] = item.result?.missingSkills ?? [];
-                      const recommendations: string[] = item.result?.recommendations ?? [];
+                  <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
+                    <div className="lg:col-span-2">
+                      <ResumeList
+                        resumes={resumes}
+                        analyses={analysis}
+                        mode={"analysis"}
+                        query={query}
+                        setQuery={setQuery}
+                        selectedId={selectedId}
+                        onSelect={(id) => setSelectedId(id)}
+                        loading={loading}
+                      />
+                    </div>
 
-                      return (
-                        <div className="crp-card p-6">
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <h3 className="text-lg font-semibold">{item.targetRole || "Analysis"}</h3>
-                              <p className="text-xs text-slate-500">{new Date(item.createdAt).toLocaleString()}</p>
-                            </div>
-                            <div className="flex gap-2">
-                              <button type="button" onClick={() => {
-                                try {
-                                  setUploadedResume({ label: `Cloud snapshot - ${new Date(item.createdAt).toLocaleDateString()}`, resumeData: item.resumeSnapshot });
-                                  setPendingAnalysis({ jobDescription: item.jobDescription, result: item.result });
-                                  router.push('/gap-analysis/analysis#analysis-results');
-                                } catch {
-                                  setToast({ message: 'Failed to open analysis.', type: 'error' });
-                                  setTimeout(() => setToast(null), 3000);
-                                }
-                              }} className="crp-btn-primary px-3 py-1">Open</button>
-                              <button type="button" onClick={() => setConfirm({ id: item.id, type: 'delete-analysis', message: 'Delete this analysis? This cannot be undone.' })} className="crp-btn-ghost px-3 py-1">Delete</button>
-                            </div>
-                          </div>
-
-                          <div className="mt-4">
-                            <p className="mb-2 font-semibold">Job description</p>
-                            <div className="rounded-md border bg-slate-50 p-3 text-sm whitespace-pre-wrap max-h-56 overflow-auto">{item.jobDescription || "(none)"}</div>
-                          </div>
-
-                          <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                            {score != null && (
-                              <div className="crp-score-card p-4">
-                                <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Match score</p>
-                                <p className={`mt-1 text-3xl font-extrabold ${score >= 70 ? 'text-emerald-600' : score >= 45 ? 'text-amber-600' : 'text-rose-500'}`}>{score}%</p>
-                              </div>
-                            )}
-
-                            {missing.length > 0 && (
-                              <div className="rounded-2xl border border-amber-100 bg-amber-50 p-4">
-                                <p className="mb-2 text-xs font-bold uppercase tracking-wide text-amber-700">Missing skills</p>
-                                <div className="flex flex-wrap gap-2">
-                                  {missing.map((sk, i) => <span key={i} className="rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-800">{sk}</span>)}
-                                </div>
-                              </div>
-                            )}
-
-                            {recommendations.length > 0 && (
-                              <div className="rounded-2xl border border-indigo-100 bg-indigo-50 p-4 sm:col-span-2">
-                                <p className="mb-2 text-xs font-bold uppercase tracking-wide text-indigo-700">Recommendations</p>
-                                <ul className="space-y-1 text-sm text-slate-700">
-                                  {recommendations.map((r: any, i: number) => <li key={i}>→ {r}</li>)}
-                                </ul>
-                              </div>
-                            )}
+                    <div className="flex flex-col gap-6 lg:col-span-3">
+                      {analysis.length === 0 && !loading ? (
+                        <div className="crp-card-soft p-8 text-center">
+                          <h3 className="mb-2 text-lg font-semibold text-slate-900">No saved analysis yet</h3>
+                          <p className="mb-4 text-sm text-slate-600">Analyze a job description to get AI-driven recommendations and ATS scores.</p>
+                          <div className="flex justify-center">
+                            <button type="button" onClick={() => router.push("/gap-analysis/analysis")} className="crp-btn-primary px-4 py-2">
+                              Create Analysis
+                            </button>
                           </div>
                         </div>
-                      );
-                    })()
-                  )}
+                      ) : selectedId == null ? (
+                        <div className="crp-card p-6 text-center text-slate-600">Select an analysis to view details.</div>
+                      ) : (
+                        (() => {
+                          const item = analysis.find((a) => a.id === selectedId);
+                          if (!item) return <div className="crp-card p-6 text-sm text-slate-500">Analysis not found.</div>;
 
-                  <ActivityTimeline items={analysis.slice(0, 8)} />
-                </div>
-              </div>
-            </section>
-          )}
-        </ScrollReveal>
+                          const score = item.result?.score != null ? Math.round(item.result.score * 100) : null;
+                          const missing: string[] = item.result?.missingSkills ?? [];
+                          const recommendations: string[] = item.result?.recommendations ?? [];
+
+                          return (
+                            <div className="crp-card p-6">
+                              <div className="flex items-start justify-between">
+                                <div>
+                                  <h3 className="text-lg font-semibold">{item.targetRole || "Analysis"}</h3>
+                                  <p className="text-xs text-slate-500">{new Date(item.createdAt).toLocaleString()}</p>
+                                </div>
+                                <div className="flex gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      try {
+                                        setUploadedResume({
+                                          label: `Cloud snapshot - ${new Date(item.createdAt).toLocaleDateString()}`,
+                                          resumeData: item.resumeSnapshot,
+                                        });
+                                        setPendingAnalysis({ jobDescription: item.jobDescription, result: item.result });
+                                        router.push("/gap-analysis/analysis#analysis-results");
+                                      } catch {
+                                        setToast({ message: "Failed to open analysis.", type: "error" });
+                                        setTimeout(() => setToast(null), 3000);
+                                      }
+                                    }}
+                                    className="crp-btn-primary px-3 py-1"
+                                  >
+                                    Open
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => setConfirm({ id: item.id, type: "delete-analysis", message: "Delete this analysis? This cannot be undone." })}
+                                    className="crp-btn-ghost px-3 py-1"
+                                  >
+                                    Delete
+                                  </button>
+                                </div>
+                              </div>
+
+                              <div className="mt-4">
+                                <p className="mb-2 font-semibold">Job description</p>
+                                <div className="max-h-56 overflow-auto whitespace-pre-wrap rounded-md border bg-slate-50 p-3 text-sm">
+                                  {item.jobDescription || "(none)"}
+                                </div>
+                              </div>
+
+                              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                {score != null && (
+                                  <div className="crp-score-card p-4">
+                                    <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Match score</p>
+                                    <p className={`mt-1 text-3xl font-extrabold ${score >= 70 ? "text-emerald-600" : score >= 45 ? "text-amber-600" : "text-rose-500"}`}>
+                                      {score}%
+                                    </p>
+                                  </div>
+                                )}
+
+                                {missing.length > 0 && (
+                                  <div className="rounded-2xl border border-amber-100 bg-amber-50 p-4">
+                                    <p className="mb-2 text-xs font-bold uppercase tracking-wide text-amber-700">Missing skills</p>
+                                    <div className="flex flex-wrap gap-2">
+                                      {missing.map((sk, i) => (
+                                        <span key={i} className="rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-800">
+                                          {sk}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+
+                                {recommendations.length > 0 && (
+                                  <div className="rounded-2xl border border-indigo-100 bg-indigo-50 p-4 sm:col-span-2">
+                                    <p className="mb-2 text-xs font-bold uppercase tracking-wide text-indigo-700">Recommendations</p>
+                                    <ul className="space-y-1 text-sm text-slate-700">
+                                      {recommendations.map((r: any, i: number) => (
+                                        <li key={i}>→ {r}</li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })()
+                      )}
+
+                      <ActivityTimeline items={analysis.slice(0, 8)} />
+                    </div>
+                  </div>
+                </section>
+              )}
+            </ScrollReveal>
           </div>
         </div>
       </main>

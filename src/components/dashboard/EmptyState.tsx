@@ -4,27 +4,38 @@ import React from "react";
 
 export default function EmptyState({ onCreate }: { onCreate?: () => void }) {
   return (
-    <div className="crp-card-soft p-10 text-center">
-      <div className="mx-auto max-w-xs">
-        {/* Abstract illustration */}
-        <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-indigo-100 to-cyan-100 shadow-inner">
-          <svg viewBox="0 0 64 64" className="h-12 w-12 text-indigo-500" fill="none" aria-hidden="true">
-            <rect x="10" y="14" rx="6" width="44" height="36" stroke="currentColor" strokeWidth="2.4" />
-            <path d="M10 22h44" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            <path d="M18 30h14M18 38h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            <circle cx="46" cy="46" r="10" fill="currentColor" fillOpacity="0.15" />
-            <path d="M46 42v4l3 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+    <div className="crp-card-soft overflow-hidden p-6 sm:p-8">
+      <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+        <div>
+          <div className="inline-flex items-center gap-2 rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-cyan-700">
+            Start here
+          </div>
+          <h3 className="mt-4 text-2xl font-extrabold tracking-tight text-slate-950">Build the first version of your career workspace.</h3>
+          <p className="mt-3 max-w-xl text-sm leading-relaxed text-slate-600">
+            Create your first tailored resume to unlock gap analysis, ATS scoring, and a cleaner next step for the role you want.
+          </p>
+
+          <button type="button" onClick={onCreate} className="crp-btn-primary mt-5 inline-flex w-full items-center justify-center px-5 py-3 text-sm font-semibold sm:w-auto">
+            Create your first resume
+          </button>
         </div>
 
-        <h3 className="mb-2 text-xl font-extrabold tracking-tight text-slate-900">Start building your career</h3>
-        <p className="mb-6 text-sm leading-relaxed text-slate-500">
-          Create your first AI-optimized resume to unlock gap analysis, ATS scoring, and tailored recommendations.
-        </p>
-
-        <button type="button" onClick={onCreate} className="crp-btn-primary w-full py-2.5 text-sm font-semibold">
-          Create Your First Resume
-        </button>
+        <div className="rounded-2xl border border-slate-200 bg-white p-5">
+          <div className="grid gap-3 sm:grid-cols-3">
+            {[
+              "Upload once",
+              "Tailor faster",
+              "Track progress",
+            ].map((label, index) => (
+              <div key={label} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-indigo-600 to-cyan-500 text-xs font-bold text-white">
+                  0{index + 1}
+                </div>
+                <p className="mt-3 text-sm font-semibold text-slate-900">{label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

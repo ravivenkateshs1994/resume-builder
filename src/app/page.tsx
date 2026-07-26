@@ -9,355 +9,393 @@ import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { useScrollDepth } from "@/hooks/useScrollDepth";
 import {
   ArrowRight,
+  BadgeCheck,
   BarChart3,
-  BriefcaseBusiness,
   CheckCircle2,
   Clock3,
-  FileSearch,
-  Route,
+  Layers3,
   ShieldCheck,
   Sparkles,
-  Target,
+  TrendingUp,
+  Wand2,
 } from "lucide-react";
 
-const coreTools = [
-  {
-    icon: FileSearch,
-    title: "Resume Analyzer",
-    category: "Analyze",
-    description: "Detect weak bullets, missing impact metrics, and formatting risks before recruiters do.",
-  },
-  {
-    icon: Target,
-    title: "JD Match Engine",
-    category: "Match",
-    description: "Compare your resume against the exact job description and expose keyword and skill gaps.",
-  },
-  {
-    icon: BarChart3,
-    title: "Skill Gap Intelligence",
-    category: "Improve",
-    description: "Get a role-specific map of missing capabilities, prioritized by hiring impact.",
-  },
-  {
-    icon: Route,
-    title: "Learning Roadmap",
-    category: "Grow",
-    description: "Turn weak areas into a weekly plan with practical resources and measurable milestones.",
-  },
-  {
-    icon: BriefcaseBusiness,
-    title: "Interview Readiness",
-    category: "Practice",
-    description: "Prepare using role-aware prompts and confidence-building recommendations.",
-  },
-  {
-    icon: Target,
-    title: "Career Score Dashboard",
-    category: "Track",
-    description: "Monitor readiness trends with one unified score and four sub-metrics you can improve fast.",
-  },
-];
-
-const howItWorks = [
-  {
-    step: "01",
-    title: "Import resume and target role",
-    description:
-      "Upload your current resume, add the job description, and pick your career goal in under two minutes.",
-  },
-  {
-    step: "02",
-    title: "Get your readiness diagnostics",
-    description:
-      "See keyword gaps, section quality, ATS compatibility, interview readiness, and role-fit confidence.",
-  },
-  {
-    step: "03",
-    title: "Execute a personalized action plan",
-    description:
-      "Apply guided improvements, track progress over time, and move from resume edits to interview calls faster.",
-  },
-];
-
-const trustStats = [
-  {
-    value: 2.4,
-    decimals: 1,
-    suffix: "x",
-    label: "faster resume-job alignment",
-  },
-  {
-    value: 89,
-    suffix: "%",
-    label: "users improve ATS relevance in first session",
-  },
+const proofMetrics = [
   {
     value: 4,
-    suffix: " signals",
-    label: "tracked in one readiness score",
+    suffix: "",
+    label: "Signals Visible in One Score",
   },
   {
     value: 10,
     suffix: " min",
-    label: "to get your first actionable plan",
+    label: "To a First Actionable Plan",
   },
+  {
+    value: 1,
+    suffix: "",
+    label: "Job Link to Begin",
+  },
+  {
+    value: 3,
+    suffix: "",
+    label: "Clear Next Steps After Each Scan",
+  },
+];
+
+const differentiators = [
+  {
+    title: "It shows the change, not just the score",
+    description:
+      "Use a live before-and-after view so people can instantly understand why a line should change and what the rewrite improves.",
+  },
+  {
+    title: "It feels like a strategy console",
+    description:
+      "The interface is built around a job-to-interview workflow, with visible states that guide the user to the next action.",
+  },
+  {
+    title: "It makes the product legible at a glance",
+    description:
+      "Color, motion, and hierarchy work together so the homepage feels more like an active product than a marketing page.",
+  },
+];
+
+const audiencePanels = [
+  {
+    badge: "Students and Freshers",
+    title: "Turn coursework and projects into strong professional proof.",
+    description:
+      "Translate internships, labs, and self-led work into impact statements that feel recruiter-ready.",
+    points: [
+      "Entry-level role matching",
+      "Skill priorities by target role",
+      "Interview starter prompts",
+    ],
+  },
+  {
+    badge: "Experienced Professionals",
+    title: "Reframe your experience for stronger roles and better scope.",
+    description:
+      "Surface leadership, ownership, and outcome language while closing the gaps that matter for the next jump.",
+    points: [
+      "Promotion and switch readiness",
+      "Leadership framing cues",
+      "Targeted interview deep-dives",
+    ],
+  },
+];
+
+const previewStats = [
+  { label: "Resume strength", value: 82, color: "#22c55e" },
+  { label: "Role fit", value: 74, color: "#0ea5e9" },
+  { label: "Interview readiness", value: 70, color: "#f59e0b" },
 ];
 
 export default function LandingPage() {
   const { y } = useScrollDepth(8);
-  const heroOffset = Math.min(y, 320);
+  const heroLift = Math.min(y, 320);
 
   return (
-    <div className="crp-shell min-h-screen text-slate-900">
+    <div className="home-shell min-h-screen text-slate-900">
       <SiteHeader />
 
-      <section id="home" className="relative overflow-hidden px-6 pb-16 pt-14 md:pt-20">
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-          <div
-            className="hero-orb absolute -left-16 top-8 h-64 w-64 rounded-full bg-cyan-200/35 blur-3xl"
-            style={{ transform: `translate3d(${heroOffset * -0.06}px, ${heroOffset * 0.18}px, 0)` }}
-          />
-          <div
-            className="hero-orb absolute right-0 top-10 h-72 w-72 rounded-full bg-indigo-200/40 blur-3xl"
-            style={{ transform: `translate3d(${heroOffset * 0.04}px, ${heroOffset * 0.12}px, 0)` }}
-          />
-        </div>
+      <section className="relative overflow-hidden px-6 pb-16 pt-12 sm:pt-16 lg:pb-20 lg:pt-20">
+        <div
+          aria-hidden="true"
+          className="home-grid-overlay pointer-events-none absolute inset-0 opacity-70"
+        />
+        <div aria-hidden="true" className="home-hero-deco pointer-events-none absolute inset-0" />
+        <div aria-hidden="true" className="home-hero-scan pointer-events-none absolute inset-0" />
+        <div
+          aria-hidden="true"
+          className="home-hero-scan home-hero-scan--secondary pointer-events-none absolute inset-0"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 h-[340px] bg-[linear-gradient(180deg,rgba(15,23,42,0.05)_0%,rgba(15,23,42,0)_100%)]"
+        />
 
-        <div className="relative mx-auto grid w-full max-w-7xl gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-          <ScrollReveal delayMs={80}>
-            <span className="inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-white/90 px-4 py-1.5 text-xs font-semibold text-indigo-700">
+        <div className="relative mx-auto grid w-full max-w-7xl gap-10 lg:grid-cols-[1.02fr_0.98fr] lg:items-center">
+          <ScrollReveal delayMs={60}>
+            <div className="inline-flex items-center gap-2 rounded-full border border-cyan-200 bg-cyan-50 px-4 py-1.5 text-xs font-semibold text-cyan-800">
               <Sparkles className="h-3.5 w-3.5" />
-              Career operating system for job seekers
-            </span>
+              A sharper way to prepare for jobs
+            </div>
 
-            <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
-              Turn every application into an interview-ready submission
+            <h1 className="mt-6 max-w-2xl text-4xl font-extrabold tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
+              Paste a job link. Get a stronger application in minutes.
             </h1>
 
             <p className="mt-5 max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg">
-              Career Readiness combines resume intelligence, role-match diagnostics, and a clear improvement roadmap so you know what to fix next and why.
+              Career Readiness turns a role description into a clear rewrite plan, a role-fit score, and the next move
+              to make. It feels like a strategy console, not another resume form.
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link href="/create" className="crp-btn-primary inline-flex items-center justify-center gap-2 px-6 py-3 text-sm">
-                Start your journey
+                Start a scan
                 <ArrowRight className="h-4 w-4" />
               </Link>
-              <a href="#how-it-works" className="crp-btn-secondary inline-flex items-center justify-center px-6 py-3 text-sm">
-                See How It Works
+              <a href="#proof" className="crp-btn-secondary inline-flex items-center justify-center px-6 py-3 text-sm">
+                See the workflow
               </a>
             </div>
 
-            <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-slate-600">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1.5">
-                <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                ATS-first recommendations
-              </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1.5">
-                <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                Role-specific skill gap map
-              </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1.5">
-                <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                Clear weekly improvement plan
-              </span>
-            </div>
-          </ScrollReveal>
-
-          <ScrollReveal
-            delayMs={220}
-            className="crp-card-soft motion-float relative overflow-hidden p-5 sm:p-6"
-            style={{ transform: `translate3d(0, ${Math.max(-8, heroOffset * -0.03)}px, 0)` }}
-          >
-            <div className="mb-5 flex items-start justify-between gap-3">
-              <div>
-                <p className="text-sm font-semibold text-slate-900">Career Readiness Score</p>
-                <p className="text-xs text-slate-500">Updated after each analysis</p>
-              </div>
-              <div className="flex flex-shrink-0 flex-col items-end gap-1.5">
-                <div className="rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-indigo-700">
-                  Live Preview
-                </div>
-                <div className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
-                  +12 this month
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              {[
-                { label: "Resume Strength", value: 82, color: "#16A34A" },
-                { label: "Skill Relevance", value: 74, color: "#0EA5E9" },
-                { label: "Interview Readiness", value: 70, color: "#F59E0B" },
-                { label: "Career Growth", value: 76, color: "#4F46E5" },
-              ].map((metric, index) => (
-                <div key={metric.label} className="score-metric-card rounded-xl border border-slate-200 bg-white p-3" style={{ animationDelay: `${80 + index * 90}ms` }}>
-                  <p className="text-[11px] text-slate-500">{metric.label}</p>
-                  <p className="mt-1 text-lg font-bold text-slate-900">{metric.value}/100</p>
-                  <div className="mt-2 h-1.5 rounded-full bg-slate-100">
-                    <div
-                      className="crp-meter-fill h-1.5 rounded-full"
-                      style={{ "--progress": metric.value / 100, backgroundColor: metric.color } as CSSProperties}
-                    />
-                  </div>
-                </div>
+            <div className="mt-6 flex flex-wrap gap-3 text-sm text-slate-600">
+              {["JD scan", "resume rewrite", "skill gaps", "interview prep"].map((item) => (
+                <span key={item} className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white/80 px-3 py-1.5">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                  {item}
+                </span>
               ))}
             </div>
-
-            <div className="mt-4 rounded-xl border border-indigo-200 bg-indigo-50/70 p-3">
-              <p className="text-xs font-semibold text-slate-800">Next action</p>
-              <p className="mt-1 text-sm text-slate-600">Add five missing keywords from the role description to your Experience section.</p>
-            </div>
           </ScrollReveal>
-        </div>
-      </section>
 
-      <section className="mx-auto w-full max-w-7xl px-6 pb-14">
-        <div className="crp-card-soft grid gap-4 p-5 md:grid-cols-4 md:gap-5 md:p-6">
-          {trustStats.map((item, index) => (
-            <ScrollReveal key={item.label} delayMs={80 + index * 90}>
-              <p className="text-2xl font-extrabold text-slate-900 md:text-3xl">
-                <CountUpOnView
-                  end={item.value}
-                  decimals={item.decimals ?? 0}
-                  suffix={item.suffix ?? ""}
-                  durationMs={1100 + index * 120}
-                />
-              </p>
-              <p className="mt-1 text-sm text-slate-600">{item.label}</p>
+          <div style={{ transform: `translate3d(0, ${Math.max(-8, heroLift * -0.03)}px, 0)` }}>
+            <ScrollReveal delayMs={180} className="home-demo-shell relative overflow-hidden rounded-2xl p-4 sm:p-5">
+              <div className="flex items-center justify-between gap-3 border-b border-white/10 pb-3 text-xs text-slate-300">
+              <div className="flex items-center gap-2">
+                <span className="rounded-full bg-cyan-400/15 px-2 py-1 font-semibold text-cyan-200">Live preview</span>
+                <span>Job-to-offer workflow</span>
+              </div>
+              <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 font-medium text-slate-200">
+                Updated just now
+              </span>
+              </div>
+
+              <div className="mt-4 grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
+                <div className="space-y-4">
+                  <div className="rounded-xl border border-white/10 bg-white/6 p-4">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="text-sm font-semibold text-white">Senior Product Designer</p>
+                        <p className="mt-1 text-xs text-slate-300">Remote, product-led team, mid-level scope</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400">Role fit</p>
+                        <p className="mt-1 text-3xl font-extrabold text-white">84</p>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 space-y-3">
+                      {previewStats.map((metric) => (
+                        <div key={metric.label}>
+                          <div className="flex items-center justify-between text-[11px] text-slate-300">
+                            <span>{metric.label}</span>
+                            <span>{metric.value}/100</span>
+                          </div>
+                          <div className="mt-1 h-2 rounded-full bg-white/10">
+                            <div
+                              className="h-2 rounded-full"
+                              style={{ width: `${metric.value}%`, backgroundColor: metric.color } as CSSProperties}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl border border-white/10 bg-white/6 p-4">
+                    <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-300">
+                      <BarChart3 className="h-3.5 w-3.5" />
+                      Missing signals
+                    </div>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {["stakeholder alignment", "launch metrics", "research synthesis", "handoff ownership"].map((item) => (
+                        <span
+                          key={item}
+                          className="rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-[11px] font-medium text-cyan-100"
+                        >
+                          {item}
+                        </span>
+                      ))}
+                    </div>
+                    <p className="mt-3 text-sm leading-relaxed text-slate-300">
+                      The scan keeps the language concrete, so you know exactly which signals need more weight before you apply.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="rounded-xl border border-white/10 bg-slate-950/90 p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
+                        <Wand2 className="h-3.5 w-3.5 text-cyan-300" />
+                        Rewrite preview
+                      </div>
+                      <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-200">
+                        +31% impact signal
+                      </span>
+                    </div>
+
+                    <div className="mt-4 space-y-3 text-sm leading-relaxed">
+                      <div className="rounded-lg border border-white/8 bg-white/5 p-3">
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400">Before</p>
+                        <p className="mt-2 text-slate-300">
+                          <span className="line-through decoration-rose-400/80 decoration-2">
+                            Worked on onboarding process and reporting.
+                          </span>
+                        </p>
+                      </div>
+                      <div className="rounded-lg border border-emerald-400/15 bg-emerald-400/10 p-3">
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-200">After</p>
+                        <p className="mt-2 text-white">
+                          Improved onboarding completion by 31% by redesigning the handoff flow and tracking first-week drop-off.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl border border-white/10 bg-gradient-to-br from-cyan-500 to-indigo-600 p-4 text-white shadow-[0_18px_45px_-28px_rgba(37,99,235,0.6)]">
+                    <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-cyan-100">
+                      <ShieldCheck className="h-3.5 w-3.5" />
+                      Next move
+                    </div>
+                    <p className="mt-3 text-sm leading-relaxed text-cyan-50">
+                      Add evidence for leadership, replace generic task language, and raise the match score with role-specific terms.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </ScrollReveal>
-          ))}
+          </div>
         </div>
       </section>
 
-      <section id="how-it-works" className="mx-auto w-full max-w-7xl px-6 pb-16">
-        <ScrollReveal className="mb-8 max-w-3xl" delayMs={40}>
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-cyan-700">How It Works</p>
-          <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-            A simple system for consistent job-search momentum
+      <section className="mx-auto w-full max-w-7xl px-6 py-16">
+        <ScrollReveal className="max-w-3xl" delayMs={40}>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-cyan-700">Why It Stands Out</p>
+          <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">
+            Built to feel more like a product cockpit than a marketing site
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-slate-600 sm:text-base">
-            Instead of rewriting your resume blindly, you move through a guided cycle: diagnose, prioritize, improve, and track.
+            The goal is not just to say what the platform does. It should show the job search loop, the transformation,
+            and the next action in a way that feels immediate.
           </p>
         </ScrollReveal>
 
-        <div className="grid gap-4 md:grid-cols-3">
-          {howItWorks.map((step, index) => (
-            <ScrollReveal key={step.step} as="article" className="crp-card-soft p-5 md:p-6" delayMs={80 + index * 100}>
-              <div className="inline-flex rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-bold text-slate-700">
-                {step.step}
+        <div className="mt-8 grid gap-4 lg:grid-cols-3">
+          {differentiators.map((item, index) => (
+            <ScrollReveal
+              key={item.title}
+              as="article"
+              delayMs={90 + index * 90}
+              className="home-panel p-5 sm:p-6"
+            >
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+                <Layers3 className="h-3.5 w-3.5 text-indigo-500" />
+                Product signal
               </div>
-              <h3 className="mt-4 text-lg font-bold text-slate-900">{step.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-slate-600">{step.description}</p>
+              <h3 className="mt-4 text-lg font-bold text-slate-950">{item.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-slate-600">{item.description}</p>
             </ScrollReveal>
           ))}
         </div>
       </section>
 
-      <section id="core-tools" className="mx-auto w-full max-w-7xl px-6 pb-16">
-        <ScrollReveal className="mb-8 max-w-3xl" delayMs={40}>
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-700">Core Platform</p>
-          <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-            Everything you need to move from application anxiety to interview confidence
-          </h2>
-        </ScrollReveal>
-
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          {coreTools.map((feature, index) => {
-            const Icon = feature.icon;
-            return (
-              <ScrollReveal
-                key={feature.title}
-                as="article"
-                delayMs={70 + index * 60}
-                className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_18px_45px_-28px_rgba(15,23,42,0.35)] transition-all hover:-translate-y-0.5 hover:border-indigo-300 hover:shadow-[0_24px_55px_-30px_rgba(79,70,229,0.35)]"
-              >
-                <div className="mb-5 flex items-center justify-between">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-cyan-500 text-white">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-600">
-                    {feature.category}
-                  </span>
-                </div>
-
-                <h3 className="text-lg font-bold text-slate-900">{feature.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-600">{feature.description}</p>
-              </ScrollReveal>
-            );
-          })}
-        </div>
-      </section>
-
-      <section id="personas" className="mx-auto w-full max-w-7xl px-6 pb-16">
-        <ScrollReveal className="mb-8 max-w-3xl" delayMs={40}>
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">Personalized Paths</p>
-          <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-            Built for both early-career and experienced professionals
-          </h2>
-        </ScrollReveal>
-
-        <div className="grid gap-5 md:grid-cols-2">
-          <ScrollReveal as="article" className="crp-card-soft p-6" delayMs={90}>
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1 text-xs font-semibold text-cyan-800">
-              <Route className="h-3.5 w-3.5" />
-              Fresher Track
+      <section className="border-y border-slate-200 bg-white/75 py-16">
+        <div className="mx-auto grid w-full max-w-7xl gap-8 px-6 lg:grid-cols-[0.9fr_0.18fr_0.9fr] lg:items-stretch">
+          <ScrollReveal delayMs={60} className="home-panel p-5 sm:p-6">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Before</p>
+            <h3 className="mt-3 text-xl font-bold text-slate-950">A generic bullet list</h3>
+            <div className="mt-4 space-y-3 text-sm leading-relaxed text-slate-600">
+              <p>Worked on onboarding process and supported reporting tasks.</p>
+              <p>Collaborated with the team and helped improve the workflow.</p>
+              <p>Assisted with stakeholder requests and weekly updates.</p>
             </div>
-            <h3 className="text-xl font-bold text-slate-900">Build your first strong professional narrative</h3>
-            <p className="mt-2 text-sm leading-relaxed text-slate-600">
-              Convert projects, internships, and coursework into compelling impact statements that pass ATS scans and recruiter skims.
-            </p>
-            <ul className="mt-4 space-y-2 text-sm text-slate-700">
-              <li className="flex items-start gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-600" />Entry-level role alignment checklist</li>
-              <li className="flex items-start gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-600" />Skill priorities by role family</li>
-              <li className="flex items-start gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-600" />Interview starter preparation plan</li>
-            </ul>
           </ScrollReveal>
 
-          <ScrollReveal as="article" className="crp-card-soft p-6" delayMs={170}>
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-800">
-              <BriefcaseBusiness className="h-3.5 w-3.5" />
-              Experienced Track
+          <div className="flex items-center justify-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full border border-cyan-200 bg-cyan-50 text-cyan-700 shadow-[0_12px_28px_-20px_rgba(6,182,212,0.55)]">
+              <ArrowRight className="h-5 w-5 lg:hidden" />
+              <TrendingUp className="hidden h-5 w-5 lg:block" />
             </div>
-            <h3 className="text-xl font-bold text-slate-900">Position yourself for better roles and bigger responsibilities</h3>
-            <p className="mt-2 text-sm leading-relaxed text-slate-600">
-              Highlight strategic outcomes, leadership signals, and domain depth while closing role-specific gaps for your next move.
-            </p>
-            <ul className="mt-4 space-y-2 text-sm text-slate-700">
-              <li className="flex items-start gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-600" />Leadership and ownership framing cues</li>
-              <li className="flex items-start gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-600" />Promotion and switch readiness indicators</li>
-              <li className="flex items-start gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-600" />Targeted interview deep-dive prep</li>
-            </ul>
+          </div>
+
+          <ScrollReveal delayMs={140} className="home-panel p-5 sm:p-6">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-700">After</p>
+            <h3 className="mt-3 text-xl font-bold text-slate-950">A sharper, more credible story</h3>
+            <div className="mt-4 space-y-3 text-sm leading-relaxed text-slate-600">
+              <p>
+                <span className="font-semibold text-slate-900">Reduced onboarding drop-off by 31%</span> by redesigning the
+                handoff flow and clarifying the first-week path.
+              </p>
+              <p>
+                <span className="font-semibold text-slate-900">Improved weekly reporting</span> by standardizing the metrics
+                that stakeholders actually used.
+              </p>
+              <p>
+                <span className="font-semibold text-slate-900">Closed the role gap faster</span> by focusing the resume on
+                evidence the target job expected to see.
+              </p>
+            </div>
           </ScrollReveal>
         </div>
       </section>
 
-      <section className="mx-auto w-full max-w-7xl px-6 pb-24">
-        <div className="overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-r from-slate-900 via-indigo-900 to-cyan-900 p-7 text-white sm:p-9">
-          <div className="grid gap-7 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+      <section className="mx-auto w-full max-w-7xl px-6 py-16">
+        <ScrollReveal className="max-w-3xl" delayMs={40}>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">Who It Helps</p>
+          <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">
+            Built for both first-time applicants and people making a strategic move
+          </h2>
+        </ScrollReveal>
+
+        <div className="mt-8 grid gap-5 md:grid-cols-2">
+          {audiencePanels.map((panel, index) => (
+            <ScrollReveal key={panel.badge} as="article" className="home-panel p-6" delayMs={80 + index * 100}>
+              <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-700">
+                <BadgeCheck className="h-3.5 w-3.5 text-emerald-600" />
+                {panel.badge}
+              </div>
+              <h3 className="mt-4 text-xl font-bold text-slate-950">{panel.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-slate-600">{panel.description}</p>
+              <ul className="mt-4 space-y-2 text-sm text-slate-700">
+                {panel.points.map((point) => (
+                  <li key={point} className="flex items-start gap-2">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-600" />
+                    <span>{point}</span>
+                  </li>
+                ))}
+              </ul>
+            </ScrollReveal>
+          ))}
+        </div>
+      </section>
+
+      <section className="relative px-6 pb-24">
+        <div aria-hidden="true" className="home-cta-deco pointer-events-none absolute inset-0" />
+        <div className="relative mx-auto w-full max-w-7xl overflow-hidden rounded-2xl border border-slate-200 bg-slate-950 px-6 py-7 text-white sm:px-8 sm:py-9">
+          <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
             <div>
-              <p className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em]">
-                <ShieldCheck className="h-3.5 w-3.5" />
-                Build a stronger application loop
+              <p className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-cyan-100">
+                <Clock3 className="h-3.5 w-3.5" />
+                Make every application feel deliberate
               </p>
               <h2 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">
-                Stop applying with guesswork. Start applying with a strategy.
+                Stop guessing what to fix. Show the right move right away.
               </h2>
-              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-cyan-100 sm:text-base">
-                In one workspace, analyze your resume, prioritize the highest-impact improvements, and track readiness over time.
+              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">
+                A good homepage should feel like a promise you can touch. This one should show the product, the
+                transformation, and the momentum in one glance.
               </p>
             </div>
 
-            <div className="space-y-3">
-              <Link href="/create" className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-100">
-                Start your journey
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Link
+                href="/create"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-100"
+              >
+                Start a scan
                 <ArrowRight className="h-4 w-4" />
               </Link>
-              <div className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/25 bg-white/10 px-4 py-3 text-xs font-medium text-cyan-100">
-                <Clock3 className="h-4 w-4" />
-                First actionable report in about 10 minutes
-              </div>
+              <Link
+                href="/gap-analysis"
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+              >
+                Explore gap analysis
+              </Link>
             </div>
           </div>
         </div>

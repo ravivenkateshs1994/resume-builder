@@ -88,7 +88,9 @@ export default function GapAnalysisPage() {
 
   if (authReady && !isLoggedIn) {
     return (
-      <div className="crp-shell flex min-h-[calc(100vh-140px)] items-center justify-center overflow-x-hidden px-4 py-8 text-sm md:text-base sm:px-6">
+      <div className="home-shell crp-shell relative isolate flex min-h-[calc(100vh-140px)] items-center justify-center overflow-x-hidden px-4 py-8 text-sm md:text-base sm:px-6">
+        <div aria-hidden="true" className="home-grid-overlay pointer-events-none absolute inset-0 opacity-55" />
+        <div aria-hidden="true" className="home-hero-deco pointer-events-none absolute inset-0 opacity-60" />
         <AuthGateCard
           title="Sign in to start gap analysis"
           description="Gap analysis is personalised to your resume and saved drafts. Sign in to unlock the analysis workspace."
@@ -98,7 +100,10 @@ export default function GapAnalysisPage() {
   }
 
   return (
-    <main className="crp-shell min-h-screen overflow-x-hidden bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_26%,#f8fafc_100%)] text-sm md:text-base">
+    <main className="home-shell crp-shell relative isolate min-h-screen overflow-x-hidden bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_26%,#f8fafc_100%)] text-sm md:text-base">
+      <div aria-hidden="true" className="home-grid-overlay pointer-events-none absolute inset-0 opacity-55" />
+      <div aria-hidden="true" className="home-hero-deco pointer-events-none absolute inset-0 opacity-75" />
+      <div aria-hidden="true" className="home-hero-scan pointer-events-none absolute inset-0" />
       <section className="relative overflow-hidden border-b border-slate-200/80">
         <div aria-hidden="true" className="pointer-events-none absolute inset-0">
           <div className="absolute -left-20 top-0 h-[420px] w-[420px] rounded-full bg-cyan-100/70 blur-3xl" />
@@ -110,8 +115,9 @@ export default function GapAnalysisPage() {
 
         <div className="relative mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 pb-16 pt-12 sm:px-6 lg:pb-24 lg:pt-18">
           <ScrollReveal delayMs={40}>
-            <section className="overflow-hidden rounded-[36px] border border-slate-200 bg-[radial-gradient(circle_at_top_left,_rgba(99,102,241,0.16),_transparent_28%),linear-gradient(180deg,#ffffff_0%,#f7fbff_100%)] p-6 shadow-[0_28px_80px_-48px_rgba(15,23,42,0.32)] md:p-8 lg:p-10">
-              <div className="grid gap-8 xl:grid-cols-[1.08fr_0.92fr] xl:items-start">
+            <section className="relative overflow-hidden rounded-[36px] border border-slate-200 bg-white/86 p-6 shadow-[0_28px_80px_-48px_rgba(15,23,42,0.32)] backdrop-blur md:p-8 lg:p-10">
+              <div aria-hidden="true" className="home-hero-scan pointer-events-none absolute inset-0" />
+              <div className="relative z-10 grid gap-8 xl:grid-cols-[1.08fr_0.92fr] xl:items-start">
                 <div>
                   <span className="crp-badge">Career Intelligence</span>
                   <h1 className="mt-4 max-w-4xl text-4xl font-black tracking-tight text-slate-900 sm:text-5xl lg:text-6xl lg:leading-[1.02]">
@@ -219,7 +225,8 @@ export default function GapAnalysisPage() {
         </div>
       </section>
 
-      <section className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:py-14">
+      <section className="relative mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:py-14">
+        <div aria-hidden="true" className="home-proof-deco pointer-events-none absolute inset-0 opacity-35" />
         <div className="grid gap-4 lg:grid-cols-3">
           {storyFrames.map((frame, index) => (
             <ScrollReveal key={frame.title} delayMs={70 + index * 70}>
@@ -233,7 +240,8 @@ export default function GapAnalysisPage() {
         </div>
       </section>
 
-      <section className="mx-auto w-full max-w-7xl px-4 py-14 sm:px-6 lg:py-18">
+      <section className="relative mx-auto w-full max-w-7xl px-4 py-14 sm:px-6 lg:py-18">
+        <div aria-hidden="true" className="home-cta-deco pointer-events-none absolute inset-0 opacity-20" />
         <ScrollReveal delayMs={90}>
           <div className="grid gap-5 lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
               <div className="rounded-[30px] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_-46px_rgba(15,23,42,0.24)] md:p-7">

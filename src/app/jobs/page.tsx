@@ -23,9 +23,11 @@ export default function JobsPage() {
   // Auth gate — show a sign-in prompt until auth state is resolved
   if (authReady && !isLoggedIn) {
     return (
-      <div className="crp-shell min-h-screen overflow-x-hidden text-sm md:text-base">
+      <div className="home-shell crp-shell relative isolate min-h-screen overflow-x-hidden text-sm md:text-base">
         <SiteHeader />
-        <main className="mx-auto flex min-h-[calc(100vh-140px)] w-full max-w-7xl items-center justify-center px-4 py-8 sm:px-6">
+        <div aria-hidden="true" className="home-grid-overlay pointer-events-none absolute inset-0 opacity-55" />
+        <div aria-hidden="true" className="home-hero-deco pointer-events-none absolute inset-0 opacity-60" />
+        <main className="relative z-10 mx-auto flex min-h-[calc(100vh-140px)] w-full max-w-7xl items-center justify-center px-4 py-8 sm:px-6">
           <AuthGateCard
             title="Sign in to view jobs"
             description="Job listings are personalised to your resume and career stage. Sign in to unlock your matched feed."
@@ -37,12 +39,16 @@ export default function JobsPage() {
   }
 
   return (
-    <div className="crp-shell min-h-screen overflow-x-hidden text-sm md:text-base">
+    <div className="home-shell crp-shell relative isolate min-h-screen overflow-x-hidden text-sm md:text-base">
       <SiteHeader />
-      <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:py-10">
+      <div aria-hidden="true" className="home-grid-overlay pointer-events-none absolute inset-0 opacity-55" />
+      <div aria-hidden="true" className="home-hero-deco pointer-events-none absolute inset-0 opacity-70" />
+      <div aria-hidden="true" className="home-hero-scan pointer-events-none absolute inset-0" />
+      <main className="relative z-10 mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:py-10">
         <ScrollReveal delayMs={40}>
-          <section className="overflow-hidden rounded-[36px] border border-slate-200 bg-[radial-gradient(circle_at_top_left,_rgba(99,102,241,0.16),_transparent_28%),linear-gradient(180deg,#ffffff_0%,#f7fbff_100%)] p-6 shadow-[0_28px_80px_-48px_rgba(15,23,42,0.32)] md:p-8 lg:p-10">
-            <div className="grid gap-8 xl:grid-cols-[1.1fr_0.9fr] xl:items-center">
+          <section className="relative overflow-hidden rounded-[36px] border border-slate-200 bg-white/86 p-6 shadow-[0_28px_80px_-48px_rgba(15,23,42,0.32)] backdrop-blur md:p-8 lg:p-10">
+            <div aria-hidden="true" className="home-hero-scan pointer-events-none absolute inset-0" />
+            <div className="relative z-10 grid gap-8 xl:grid-cols-[1.1fr_0.9fr] xl:items-center">
               <div>
                 <span className="crp-badge inline-flex items-center gap-2">
                   <Sparkles className="h-4 w-4" />
