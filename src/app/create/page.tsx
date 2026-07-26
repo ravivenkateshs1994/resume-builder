@@ -114,7 +114,7 @@ function FlowStrip({ activeStep }: { activeStep: number }) {
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6">
-      <div className="rounded-2xl border border-slate-200/90 bg-white/90 px-3 py-2 shadow-[0_14px_35px_-24px_rgba(15,23,42,0.35)] backdrop-blur">
+      <div className="home-panel px-3 py-2 backdrop-blur">
         <span className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.22em] text-indigo-600">Template flow</span>
         <div className="flex flex-wrap items-center justify-start gap-2 sm:justify-center">
           {flowStages.map((step, index) => {
@@ -685,8 +685,10 @@ function CreatePageContent() {
 
   if (authReady && !isLoggedIn) {
     return (
-      <div className="crp-shell flex min-h-screen max-w-full flex-col overflow-x-hidden text-sm md:text-base">
+      <div className="home-shell crp-shell relative isolate flex min-h-screen max-w-full flex-col overflow-x-hidden text-sm md:text-base">
         <SiteHeader />
+        <div aria-hidden="true" className="home-grid-overlay pointer-events-none absolute inset-0 opacity-55" />
+        <div aria-hidden="true" className="home-hero-deco pointer-events-none absolute inset-0 opacity-60" />
         <main className="mx-auto flex w-full max-w-7xl flex-1 items-center justify-center px-4 py-8 sm:px-6">
           <AuthGateCard
             title="Sign in to use the builder"
@@ -701,15 +703,19 @@ function CreatePageContent() {
   // ── Gate screen ──────────────────────────────────────────────────────────────
   if (mode === "gate") {
     return (
-      <div className="crp-shell flex min-h-screen max-w-full flex-col overflow-x-hidden text-sm md:text-base">
+      <div className="home-shell crp-shell relative isolate flex min-h-screen max-w-full flex-col overflow-x-hidden text-sm md:text-base">
         <SiteHeader />
+        <div aria-hidden="true" className="home-grid-overlay pointer-events-none absolute inset-0 opacity-55" />
+        <div aria-hidden="true" className="home-hero-deco pointer-events-none absolute inset-0 opacity-70" />
+        <div aria-hidden="true" className="home-hero-scan pointer-events-none absolute inset-0" />
 
         <FlowStrip activeStep={0} />
 
         <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 pb-10 pt-4 sm:px-6">
           <ScrollReveal delayMs={50}>
-            <section className="overflow-hidden rounded-[36px] border border-slate-200 bg-[radial-gradient(circle_at_top_left,_rgba(99,102,241,0.16),_transparent_28%),linear-gradient(180deg,#ffffff_0%,#f7fbff_100%)] p-6 shadow-[0_28px_70px_-46px_rgba(15,23,42,0.32)] md:p-8">
-              <div className="grid gap-8 xl:grid-cols-[1.15fr_0.85fr] xl:items-start">
+            <section className="relative overflow-hidden rounded-[36px] border border-slate-200 bg-white/86 p-6 shadow-[0_28px_70px_-46px_rgba(15,23,42,0.32)] backdrop-blur md:p-8">
+              <div aria-hidden="true" className="home-hero-scan pointer-events-none absolute inset-0" />
+              <div className="relative z-10 grid gap-8 xl:grid-cols-[1.15fr_0.85fr] xl:items-start">
                 <div>
                   <span className="crp-badge">Template Studio</span>
                   <h1 className="mt-4 text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">
@@ -1212,15 +1218,19 @@ function CreatePageContent() {
 
   // ── Form screen ──────────────────────────────────────────────────────────────
   return (
-    <div className="crp-shell min-h-screen max-w-full overflow-x-hidden text-sm md:text-base">
+    <div className="home-shell crp-shell relative isolate min-h-screen max-w-full overflow-x-hidden text-sm md:text-base">
       <SiteHeader />
+      <div aria-hidden="true" className="home-grid-overlay pointer-events-none absolute inset-0 opacity-55" />
+      <div aria-hidden="true" className="home-hero-deco pointer-events-none absolute inset-0 opacity-70" />
+      <div aria-hidden="true" className="home-hero-scan pointer-events-none absolute inset-0" />
 
       <FlowStrip activeStep={currentStep === "preview" ? 2 : 1} />
 
       <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 pb-10 pt-6 sm:px-6">
         <ScrollReveal delayMs={60}>
-          <section className="overflow-hidden rounded-[36px] border border-slate-200 bg-[radial-gradient(circle_at_top_left,_rgba(99,102,241,0.16),_transparent_28%),linear-gradient(180deg,#ffffff_0%,#f7fbff_100%)] p-6 shadow-[0_28px_70px_-46px_rgba(15,23,42,0.32)] md:p-8">
-            <div className="grid gap-8 xl:grid-cols-[1.08fr_0.92fr] xl:items-start">
+          <section className="relative overflow-hidden rounded-[36px] border border-slate-200 bg-white/86 p-6 shadow-[0_28px_70px_-46px_rgba(15,23,42,0.32)] backdrop-blur md:p-8">
+            <div aria-hidden="true" className="home-hero-scan pointer-events-none absolute inset-0" />
+            <div className="relative z-10 grid gap-8 xl:grid-cols-[1.08fr_0.92fr] xl:items-start">
               <div>
                 <span className="crp-badge">Resume Builder</span>
                 <h1 className="mt-4 text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">A cleaner editing workspace with the same workflow underneath.</h1>

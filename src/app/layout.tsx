@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import ChunkErrorHandler from "@/components/ChunkErrorHandler";
+import { AppBackdrop } from "@/components/AppBackdrop";
 import PwaRegister from "@/components/PwaRegister";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -125,7 +126,7 @@ export default function RootLayout({
         <link rel="shortcut icon" href="/career-readiness-favicon.png" />
         <link rel="apple-touch-icon" href="/career-readiness-desktop-logo.png" sizes="180x180" />
       </head>
-      <body className={`${jakarta.variable} ${playfair.variable} bg-gray-50 text-gray-900 antialiased`}>
+      <body className={`${jakarta.variable} ${playfair.variable} relative isolate overflow-x-hidden bg-slate-50 text-slate-900 antialiased`}>
         <a href="#content" className="skip-link">
           Skip to main content
         </a>
@@ -136,7 +137,10 @@ export default function RootLayout({
         />
         <ChunkErrorHandler />
         <PwaRegister />
-        <main id="content" role="main">{children}</main>
+        <AppBackdrop />
+        <div className="relative z-10">
+          <main id="content" role="main">{children}</main>
+        </div>
       </body>
     </html>
   );

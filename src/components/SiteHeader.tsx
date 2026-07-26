@@ -81,6 +81,13 @@ function SiteHeaderImpl() {
           </nav>
 
           <div className="flex items-center gap-4">
+            <Link
+              href={isLoggedIn ? "/dashboard" : "/create"}
+              className="hidden rounded-full border border-slate-200 bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 md:inline-flex"
+            >
+              {isLoggedIn ? "Open dashboard" : "Start free"}
+            </Link>
+
             <div className="hidden md:flex items-center gap-3" ref={profileRef}>
               {isLoggedIn ? (
                 <div className="relative">
