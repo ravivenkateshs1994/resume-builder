@@ -112,15 +112,46 @@ function MobileNav({
 
   return (
     <section className="md:hidden space-y-3 rounded-3xl border border-slate-200 bg-white/95 p-4 shadow-sm backdrop-blur">
-        <div className="rounded-2xl border border-slate-200 bg-white p-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-600 text-white font-semibold">{initials}</div>
-            <div>
-              <p className="text-sm font-semibold text-slate-900">{name ?? (email ? email.split("@")[0] : "User")}</p>
-              <p className="text-xs text-slate-500">Workspace</p>
-            </div>
+      <div className="rounded-2xl border border-slate-200 bg-white p-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-600 text-white font-semibold">{initials}</div>
+          <div>
+            <p className="text-sm font-semibold text-slate-900">{name ?? (email ? email.split("@")[0] : "User")}</p>
+            <p className="text-xs text-slate-500">Workspace</p>
           </div>
         </div>
+      </div>
+
+      <div className="rounded-2xl border border-slate-200 bg-white p-2">
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            onClick={() => setTab('resumes')}
+            className={`flex items-center justify-between gap-2 rounded-xl px-3 py-2 text-sm font-medium transition ${
+              tab === 'resumes'
+                ? 'bg-indigo-50 text-indigo-700 ring-1 ring-indigo-200'
+                : 'text-slate-600'
+            }`}
+          >
+            <span>Resumes</span>
+            <span className="inline-flex min-w-6 items-center justify-center rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-700">
+              {resumesCount}
+            </span>
+          </button>
+          <button
+            onClick={() => setTab('analysis')}
+            className={`flex items-center justify-between gap-2 rounded-xl px-3 py-2 text-sm font-medium transition ${
+              tab === 'analysis'
+                ? 'bg-indigo-50 text-indigo-700 ring-1 ring-indigo-200'
+                : 'text-slate-600'
+            }`}
+          >
+            <span>Analysis</span>
+            <span className="inline-flex min-w-6 items-center justify-center rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-700">
+              {analysisCount}
+            </span>
+          </button>
+        </div>
+      </div>
     </section>
   );
 }
