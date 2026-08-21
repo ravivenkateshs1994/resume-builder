@@ -353,7 +353,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="home-shell crp-shell relative isolate min-h-screen overflow-x-hidden">
+    <div className="home-shell crp-shell relative isolate min-h-screen">
       <SiteHeader />
       <div aria-hidden="true" className="home-grid-overlay pointer-events-none absolute inset-0 opacity-50" />
       <div aria-hidden="true" className="home-hero-deco pointer-events-none absolute inset-0 opacity-60" />

@@ -137,13 +137,10 @@ export default function LandingPage() {
                 Start a scan
                 <ArrowRight className="h-4 w-4" />
               </Link>
-              <a href="#proof" className="crp-btn-secondary inline-flex items-center justify-center px-6 py-3 text-sm">
-                See the workflow
-              </a>
             </div>
 
             <div className="mt-6 flex flex-wrap gap-3 text-sm text-slate-600">
-              {["JD scan", "resume rewrite", "skill gaps", "interview prep"].map((item) => (
+              {["JD Scan", "Resume Rewrite", "Skill Gaps", "Interview Preparation"].map((item) => (
                 <span key={item} className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white/80 px-3 py-1.5">
                   <CheckCircle2 className="h-4 w-4 text-emerald-600" />
                   {item}
