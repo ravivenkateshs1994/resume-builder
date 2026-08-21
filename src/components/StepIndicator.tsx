@@ -31,19 +31,19 @@ export default function StepIndicator({ variant = "horizontal" }: { variant?: "h
                 aria-label={`Go to step ${i + 1}: ${step.label}`}
                 className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-left transition-all group ${
                   active
-                    ? "bg-indigo-50 text-indigo-700"
+                    ? "bg-cyan-500/10 text-cyan-100 border border-cyan-400/20"
                     : done
-                    ? "text-slate-600 hover:bg-slate-50"
-                    : "text-slate-400 hover:bg-slate-50 hover:text-slate-600"
+                    ? "text-slate-300 hover:bg-white/5"
+                    : "text-slate-400 hover:bg-white/5 hover:text-slate-200"
                 }`}
               >
                 <div
                   className={`w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold border-2 transition-all ${
                     done
-                      ? "bg-indigo-600 border-indigo-600 text-white"
+                      ? "bg-cyan-400 border-cyan-400 text-slate-950"
                       : active
-                      ? "border-indigo-600 text-indigo-600 bg-white"
-                      : "border-slate-300 text-slate-400"
+                      ? "border-cyan-400 text-cyan-100 bg-slate-900"
+                      : "border-slate-600 text-slate-400"
                   }`}
                 >
                   {done ? "✓" : i + 1}
@@ -52,7 +52,7 @@ export default function StepIndicator({ variant = "horizontal" }: { variant?: "h
               </button>
               {i < STEPS.length - 1 && (
                 <div className={`ml-[22px] w-0.5 h-4 ${
-                  i < currentIndex ? "bg-indigo-300" : "bg-slate-200"
+                  i < currentIndex ? "bg-cyan-400/70" : "bg-slate-700"
                 }`} />
               )}
             </div>
@@ -66,9 +66,9 @@ export default function StepIndicator({ variant = "horizontal" }: { variant?: "h
     <div className="mb-6 w-full max-w-full overflow-x-hidden md:mb-8">
       <div className="relative grid grid-cols-5 gap-2">
         {/* Progress line */}
-        <div className="absolute top-4 left-0 right-0 h-0.5 bg-gray-200 z-0" />
+        <div className="absolute top-4 left-0 right-0 h-0.5 bg-slate-700 z-0" />
         <div
-          className="absolute top-4 left-0 h-0.5 bg-indigo-600 z-0 transition-all duration-500"
+          className="absolute top-4 left-0 h-0.5 bg-gradient-to-r from-cyan-400 to-violet-500 z-0 transition-all duration-500"
           style={{ width: `${(currentIndex / (STEPS.length - 1)) * 100}%` }}
         />
 
@@ -88,10 +88,10 @@ export default function StepIndicator({ variant = "horizontal" }: { variant?: "h
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold border-2 transition-all duration-300 ${
                   done
-                    ? "bg-indigo-600 border-indigo-600 text-white"
+                    ? "bg-cyan-400 border-cyan-400 text-slate-950"
                     : active
-                    ? "bg-white border-indigo-600 text-indigo-600"
-                    : "bg-white border-slate-300 text-slate-400 group-hover:border-indigo-400 group-hover:text-indigo-500"
+                    ? "bg-slate-900 border-cyan-400 text-cyan-100"
+                    : "bg-slate-900 border-slate-600 text-slate-400 group-hover:border-cyan-400 group-hover:text-cyan-100"
                 }`}
               >
                 {done ? "✓" : i + 1}
@@ -99,10 +99,10 @@ export default function StepIndicator({ variant = "horizontal" }: { variant?: "h
               <span
                 className={`mt-1 break-words text-center text-[10px] font-medium leading-tight sm:text-xs ${
                   active
-                    ? "text-indigo-600"
+                    ? "text-cyan-200"
                     : done
-                    ? "text-slate-600"
-                    : "text-slate-400 group-hover:text-indigo-500"
+                    ? "text-slate-200"
+                    : "text-slate-400 group-hover:text-cyan-200"
                 }`}
               >
                 {step.label}

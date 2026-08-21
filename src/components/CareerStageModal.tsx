@@ -30,27 +30,27 @@ export default function CareerStageModal({ onComplete }: { onComplete?: (stage: 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="w-full max-w-xl rounded-2xl bg-white p-6 shadow-2xl">
-        <h3 className="text-lg font-semibold">Tell us about your experience</h3>
-        <p className="mt-2 text-sm text-slate-600">This helps us personalize your dashboard and recommendations.</p>
+      <div className="w-full max-w-xl rounded-2xl border border-white/10 bg-slate-950/90 p-6 text-slate-100 shadow-2xl backdrop-blur">
+        <h3 className="text-lg font-semibold text-white">Tell us about your experience</h3>
+        <p className="mt-2 text-sm text-slate-300">This helps us personalize your dashboard and recommendations.</p>
 
         <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
           <button
             type="button"
             onClick={() => setSelection("FRESHER")}
-            className={`rounded-lg border p-4 text-left ${selection === "FRESHER" ? "border-indigo-500 bg-indigo-50" : "border-slate-200"}`}
+            className={`rounded-lg border p-4 text-left transition ${selection === "FRESHER" ? "border-indigo-300/60 bg-indigo-400/15" : "border-white/10 bg-white/5"}`}
           >
-            <p className="font-semibold">Fresher / Student</p>
-            <p className="mt-1 text-sm text-slate-600">I&apos;m starting my career and want entry-level guidance.</p>
+            <p className="font-semibold text-white">Fresher / Student</p>
+            <p className="mt-1 text-sm text-slate-300">I&apos;m starting my career and want entry-level guidance.</p>
           </button>
 
           <button
             type="button"
             onClick={() => setSelection("EXPERIENCED")}
-            className={`rounded-lg border p-4 text-left ${selection === "EXPERIENCED" ? "border-teal-500 bg-teal-50" : "border-slate-200"}`}
+            className={`rounded-lg border p-4 text-left transition ${selection === "EXPERIENCED" ? "border-cyan-300/60 bg-cyan-400/15" : "border-white/10 bg-white/5"}`}
           >
-            <p className="font-semibold">Experienced Professional</p>
-            <p className="mt-1 text-sm text-slate-600">I have work experience and want growth and senior role guidance.</p>
+            <p className="font-semibold text-white">Experienced Professional</p>
+            <p className="mt-1 text-sm text-slate-300">I have work experience and want growth and senior role guidance.</p>
           </button>
         </div>
 

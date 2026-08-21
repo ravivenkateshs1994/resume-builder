@@ -110,18 +110,19 @@ const stepDetails = {
 } as const;
 
 function FlowStrip({ activeStep }: { activeStep: number }) {
-  // FlowStrip only displays the progress stages; store actions not required here
-
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6">
-      <div className="home-panel px-3 py-2 backdrop-blur">
+    <nav aria-label="Resume builder progress" className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6">
+      <div className="crp-panel px-3 py-2 backdrop-blur">
         <span className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.22em] text-indigo-600">Template flow</span>
-        <div className="flex flex-wrap items-center justify-start gap-2 sm:justify-center">
+        <div role="list" aria-label="Template flow steps" className="mt-2 flex flex-wrap items-center justify-start gap-2 sm:justify-center">
           {flowStages.map((step, index) => {
             const isActive = index === activeStep;
             return (
               <div
                 key={step.number}
+                role="listitem"
+                aria-current={isActive ? "step" : undefined}
+                aria-label={`Go to step ${index + 1}: ${step.title}`}
                 className={
                   isActive
                     ? "inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium transition-colors bg-indigo-50 text-slate-900"
@@ -131,7 +132,7 @@ function FlowStrip({ activeStep }: { activeStep: number }) {
                 <span
                   className={
                     isActive
-                      ? "flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-bold bg-gradient-to-br from-indigo-600 to-cyan-500 text-white shadow-sm shadow-indigo-200"
+                      ? "flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white shadow-sm shadow-indigo-200"
                       : "flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-bold border border-slate-200 bg-white text-slate-500"
                   }
                 >
@@ -143,7 +144,7 @@ function FlowStrip({ activeStep }: { activeStep: number }) {
           })}
         </div>
       </div>
-    </div>
+    </nav>
   );
 }
 
@@ -685,7 +686,7 @@ function CreatePageContent() {
 
   if (authReady && !isLoggedIn) {
     return (
-      <div className="home-shell crp-shell relative isolate flex min-h-screen max-w-full flex-col overflow-x-hidden text-sm md:text-base">
+      <div className="home-shell crp-shell relative isolate flex min-h-screen max-w-full flex-col text-sm md:text-base">
         <SiteHeader />
         <div aria-hidden="true" className="home-grid-overlay pointer-events-none absolute inset-0 opacity-55" />
         <div aria-hidden="true" className="home-hero-deco pointer-events-none absolute inset-0 opacity-60" />
@@ -703,7 +704,7 @@ function CreatePageContent() {
   // ── Gate screen ──────────────────────────────────────────────────────────────
   if (mode === "gate") {
     return (
-      <div className="home-shell crp-shell relative isolate flex min-h-screen max-w-full flex-col overflow-x-hidden text-sm md:text-base">
+      <div className="home-shell crp-shell relative isolate flex min-h-screen max-w-full flex-col text-sm md:text-base">
         <SiteHeader />
         <div aria-hidden="true" className="home-grid-overlay pointer-events-none absolute inset-0 opacity-55" />
         <div aria-hidden="true" className="home-hero-deco pointer-events-none absolute inset-0 opacity-70" />
@@ -713,15 +714,15 @@ function CreatePageContent() {
 
         <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 pb-10 pt-4 sm:px-6">
           <ScrollReveal delayMs={50}>
-            <section className="relative overflow-hidden rounded-[36px] border border-slate-200 bg-white/86 p-6 shadow-[0_28px_70px_-46px_rgba(15,23,42,0.32)] backdrop-blur md:p-8">
+            <section className="crp-panel relative overflow-hidden p-6 md:p-8">
               <div aria-hidden="true" className="home-hero-scan pointer-events-none absolute inset-0" />
               <div className="relative z-10 grid gap-8 xl:grid-cols-[1.15fr_0.85fr] xl:items-start">
                 <div>
                   <span className="crp-badge">Template Studio</span>
-                  <h1 className="mt-4 text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">
+                  <h1 className="mt-4 text-4xl font-black tracking-tight text-slate-100 sm:text-5xl">
                     Design the resume first impression before you write a single line
                   </h1>
-                  <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-600">
+                  <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-300">
                     Pick a template, import an existing resume, or start fresh — then move straight into the builder without changing your workflow.
                   </p>
 
@@ -799,11 +800,11 @@ function CreatePageContent() {
           </ScrollReveal>
 
           <ScrollReveal delayMs={100}>
-            <section className="rounded-[32px] border border-slate-200 bg-white p-4 shadow-[0_24px_60px_-42px_rgba(15,23,42,0.22)] md:p-5">
+            <section className="rounded-[32px] border border-white/10 bg-slate-950/75 p-4 shadow-[0_24px_60px_-42px_rgba(15,23,42,0.58)] backdrop-blur md:p-5">
               <div className="flex flex-col gap-4">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Filter studio</p>
-                  <p className="mt-1 text-sm text-slate-600">Narrow the catalog without changing the underlying selection flow.</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-300">Filter studio</p>
+                  <p className="mt-1 text-sm text-slate-200">Narrow the catalog without changing the underlying selection flow.</p>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2">
@@ -819,8 +820,8 @@ function CreatePageContent() {
                       onClick={() => setActiveTierFilter(f.key as TemplateTierFilter)}
                       className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
                         activeTierFilter === f.key
-                          ? "border-indigo-300 bg-indigo-50 text-indigo-700"
-                          : "border-slate-200 bg-white text-slate-600 hover:text-slate-800"
+                          ? "border-cyan-300/80 bg-cyan-300/15 text-cyan-100"
+                          : "border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white"
                       }`}
                     >
                       {f.label}
@@ -854,10 +855,10 @@ function CreatePageContent() {
                               | "ats"
                           )
                         }
-                        className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
+                        className={`whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
                           activeFilter === f.key
-                            ? "bg-slate-900 text-white"
-                            : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                            ? "border-cyan-300/80 bg-cyan-300/15 text-cyan-100"
+                            : "border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white"
                         }`}
                       >
                         {f.label}
@@ -869,7 +870,7 @@ function CreatePageContent() {
                     <select
                       value={activeRoleCategory}
                       onChange={(event) => setActiveRoleCategory(event.target.value as RoleCategory)}
-                      className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs font-medium text-slate-700"
+                      className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-medium text-slate-100"
                       aria-label="Filter by role category"
                     >
                       <option value="all">All role categories</option>
@@ -883,7 +884,7 @@ function CreatePageContent() {
                     <select
                       value={activeLevelCategory}
                       onChange={(event) => setActiveLevelCategory(event.target.value as CareerLevel)}
-                      className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs font-medium text-slate-700"
+                      className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-medium text-slate-100"
                       aria-label="Filter by level category"
                     >
                       <option value="all">All levels</option>
@@ -900,25 +901,25 @@ function CreatePageContent() {
           <ScrollReveal delayMs={150}>
             {!!orderedTemplates.length && focusedTemplate && (
               <section className="space-y-6">
-                <div className="rounded-[36px] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f6f8fb_100%)] p-4 shadow-[0_26px_70px_-46px_rgba(15,23,42,0.24)] md:p-6">
+                <div className="rounded-[36px] border border-white/10 bg-slate-950/75 p-4 shadow-[0_26px_70px_-46px_rgba(15,23,42,0.6)] backdrop-blur md:p-6">
                   <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Template gallery</p>
-                      <h4 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">A focused browsing layout with a persistent preview</h4>
-                      <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-300">Template gallery</p>
+                      <h4 className="mt-1 text-2xl font-bold tracking-tight text-white md:text-3xl">A focused browsing layout with a persistent preview</h4>
+                      <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-300">
                         Scroll the template column on the left while the large preview stays visible on the right — choose once it feels right.
                       </p>
                     </div>
-                    <div className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
+                    <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-300">
                       {orderedTemplates.length} templates
                     </div>
                   </div>
 
                   <div className="grid gap-5 xl:grid-cols-[minmax(280px,30%)_minmax(0,70%)] xl:items-start">
-                    <div className="rounded-[30px] border border-slate-200 bg-white p-3 shadow-[0_18px_50px_-40px_rgba(15,23,42,0.2)] xl:h-[920px] xl:overflow-hidden">
+                    <div className="rounded-[30px] border border-white/10 bg-slate-950/70 p-3 shadow-[0_18px_50px_-40px_rgba(15,23,42,0.5)] xl:h-[920px] xl:overflow-hidden">
                       <div className="mb-3 flex items-center justify-between gap-3 px-2">
                         <div>
-                          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Templates</p>
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-300">Templates</p>
                         </div>
                       </div>
 
@@ -933,8 +934,8 @@ function CreatePageContent() {
                               onClick={() => focusTemplate(t.id, true)}
                               className={`crp-template-rail-item w-full rounded-[26px] border p-3 text-left ${
                                 isFocused
-                                  ? "border-slate-900 bg-slate-900 text-white shadow-[0_28px_70px_-42px_rgba(15,23,42,0.55)]"
-                                  : "border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] text-slate-900 hover:border-indigo-200 hover:bg-indigo-50/30"
+                                  ? "border-cyan-300/70 bg-cyan-300/10 text-white shadow-[0_28px_70px_-42px_rgba(34,211,238,0.35)]"
+                                  : "border-white/10 bg-white/5 text-slate-100 hover:border-white/20 hover:bg-white/10"
                               }`}
                             >
                               <div className="flex gap-3">
@@ -952,16 +953,16 @@ function CreatePageContent() {
                                     )}
                                   </div>
 
-                                  <p className={`mt-2 truncate text-sm font-semibold ${isFocused ? "text-white" : "text-slate-900"}`}>{t.name}</p>
-                                  <p className={`mt-1 text-xs leading-relaxed ${isFocused ? "text-slate-300" : "text-slate-600"}`}>{t.style}</p>
-                                  <p className={`mt-2 line-clamp-2 text-xs leading-relaxed ${isFocused ? "text-slate-300" : "text-slate-500"}`}>{t.description}</p>
+                                  <p className={`mt-2 truncate text-sm font-semibold ${isFocused ? "text-white" : "text-slate-100"}`}>{t.name}</p>
+                                  <p className={`mt-1 text-xs leading-relaxed ${isFocused ? "text-slate-200" : "text-slate-300"}`}>{t.style}</p>
+                                  <p className={`mt-2 line-clamp-2 text-xs leading-relaxed ${isFocused ? "text-slate-200" : "text-slate-300"}`}>{t.description}</p>
 
                                   <div className="mt-2 flex flex-wrap gap-1">
                                     {t.tags.slice(0, 2).map((tag) => (
                                       <span
                                         key={tag}
                                         className={`rounded-full px-2 py-0.5 text-[10px] ${
-                                          isFocused ? "border border-white/10 bg-white/10 text-slate-200" : "border border-slate-200 bg-white text-slate-600"
+                                          isFocused ? "border border-white/10 bg-white/10 text-slate-200" : "border border-white/10 bg-slate-900/70 text-slate-300"
                                         }`}
                                       >
                                         {tag}
@@ -985,7 +986,7 @@ function CreatePageContent() {
                       className={`rounded-[30px] border bg-slate-950 p-4 text-white shadow-[0_30px_80px_-44px_rgba(15,23,42,0.62)] transition-all duration-500 md:p-6 ${
                         previewPulse
                           ? "border-cyan-300 shadow-[0_0_0_1px_rgba(165,243,252,0.55),0_30px_80px_-44px_rgba(34,211,238,0.45)]"
-                          : "border-slate-200"
+                          : "border-white/10"
                       }`}
                     >
                       <div className="flex flex-wrap items-center gap-2">
@@ -1228,13 +1229,13 @@ function CreatePageContent() {
 
       <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 pb-10 pt-6 sm:px-6">
         <ScrollReveal delayMs={60}>
-          <section className="relative overflow-hidden rounded-[36px] border border-slate-200 bg-white/86 p-6 shadow-[0_28px_70px_-46px_rgba(15,23,42,0.32)] backdrop-blur md:p-8">
+<section className="crp-panel relative overflow-hidden p-6 md:p-8">
             <div aria-hidden="true" className="home-hero-scan pointer-events-none absolute inset-0" />
             <div className="relative z-10 grid gap-8 xl:grid-cols-[1.08fr_0.92fr] xl:items-start">
               <div>
                 <span className="crp-badge">Resume Builder</span>
-                <h1 className="mt-4 text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">A cleaner editing workspace with the same workflow underneath.</h1>
-                <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-600">
+                <h1 className="mt-4 text-4xl font-black tracking-tight text-slate-100 sm:text-5xl">A cleaner editing workspace with the same workflow underneath.</h1>
+                <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-300">
                   Your step flow, parsing, and template logic stay the same. This shell just makes the editing workspace easier to scan and use.
                 </p>
 

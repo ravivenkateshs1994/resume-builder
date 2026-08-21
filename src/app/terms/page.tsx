@@ -93,12 +93,12 @@ export const metadata: Metadata = {
 
 function LegalSection({ title, items }: Section) {
   return (
-    <section className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm sm:p-8">
-      <h2 className="text-2xl font-extrabold text-slate-900">{title}</h2>
-      <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-600">
+    <section className="rounded-3xl border border-white/10 bg-slate-900/80 p-6 shadow-[0_24px_60px_-36px_rgba(15,23,42,0.9)] sm:p-8">
+      <h2 className="text-2xl font-extrabold text-white">{title}</h2>
+      <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-300">
         {items.map((item) => (
           <li key={item} className="flex gap-3">
-            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-500" />
+            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-400" />
             <span>{item}</span>
           </li>
         ))}
@@ -109,40 +109,40 @@ function LegalSection({ title, items }: Section) {
 
 export default function TermsPage() {
   return (
-    <main className="min-h-screen bg-[#f8f9fc] text-slate-900">
+    <main className="min-h-screen bg-slate-950 text-slate-100">
       <SiteHeader />
 
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden bg-slate-950">
         <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-          <div className="absolute -top-32 -left-32 h-[560px] w-[560px] rounded-full bg-indigo-100/70 blur-3xl" />
-          <div className="absolute top-20 right-0 h-[360px] w-[360px] rounded-full bg-cyan-100/70 blur-3xl" />
+          <div className="absolute -top-32 -left-32 h-[560px] w-[560px] rounded-full bg-cyan-500/10 blur-3xl" />
+          <div className="absolute top-20 right-0 h-[360px] w-[360px] rounded-full bg-violet-500/10 blur-3xl" />
         </div>
         <div className="relative mx-auto max-w-5xl px-6 pb-14 pt-20 sm:pt-24">
-          <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white px-4 py-1.5 text-xs font-semibold text-indigo-700 shadow-sm">
+          <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-slate-900/80 px-4 py-1.5 text-xs font-semibold text-cyan-200 shadow-sm">
             Terms of Service
           </span>
-          <h1 className="max-w-3xl text-5xl font-extrabold leading-[1.08] tracking-tight text-slate-900 sm:text-6xl">
+          <h1 className="max-w-3xl text-5xl font-extrabold leading-[1.08] tracking-tight text-white sm:text-6xl">
             Terms of use
           </h1>
-          <p className="mt-6 max-w-2xl text-xl leading-relaxed text-slate-500">
+          <p className="mt-6 max-w-2xl text-xl leading-relaxed text-slate-300">
             These terms explain what the service does, what you are responsible for, and the limits that apply when
             you use Career Readiness to create or analyze resumes.
           </p>
           <div className="mt-10 grid gap-4 sm:grid-cols-3">
-            <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-              <p className="text-xs font-bold uppercase tracking-widest text-indigo-600">Review your output</p>
-              <p className="mt-2 text-sm leading-6 text-slate-600">AI suggestions should always be checked before you submit them.</p>
+            <div className="rounded-2xl border border-white/10 bg-slate-900/80 p-5 shadow-[0_18px_48px_-34px_rgba(15,23,42,0.9)]">
+              <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">Review your output</p>
+              <p className="mt-2 text-sm leading-6 text-slate-300">AI suggestions should always be checked before you submit them.</p>
             </div>
-            <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-              <p className="text-xs font-bold uppercase tracking-widest text-indigo-600">Use responsibly</p>
-              <p className="mt-2 text-sm leading-6 text-slate-600">Do not use the service to mislead employers or violate anyone&apos;s rights.</p>
+            <div className="rounded-2xl border border-white/10 bg-slate-900/80 p-5 shadow-[0_18px_48px_-34px_rgba(15,23,42,0.9)]">
+              <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">Use responsibly</p>
+              <p className="mt-2 text-sm leading-6 text-slate-300">Do not use the service to mislead employers or violate anyone&apos;s rights.</p>
             </div>
-            <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-              <p className="text-xs font-bold uppercase tracking-widest text-indigo-600">Keep backups</p>
-              <p className="mt-2 text-sm leading-6 text-slate-600">Save your own copy of anything important before you rely on it elsewhere.</p>
+            <div className="rounded-2xl border border-white/10 bg-slate-900/80 p-5 shadow-[0_18px_48px_-34px_rgba(15,23,42,0.9)]">
+              <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">Keep backups</p>
+              <p className="mt-2 text-sm leading-6 text-slate-300">Save your own copy of anything important before you rely on it elsewhere.</p>
             </div>
           </div>
-          <p className="mt-5 text-xs text-slate-600">Last updated {lastUpdated}</p>
+          <p className="mt-5 text-xs text-slate-400">Last updated {lastUpdated}</p>
         </div>
       </section>
 
@@ -151,7 +151,7 @@ export default function TermsPage() {
           {sections.map((section) => (
             <LegalSection key={section.title} title={section.title} items={section.items} />
           ))}
-          <div className="rounded-3xl border border-slate-100 bg-slate-900 px-6 py-8 text-white shadow-xl shadow-slate-200 sm:px-8">
+          <div className="rounded-3xl border border-white/10 bg-slate-900 px-6 py-8 text-white shadow-[0_26px_70px_-34px_rgba(15,23,42,0.9)] sm:px-8">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-300">Short summary</p>
             <p className="mt-3 max-w-3xl text-lg leading-8 text-slate-200">
               You can use the app to build and improve your resume, but you are responsible for checking the results,

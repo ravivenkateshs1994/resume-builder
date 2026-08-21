@@ -8,7 +8,7 @@ export default function GapAnalysisLayout({ children }: { children: React.ReactN
   
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#06141d] text-slate-100">
       <SiteHeader />
 
       <main>{children}</main>

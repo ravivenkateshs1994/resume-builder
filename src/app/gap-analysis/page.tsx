@@ -88,7 +88,7 @@ export default function GapAnalysisPage() {
 
   if (authReady && !isLoggedIn) {
     return (
-      <div className="home-shell crp-shell relative isolate flex min-h-[calc(100vh-140px)] items-center justify-center overflow-x-hidden px-4 py-8 text-sm md:text-base sm:px-6">
+      <div className="home-shell crp-shell relative isolate flex min-h-[calc(100vh-140px)] items-center justify-center px-4 py-8 text-sm md:text-base sm:px-6">
         <div aria-hidden="true" className="home-grid-overlay pointer-events-none absolute inset-0 opacity-55" />
         <div aria-hidden="true" className="home-hero-deco pointer-events-none absolute inset-0 opacity-60" />
         <AuthGateCard
@@ -100,11 +100,12 @@ export default function GapAnalysisPage() {
   }
 
   return (
-    <main className="home-shell crp-shell relative isolate min-h-screen overflow-x-hidden bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_26%,#f8fafc_100%)] text-sm md:text-base">
+    <div className="home-shell crp-shell relative isolate min-h-screen overflow-x-hidden text-sm text-slate-100 md:text-base">
       <div aria-hidden="true" className="home-grid-overlay pointer-events-none absolute inset-0 opacity-55" />
       <div aria-hidden="true" className="home-hero-deco pointer-events-none absolute inset-0 opacity-75" />
       <div aria-hidden="true" className="home-hero-scan pointer-events-none absolute inset-0" />
-      <section className="relative overflow-hidden border-b border-slate-200/80">
+      <div className="relative z-10">
+      <section className="relative overflow-hidden border-b border-white/10">
         <div aria-hidden="true" className="pointer-events-none absolute inset-0">
           <div className="absolute -left-20 top-0 h-[420px] w-[420px] rounded-full bg-cyan-100/70 blur-3xl" />
           <div className="absolute right-[-8%] top-12 h-[520px] w-[520px] rounded-full bg-indigo-100/70 blur-3xl" />
@@ -115,15 +116,15 @@ export default function GapAnalysisPage() {
 
         <div className="relative mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 pb-16 pt-12 sm:px-6 lg:pb-24 lg:pt-18">
           <ScrollReveal delayMs={40}>
-            <section className="relative overflow-hidden rounded-[36px] border border-slate-200 bg-white/86 p-6 shadow-[0_28px_80px_-48px_rgba(15,23,42,0.32)] backdrop-blur md:p-8 lg:p-10">
+            <section className="relative overflow-hidden rounded-[36px] border border-white/10 bg-slate-950/75 p-6 shadow-[0_28px_80px_-48px_rgba(15,23,42,0.7)] backdrop-blur md:p-8 lg:p-10">
               <div aria-hidden="true" className="home-hero-scan pointer-events-none absolute inset-0" />
               <div className="relative z-10 grid gap-8 xl:grid-cols-[1.08fr_0.92fr] xl:items-start">
                 <div>
                   <span className="crp-badge">Career Intelligence</span>
-                  <h1 className="mt-4 max-w-4xl text-4xl font-black tracking-tight text-slate-900 sm:text-5xl lg:text-6xl lg:leading-[1.02]">
+                  <h1 className="mt-4 max-w-4xl text-4xl font-black tracking-tight text-white sm:text-5xl lg:text-6xl lg:leading-[1.02]">
                     Premium gap analysis for the role you want next.
                   </h1>
-                  <p className="mt-5 max-w-2xl text-base leading-relaxed text-slate-600 md:text-lg">
+                  <p className="mt-5 max-w-2xl text-base leading-relaxed text-slate-300 md:text-lg">
                     Compare your current profile against a target role, spot the missing signals quickly, and focus your next edits on the few changes most likely to improve fit.
                   </p>
 
@@ -144,7 +145,7 @@ export default function GapAnalysisPage() {
                     {analysisSignals.map((item) => (
                       <span
                         key={item}
-                        className="rounded-full border border-slate-200 bg-white/85 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-600"
+                        className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-300"
                       >
                         {item}
                       </span>
@@ -230,10 +231,10 @@ export default function GapAnalysisPage() {
         <div className="grid gap-4 lg:grid-cols-3">
           {storyFrames.map((frame, index) => (
             <ScrollReveal key={frame.title} delayMs={70 + index * 70}>
-              <article className="crp-story-card rounded-[30px] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-7 shadow-[0_26px_60px_-46px_rgba(15,23,42,0.22)] md:p-8">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">{frame.eyebrow}</p>
-                <h3 className="mt-3 text-2xl font-black tracking-tight text-slate-900">{frame.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-slate-600 md:text-base">{frame.copy}</p>
+              <article className="crp-story-card rounded-[30px] border border-white/10 bg-slate-950/75 p-7 shadow-[0_26px_60px_-46px_rgba(15,23,42,0.4)] md:p-8">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">{frame.eyebrow}</p>
+                <h3 className="mt-3 text-2xl font-black tracking-tight text-white">{frame.title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-slate-300 md:text-base">{frame.copy}</p>
               </article>
             </ScrollReveal>
           ))}
@@ -244,10 +245,10 @@ export default function GapAnalysisPage() {
         <div aria-hidden="true" className="home-cta-deco pointer-events-none absolute inset-0 opacity-20" />
         <ScrollReveal delayMs={90}>
           <div className="grid gap-5 lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
-              <div className="rounded-[30px] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_-46px_rgba(15,23,42,0.24)] md:p-7">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Premium outcomes</p>
-              <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-900">A role-fit briefing, not a checklist.</h2>
-              <p className="mt-4 max-w-xl text-sm leading-relaxed text-slate-600 md:text-base">
+              <div className="rounded-[30px] border border-white/10 bg-slate-950/75 p-6 shadow-[0_24px_60px_-46px_rgba(15,23,42,0.44)] md:p-7">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Premium outcomes</p>
+              <h2 className="mt-3 text-3xl font-black tracking-tight text-white">A role-fit briefing, not a checklist.</h2>
+              <p className="mt-4 max-w-xl text-sm leading-relaxed text-slate-300 md:text-base">
                 Use this report to decide what to rewrite, what to learn, and which signals need stronger proof before tailoring your resume.
               </p>
             </div>
@@ -259,14 +260,14 @@ export default function GapAnalysisPage() {
                 return (
                   <ScrollReveal key={item.title} delayMs={120 + index * 75}>
                     <article
-                      className="score-metric-card rounded-[28px] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-[0_24px_60px_-46px_rgba(15,23,42,0.2)]"
+                      className="score-metric-card rounded-[28px] border border-white/10 bg-slate-950/75 p-5 shadow-[0_24px_60px_-46px_rgba(15,23,42,0.4)]"
                       style={{ animationDelay: `${index * 90}ms` }}
                     >
                       <div className={`flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${item.tone} text-white shadow-lg`}>
                         <Icon className="h-5 w-5" />
                       </div>
-                      <h3 className="mt-4 text-lg font-bold tracking-tight text-slate-900">{item.title}</h3>
-                      <p className="mt-2 text-sm leading-relaxed text-slate-600">{item.copy}</p>
+                      <h3 className="mt-4 text-lg font-bold tracking-tight text-white">{item.title}</h3>
+                      <p className="mt-2 text-sm leading-relaxed text-slate-300">{item.copy}</p>
                     </article>
                   </ScrollReveal>
                 );
@@ -321,7 +322,8 @@ export default function GapAnalysisPage() {
           </div>
         </ScrollReveal>
       </section>
-    </main>
+      </div>
+    </div>
   );
 }
 

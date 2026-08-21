@@ -90,23 +90,25 @@ export default function PersonalInfoStep() {
   }
 
   return (
-    <div>
-      <h2 className="mb-1 text-[22px] font-bold text-slate-800 md:text-[30px]">Personal Details</h2>
-      <p className="mb-6 break-words text-sm text-slate-500 md:text-base">Start with your basic contact information.</p>
+    <div className="space-y-6">
+      <div>
+        <h2 className="mb-1 text-[22px] font-bold text-slate-100 md:text-[30px]">Personal Details</h2>
+        <p className="mb-0 break-words text-sm text-slate-300 md:text-base">Start with your basic contact information.</p>
+      </div>
 
       {/* Avatar preview */}
-      <div className="mb-6 max-w-full overflow-x-hidden rounded-xl border border-slate-200 bg-slate-50 p-4 md:p-6">
+      <div className="mb-6 max-w-full overflow-x-hidden rounded-2xl border border-white/10 bg-white/3 p-4 md:p-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex min-w-0 items-center gap-4">
             <HeadshotAvatar
               headshotUrl={form.headshotUrl}
               alt={`${form.fullName || "Candidate"} headshot`}
-              className="h-32 w-32 shrink-0 overflow-hidden rounded-3xl border-2 border-blue-200 bg-blue-100"
+              className="h-32 w-32 shrink-0 overflow-hidden rounded-3xl border-2 border-cyan-400/30 bg-slate-900"
             />
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-gray-800 md:text-base">{form.fullName || "Your Name"}</p>
-              <p className="mt-0.5 truncate text-xs text-gray-400 md:text-sm">{form.jobTitle || "Job Title"}</p>
-              <p className="mt-2 break-words text-[11px] text-slate-500 md:text-xs">Recommended: square image, 512 x 512 px or larger.</p>
+              <p className="truncate text-sm font-semibold text-slate-100 md:text-base">{form.fullName || "Your Name"}</p>
+              <p className="mt-0.5 truncate text-xs text-slate-400 md:text-sm">{form.jobTitle || "Job Title"}</p>
+              <p className="mt-2 break-words text-[11px] text-slate-400 md:text-xs">Recommended: square image, 512 x 512 px or larger.</p>
             </div>
           </div>
 
@@ -114,7 +116,7 @@ export default function PersonalInfoStep() {
             <button
               type="button"
               onClick={() => headshotInputRef.current?.click()}
-              className="min-h-[44px] w-full rounded-lg border border-blue-200 bg-white px-3 py-2 text-xs font-semibold text-blue-700 transition-colors hover:border-blue-300 hover:bg-blue-50 md:w-auto"
+              className="min-h-[44px] w-full rounded-xl border border-cyan-400/30 bg-cyan-500/10 px-3 py-2 text-xs font-semibold text-cyan-100 transition-colors hover:border-cyan-300/50 hover:bg-cyan-500/15 md:w-auto"
             >
               {form.headshotUrl ? "Replace headshot" : "Add headshot"}
             </button>
@@ -122,7 +124,7 @@ export default function PersonalInfoStep() {
               <button
                 type="button"
                 onClick={removeHeadshot}
-                className="min-h-[44px] w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-700 md:w-auto"
+                className="min-h-[44px] w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-300 transition-colors hover:border-white/20 hover:text-slate-100 md:w-auto"
               >
                 Remove
               </button>
@@ -149,8 +151,8 @@ export default function PersonalInfoStep() {
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         <div>
-          <label htmlFor="fullName" className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">
-            Full Name <span className="text-red-500">*</span>
+          <label htmlFor="fullName" className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-400">
+            Full Name <span className="text-red-400">*</span>
           </label>
           <input
             id="fullName"
@@ -158,7 +160,7 @@ export default function PersonalInfoStep() {
             onChange={(e) => setForm({ ...form, fullName: e.target.value })}
             placeholder="e.g. Jane Smith"
             aria-invalid={Boolean(errors.fullName)}
-            className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.fullName ? "border-red-400" : "border-slate-200"}`}
+            className={`crp-input ${errors.fullName ? "border-red-400" : "border-white/10"}`}
           />
           {errors.fullName && <p className="text-red-500 text-xs mt-1" role="alert">{errors.fullName}</p>}
         </div>
