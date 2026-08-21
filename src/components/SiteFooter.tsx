@@ -13,13 +13,13 @@ export function SiteFooter() {
           {/* Brand Section */}
           <div className="space-y-6">
             <Link href="/" className="flex items-center gap-2.5" aria-label="Career Readiness">
-              <div className="flex h-9 max-w-[140px] items-center sm:h-10 sm:max-w-[220px]">
+              <div className="flex h-10 max-w-[168px] items-center sm:h-11 sm:max-w-[235px] md:h-9 md:max-w-[188px]">
                 <Image
                   src="/career-readiness-desktop-logo.png"
                   alt="Career Readiness"
-                  width={220}
-                  height={40}
-                  className="h-auto max-h-full w-auto max-w-full object-contain"
+                  width={2172}
+                  height={724}
+                  className="h-full w-auto max-w-full object-contain"
                 />
               </div>
               <span className="sr-only">Career Readiness</span>

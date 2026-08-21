@@ -38,13 +38,13 @@ function SiteHeaderImpl() {
       <div className="mx-auto w-full max-w-7xl px-4 md:px-6">
         <div className={`flex items-center gap-4 transition-all duration-300 h-16 ${scrolled ? "md:h-[60px]" : "md:h-16"}`}>
           <Link href="/" className="flex items-center gap-2.5" aria-label="Career Readiness">
-            <div className="flex max-w-[140px] items-center sm:max-w-[220px]">
+            <div className="flex h-9 max-w-[156px] items-center sm:h-10 sm:max-w-[230px] md:h-8 md:max-w-[184px] lg:max-w-[200px]">
               <Image
                 src="/career-readiness-desktop-logo.png"
                 alt="Career Readiness"
-                width={220}
-                height={40}
-                className="h-auto max-w-full object-contain transition-all duration-300 max-h-10"
+                width={2172}
+                height={724}
+                className="h-full w-auto max-w-full object-contain transition-all duration-300"
                 priority
               />
             </div>
