@@ -85,7 +85,7 @@ export default function MobileNav() {
     <div
       ref={overlayRef}
       id="mobile-navigation-panel"
-      style={{ backgroundColor: "#ffffff", position: "fixed", inset: 0, zIndex: 99999 }}
+      style={{ backgroundColor: "#06141d", position: "fixed", inset: 0, zIndex: 99999 }}
       className={`flex flex-col md:hidden transition-opacity duration-300 ${
         open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
       }`}
@@ -95,15 +95,15 @@ export default function MobileNav() {
       aria-label="Site navigation"
     >
       {/* Top bar */}
-      <div className="flex h-16 shrink-0 items-center justify-between border-b border-slate-100 px-4 md:px-6">
+      <div className="flex h-16 shrink-0 items-center justify-between border-b border-white/10 bg-slate-950/80 px-4 md:px-6">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-9 max-w-[140px] items-center sm:h-10 sm:max-w-[220px]">
+          <div className="flex h-9 max-w-[156px] items-center sm:h-10 sm:max-w-[200px]">
             <Image
               src="/career-readiness-desktop-logo.png"
               alt="Career Readiness"
-              width={220}
-              height={40}
-              className="h-auto max-h-full w-auto max-w-full object-contain"
+              width={2172}
+              height={724}
+              className="h-full w-auto max-w-full object-contain"
               priority
             />
           </div>
@@ -114,9 +114,9 @@ export default function MobileNav() {
           type="button"
           aria-label="Close menu"
           onClick={closeMenu}
-          className="flex h-10 w-10 items-center justify-center rounded-md border border-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+          className="flex h-10 w-10 items-center justify-center rounded-md border border-white/10 bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
         >
-          <svg className="h-4 w-4 text-slate-700" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <svg className="h-4 w-4 text-slate-200" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
@@ -133,8 +133,8 @@ export default function MobileNav() {
               onClick={closeMenu}
               className={`rounded-xl px-5 py-4 text-base font-semibold tracking-wide transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 ${
                 active
-                  ? "bg-indigo-600 text-white"
-                  : "text-slate-800 hover:bg-slate-100"
+                  ? "bg-cyan-400/15 text-cyan-100 border border-cyan-300/40"
+                  : "text-slate-200 hover:bg-white/10"
               }`}
             >
               {link.label}
@@ -145,9 +145,9 @@ export default function MobileNav() {
 
       <div className="shrink-0 px-6 pb-8">
         {isLoggedIn ? (
-            <div className="mt-4 border-t border-slate-100 pt-4">
-            <div className="text-sm text-slate-700">Signed in as</div>
-            <div className="mb-3 truncate text-sm font-medium text-slate-900">{userFullName ?? userEmail ?? "Account"}</div>
+            <div className="mt-4 border-t border-white/10 pt-4">
+            <div className="text-sm text-slate-300">Signed in as</div>
+            <div className="mb-3 truncate text-sm font-medium text-slate-100">{userFullName ?? userEmail ?? "Account"}</div>
             <Link
               href="/dashboard"
               onClick={closeMenu}
@@ -161,13 +161,13 @@ export default function MobileNav() {
                 closeMenu();
                 void signOut();
               }}
-              className="mt-2 block w-full rounded-xl border border-slate-200 px-4 py-3 text-center font-medium text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+              className="mt-2 block w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-center font-medium text-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
             >
               Logout
             </button>
           </div>
         ) : (
-          <div className="mt-4 border-t border-slate-100 pt-4">
+          <div className="mt-4 border-t border-white/10 pt-4">
             <Link
               href="/login"
               onClick={closeMenu}
@@ -178,7 +178,7 @@ export default function MobileNav() {
           </div>
         )}
 
-        <p className="mt-4 text-center text-xs text-slate-600">Career Readiness Platform</p>
+        <p className="mt-4 text-center text-xs text-slate-400">Career Readiness Platform</p>
       </div>
     </div>
   );
@@ -203,7 +203,7 @@ export default function MobileNav() {
         className="relative flex h-10 w-10 items-center justify-center rounded-md md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
         style={{ zIndex: 100000 }}
       >
-        <Menu className="h-5 w-5 text-slate-800" aria-hidden="true" />
+        <Menu className="h-5 w-5 text-slate-200" aria-hidden="true" />
       </button>
 
       {/* Portal: renders outside any stacking context */}
