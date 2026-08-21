@@ -23,7 +23,7 @@ export default function JobsPage() {
   // Auth gate — show a sign-in prompt until auth state is resolved
   if (authReady && !isLoggedIn) {
     return (
-      <div className="home-shell crp-shell relative isolate min-h-screen overflow-x-hidden text-sm md:text-base">
+      <div className="home-shell crp-shell relative isolate min-h-screen text-sm md:text-base">
         <SiteHeader />
         <div aria-hidden="true" className="home-grid-overlay pointer-events-none absolute inset-0 opacity-55" />
         <div aria-hidden="true" className="home-hero-deco pointer-events-none absolute inset-0 opacity-60" />
@@ -39,14 +39,14 @@ export default function JobsPage() {
   }
 
   return (
-    <div className="home-shell crp-shell relative isolate min-h-screen overflow-x-hidden text-sm md:text-base">
+    <div className="home-shell crp-shell relative isolate min-h-screen text-sm md:text-base">
       <SiteHeader />
       <div aria-hidden="true" className="home-grid-overlay pointer-events-none absolute inset-0 opacity-55" />
       <div aria-hidden="true" className="home-hero-deco pointer-events-none absolute inset-0 opacity-70" />
       <div aria-hidden="true" className="home-hero-scan pointer-events-none absolute inset-0" />
       <main className="relative z-10 mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:py-10">
         <ScrollReveal delayMs={40}>
-          <section className="relative overflow-hidden rounded-[36px] border border-slate-200 bg-white/86 p-6 shadow-[0_28px_80px_-48px_rgba(15,23,42,0.32)] backdrop-blur md:p-8 lg:p-10">
+          <section className="relative overflow-hidden rounded-[36px] border border-white/10 bg-slate-950/75 p-6 shadow-[0_28px_80px_-48px_rgba(15,23,42,0.7)] backdrop-blur md:p-8 lg:p-10">
             <div aria-hidden="true" className="home-hero-scan pointer-events-none absolute inset-0" />
             <div className="relative z-10 grid gap-8 xl:grid-cols-[1.1fr_0.9fr] xl:items-center">
               <div>
@@ -54,10 +54,10 @@ export default function JobsPage() {
                   <Sparkles className="h-4 w-4" />
                   Role-aware job feed
                 </span>
-                <h1 className="mt-4 max-w-3xl text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">
+                <h1 className="mt-4 max-w-3xl text-4xl font-black tracking-tight text-white sm:text-5xl">
                   {feedTitle}
                 </h1>
-                <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-600 md:text-lg">
+                <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-300 md:text-lg">
                   {feedSubtitle}
                 </p>
 
@@ -71,23 +71,23 @@ export default function JobsPage() {
                   </Link>
                 </div>
 
-                <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-slate-600">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1.5">
-                    <BriefcaseBusiness className="h-4 w-4 text-indigo-600" />
-                    {careerStage === "FRESHER" ? "Internships and entry roles first" : "Full-time roles first"}
+                <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-slate-300">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                    <BriefcaseBusiness className="h-4 w-4 text-indigo-300" />
+                    {careerStage === "FRESHER" ? "Internships and entry roles first" : "Experienced roles and career moves first"}
                   </span>
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1.5">
-                    <BriefcaseBusiness className="h-4 w-4 text-indigo-600" />
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                    <BriefcaseBusiness className="h-4 w-4 text-indigo-300" />
                     Resume match scoring
                   </span>
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1.5">
-                    <BriefcaseBusiness className="h-4 w-4 text-indigo-600" />
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                    <BriefcaseBusiness className="h-4 w-4 text-indigo-300" />
                     Save and tailor in one click
                   </span>
                 </div>
               </div>
 
-              <div className="rounded-[30px] border border-slate-200 bg-slate-950 p-5 text-white shadow-[0_34px_80px_-46px_rgba(15,23,42,0.68)] md:p-6">
+              <div className="rounded-[30px] border border-white/10 bg-slate-950 p-5 text-white shadow-[0_34px_80px_-46px_rgba(15,23,42,0.68)] md:p-6">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-cyan-200">Profile snapshot</p>
                 <div className="mt-4 space-y-4">
                   <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
@@ -104,7 +104,7 @@ export default function JobsPage() {
                     {[
                       { label: "Match type", value: "Skills + stage" },
                       { label: "Actions", value: "Save or tailor" },
-                      { label: "Best fit", value: careerStage === "FRESHER" ? "Internship-first" : "Career-move first" },
+                      { label: "Best fit", value: careerStage === "FRESHER" ? "Internship-first" : "Experienced roles + career moves" },
                       { label: "Refresh", value: "Live fetch" },
                       { label: "Location", value: resumeLocation || "Enter in feed" },
                     ].map((item) => (

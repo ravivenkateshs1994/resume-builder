@@ -301,24 +301,24 @@ export function JobFeedPanel({
   const visibleJobs = jobs.slice(0, limit);
 
   return (
-    <section className="rounded-[34px] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-[0_24px_70px_-48px_rgba(15,23,42,0.22)] md:p-6">
+    <section className="rounded-[34px] border border-white/10 bg-slate-950/75 p-5 text-slate-100 shadow-[0_24px_70px_-48px_rgba(15,23,42,0.58)] backdrop-blur md:p-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{summary?.stageLabel ?? stageLabel}</p>
-          <h2 className="mt-2 text-2xl font-black tracking-tight text-slate-900">{title}</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600">{description}</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-300">{summary?.stageLabel ?? stageLabel}</p>
+          <h2 className="mt-2 text-2xl font-black tracking-tight text-white">{title}</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-300">{description}</p>
         </div>
 
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600">
-            <BriefcaseBusiness className="h-3.5 w-3.5 text-slate-500" />
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-300">
+            <BriefcaseBusiness className="h-3.5 w-3.5 text-slate-300" />
             {summary?.totalJobs ?? jobs.length} matches
           </div>
           <a
             href="https://www.adzuna.com/"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-indigo-200 hover:text-indigo-700"
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-300 transition hover:border-cyan-300/40 hover:text-cyan-100"
           >
             Jobs by Adzuna
           </a>
@@ -331,30 +331,30 @@ export function JobFeedPanel({
 
       {showSearch && (
         <div className="mt-5 grid gap-3 lg:grid-cols-[1.2fr_0.8fr]">
-          <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3">
-            <Search className="h-4 w-4 text-slate-400" />
+          <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+            <Search className="h-4 w-4 text-slate-300" />
             <input
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search role, company, or skill"
-              className="w-full bg-transparent text-sm outline-none placeholder:text-slate-400"
+              className="w-full bg-transparent text-sm text-slate-100 outline-none placeholder:text-slate-400"
             />
           </div>
-          <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3">
-            <MapPin className="h-4 w-4 text-slate-400" />
+          <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+            <MapPin className="h-4 w-4 text-slate-300" />
             <input
               type="search"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder={resumeData.personalInfo.location || "Enter a city, region, or country"}
-              className="w-full bg-transparent text-sm outline-none placeholder:text-slate-400"
+              className="w-full bg-transparent text-sm text-slate-100 outline-none placeholder:text-slate-400"
             />
             {resumeData.personalInfo.location && (
               <button
                 type="button"
                 onClick={() => setLocation(resumeData.personalInfo.location)}
-                className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-600 transition hover:border-indigo-200 hover:text-indigo-700"
+                className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-300 transition hover:border-cyan-300/40 hover:text-cyan-100"
               >
                 Use resume
               </button>
@@ -363,24 +363,24 @@ export function JobFeedPanel({
               type="button"
               onClick={() => void detectLocation()}
               disabled={geoStatus === "detecting"}
-              className="rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-600 transition hover:border-indigo-200 hover:text-indigo-700 disabled:opacity-60"
+              className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-300 transition hover:border-cyan-300/40 hover:text-cyan-100 disabled:opacity-60"
             >
               {geoStatus === "detecting" ? "Detecting..." : "Detect"}
             </button>
           </div>
           {geoMessage && (
-            <p className={`text-xs ${geoStatus === "error" ? "text-rose-600" : "text-slate-500"}`}>{geoMessage}</p>
+            <p className={`text-xs ${geoStatus === "error" ? "text-rose-300" : "text-slate-300"}`}>{geoMessage}</p>
           )}
         </div>
       )}
 
       {error && (
-        <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
+        <div className="mt-4 rounded-2xl border border-rose-400/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">{error}</div>
       )}
 
       <div className={compact ? "mt-5 grid gap-4" : "mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-2"}>
         {loading ? (
-          <div className="col-span-full rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-6 text-sm text-slate-500">
+          <div className="col-span-full rounded-2xl border border-dashed border-white/15 bg-white/5 p-6 text-sm text-slate-300">
             <span className="inline-flex items-center gap-2">
               <Loader2 className="h-4 w-4 animate-spin" />
               Finding your best matches...
@@ -392,51 +392,51 @@ export function JobFeedPanel({
             const saved = savedKeys.has(jobKey);
 
             return (
-              <article key={jobKey} className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_18px_55px_-40px_rgba(15,23,42,0.28)]">
+              <article key={jobKey} className="rounded-[28px] border border-white/10 bg-white/5 p-5 shadow-[0_18px_55px_-40px_rgba(15,23,42,0.52)]">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="text-lg font-bold text-slate-900">{job.title}</h3>
-                      <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-600">
+                      <h3 className="text-lg font-bold text-white">{job.title}</h3>
+                      <span className="rounded-full border border-cyan-300/30 bg-cyan-300/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-cyan-100">
                         {job.matchScore}% match
                       </span>
                       {job.featured && (
-                        <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-700">
+                        <span className="rounded-full border border-emerald-300/35 bg-emerald-400/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-200">
                           Featured
                         </span>
                       )}
                     </div>
-                    <p className="mt-1 text-sm font-medium text-slate-600">
+                    <p className="mt-1 text-sm font-medium text-slate-300">
                       {job.company} - {job.location}
                     </p>
-                    <p className="mt-2 text-sm text-slate-600">{job.description}</p>
+                    <p className="mt-2 text-sm text-slate-300">{job.description}</p>
                   </div>
                 </div>
 
                 <div className="mt-4 flex flex-wrap gap-2">
                   {job.tags.slice(0, 4).map((tag) => (
-                    <span key={tag} className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-600">
+                    <span key={tag} className="rounded-full border border-white/10 bg-slate-900/70 px-2.5 py-1 text-[11px] font-medium text-slate-300">
                       {tag}
                     </span>
                   ))}
                 </div>
 
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Compensation</p>
-                    <p className="mt-1 text-sm font-semibold text-slate-900">{currencyLabel(job)}</p>
+                  <div className="rounded-2xl border border-white/10 bg-slate-900/70 p-3">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-300">Compensation</p>
+                    <p className="mt-1 text-sm font-semibold text-white">{currencyLabel(job)}</p>
                   </div>
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Why it matched</p>
-                    <p className="mt-1 text-sm font-semibold text-slate-900">{job.matchReasons[0] ?? "High relevance to your profile."}</p>
+                  <div className="rounded-2xl border border-white/10 bg-slate-900/70 p-3">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-300">Why it matched</p>
+                    <p className="mt-1 text-sm font-semibold text-white">{job.matchReasons[0] ?? "High relevance to your profile."}</p>
                   </div>
                 </div>
 
                 {job.matchReasons.length > 1 && (
-                  <ul className="mt-4 space-y-2 text-sm text-slate-600">
+                  <ul className="mt-4 space-y-2 text-sm text-slate-300">
                     {job.matchReasons.slice(1, 4).map((reason) => (
                       <li key={reason} className="flex items-start gap-2">
-                        <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-cyan-600" />
+                        <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300" />
                         <span>{reason}</span>
                       </li>
                     ))}
@@ -457,7 +457,7 @@ export function JobFeedPanel({
                     target="_blank"
                     rel="noreferrer"
                     onClick={() => void trackJob(job, "click")}
-                    className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-indigo-200 hover:text-indigo-700"
+                    className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-cyan-300/40 hover:text-cyan-100"
                   >
                     Open listing
                     <ExternalLink className="h-4 w-4" />
@@ -466,7 +466,7 @@ export function JobFeedPanel({
                     type="button"
                     onClick={() => void saveJob(job)}
                     disabled={savingKey === jobKey}
-                    className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-rose-200 hover:text-rose-700 disabled:opacity-60"
+                    className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-rose-300/50 hover:text-rose-200 disabled:opacity-60"
                   >
                     <Heart className={`h-4 w-4 ${saved ? "fill-rose-500 text-rose-500" : ""}`} />
                     {savingKey === jobKey ? "Saving..." : saved ? "Saved" : "Save"}
@@ -476,19 +476,19 @@ export function JobFeedPanel({
             );
           })
         ) : (
-          <div className="col-span-full rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-6 text-sm text-slate-500">
+          <div className="col-span-full rounded-2xl border border-dashed border-white/15 bg-white/5 p-6 text-sm text-slate-300">
             No jobs matched your current search. Try a broader keyword or clear the search field.
           </div>
         )}
       </div>
 
       {!compact && (
-        <div className="mt-6 rounded-[24px] border border-indigo-100 bg-indigo-50/70 p-4 text-sm text-slate-700">
-          <p className="font-semibold text-indigo-700">Stage-aware ranking is enabled.</p>
-          <p className="mt-1 text-slate-600">
+        <div className="mt-6 rounded-[24px] border border-indigo-300/30 bg-indigo-400/10 p-4 text-sm text-slate-200">
+          <p className="font-semibold text-indigo-100">Stage-aware ranking is enabled.</p>
+          <p className="mt-1 text-slate-300">
             Freshers see internships and entry-level roles first, while experienced users see full-time jobs ranked against their resume.
           </p>
-          <p className="mt-2 text-slate-600">
+          <p className="mt-2 text-slate-300">
             Live listings are pulled from Adzuna when keys are configured, then merged with your saved jobs and bundled fallback listings.
           </p>
         </div>

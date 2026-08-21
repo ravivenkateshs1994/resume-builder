@@ -97,7 +97,7 @@ export default function LandingPage() {
   const heroLift = Math.min(y, 320);
 
   return (
-    <div className="home-shell min-h-screen text-slate-900">
+    <div className="home-shell min-h-screen text-slate-100">
       <SiteHeader />
 
       <section className="relative overflow-hidden px-6 pb-16 pt-12 sm:pt-16 lg:pb-20 lg:pt-20">
@@ -118,16 +118,16 @@ export default function LandingPage() {
 
         <div className="relative mx-auto grid w-full max-w-7xl gap-10 lg:grid-cols-[1.02fr_0.98fr] lg:items-center">
           <ScrollReveal delayMs={60}>
-            <div className="inline-flex items-center gap-2 rounded-full border border-cyan-200 bg-cyan-50 px-4 py-1.5 text-xs font-semibold text-cyan-800">
+            <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-500/10 px-4 py-1.5 text-xs font-semibold text-cyan-100">
               <Sparkles className="h-3.5 w-3.5" />
               A sharper way to prepare for jobs
             </div>
 
-            <h1 className="mt-6 max-w-2xl text-4xl font-extrabold tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
+            <h1 className="mt-6 max-w-2xl text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
               Paste a job link. Get a stronger application in minutes.
             </h1>
 
-            <p className="mt-5 max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg">
+            <p className="mt-5 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
               Career Readiness turns a role description into a clear rewrite plan, a role-fit score, and the next move
               to make. It feels like a strategy console, not another resume form.
             </p>
@@ -139,10 +139,10 @@ export default function LandingPage() {
               </Link>
             </div>
 
-            <div className="mt-6 flex flex-wrap gap-3 text-sm text-slate-600">
+            <div className="mt-6 flex flex-wrap gap-3 text-sm text-slate-300">
               {["JD Scan", "Resume Rewrite", "Skill Gaps", "Interview Preparation"].map((item) => (
-                <span key={item} className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white/80 px-3 py-1.5">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                <span key={item} className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-400" />
                   {item}
                 </span>
               ))}
@@ -262,11 +262,11 @@ export default function LandingPage() {
 
       <section className="mx-auto w-full max-w-7xl px-6 py-16">
         <ScrollReveal className="max-w-3xl" delayMs={40}>
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-cyan-700">Why It Stands Out</p>
-          <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-cyan-300">Why It Stands Out</p>
+          <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
             Built to feel more like a product cockpit than a marketing site
           </h2>
-          <p className="mt-3 text-sm leading-relaxed text-slate-600 sm:text-base">
+          <p className="mt-3 text-sm leading-relaxed text-slate-300 sm:text-base">
             The goal is not just to say what the platform does. It should show the job search loop, the transformation,
             and the next action in a way that feels immediate.
           </p>
@@ -280,23 +280,23 @@ export default function LandingPage() {
               delayMs={90 + index * 90}
               className="home-panel p-5 sm:p-6"
             >
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
-                <Layers3 className="h-3.5 w-3.5 text-indigo-500" />
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
+                <Layers3 className="h-3.5 w-3.5 text-cyan-300" />
                 Product signal
               </div>
-              <h3 className="mt-4 text-lg font-bold text-slate-950">{item.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-slate-600">{item.description}</p>
+              <h3 className="mt-4 text-lg font-bold text-white">{item.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-slate-300">{item.description}</p>
             </ScrollReveal>
           ))}
         </div>
       </section>
 
-      <section className="border-y border-slate-200 bg-white/75 py-16">
+      <section className="border-y border-white/10 bg-slate-950/70 py-16">
         <div className="mx-auto grid w-full max-w-7xl gap-8 px-6 lg:grid-cols-[0.9fr_0.18fr_0.9fr] lg:items-stretch">
           <ScrollReveal delayMs={60} className="home-panel p-5 sm:p-6">
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Before</p>
-            <h3 className="mt-3 text-xl font-bold text-slate-950">A generic bullet list</h3>
-            <div className="mt-4 space-y-3 text-sm leading-relaxed text-slate-600">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">Before</p>
+            <h3 className="mt-3 text-xl font-bold text-white">A generic bullet list</h3>
+            <div className="mt-4 space-y-3 text-sm leading-relaxed text-slate-300">
               <p>Worked on onboarding process and supported reporting tasks.</p>
               <p>Collaborated with the team and helped improve the workflow.</p>
               <p>Assisted with stakeholder requests and weekly updates.</p>
@@ -311,19 +311,19 @@ export default function LandingPage() {
           </div>
 
           <ScrollReveal delayMs={140} className="home-panel p-5 sm:p-6">
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-700">After</p>
-            <h3 className="mt-3 text-xl font-bold text-slate-950">A sharper, more credible story</h3>
-            <div className="mt-4 space-y-3 text-sm leading-relaxed text-slate-600">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-300">After</p>
+            <h3 className="mt-3 text-xl font-bold text-white">A sharper, more credible story</h3>
+            <div className="mt-4 space-y-3 text-sm leading-relaxed text-slate-300">
               <p>
-                <span className="font-semibold text-slate-900">Reduced onboarding drop-off by 31%</span> by redesigning the
+                <span className="font-semibold text-white">Reduced onboarding drop-off by 31%</span> by redesigning the
                 handoff flow and clarifying the first-week path.
               </p>
               <p>
-                <span className="font-semibold text-slate-900">Improved weekly reporting</span> by standardizing the metrics
+                <span className="font-semibold text-white">Improved weekly reporting</span> by standardizing the metrics
                 that stakeholders actually used.
               </p>
               <p>
-                <span className="font-semibold text-slate-900">Closed the role gap faster</span> by focusing the resume on
+                <span className="font-semibold text-white">Closed the role gap faster</span> by focusing the resume on
                 evidence the target job expected to see.
               </p>
             </div>
@@ -333,8 +333,8 @@ export default function LandingPage() {
 
       <section className="mx-auto w-full max-w-7xl px-6 py-16">
         <ScrollReveal className="max-w-3xl" delayMs={40}>
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">Who It Helps</p>
-          <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-300">Who It Helps</p>
+          <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
             Built for both first-time applicants and people making a strategic move
           </h2>
         </ScrollReveal>
@@ -342,13 +342,13 @@ export default function LandingPage() {
         <div className="mt-8 grid gap-5 md:grid-cols-2">
           {audiencePanels.map((panel, index) => (
             <ScrollReveal key={panel.badge} as="article" className="home-panel p-6" delayMs={80 + index * 100}>
-              <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-700">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-slate-200">
                 <BadgeCheck className="h-3.5 w-3.5 text-emerald-600" />
                 {panel.badge}
               </div>
-              <h3 className="mt-4 text-xl font-bold text-slate-950">{panel.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-slate-600">{panel.description}</p>
-              <ul className="mt-4 space-y-2 text-sm text-slate-700">
+              <h3 className="mt-4 text-xl font-bold text-white">{panel.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-slate-300">{panel.description}</p>
+              <ul className="mt-4 space-y-2 text-sm text-slate-300">
                 {panel.points.map((point) => (
                   <li key={point} className="flex items-start gap-2">
                     <CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-600" />
@@ -361,7 +361,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="relative px-6 pb-24">
+      <section className="relative px-6 py-24">
         <div aria-hidden="true" className="home-cta-deco pointer-events-none absolute inset-0" />
         <div className="relative mx-auto w-full max-w-7xl overflow-hidden rounded-2xl border border-slate-200 bg-slate-950 px-6 py-7 text-white sm:px-8 sm:py-9">
           <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
@@ -382,7 +382,7 @@ export default function LandingPage() {
             <div className="grid gap-3 sm:grid-cols-2">
               <Link
                 href="/create"
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-100"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-white/5 px-5 py-3 text-sm font-semibold transition hover:bg-slate-100"
               >
                 Start a scan
                 <ArrowRight className="h-4 w-4" />

@@ -542,21 +542,21 @@ export default function AnalysisWorkspacePage() {
   // previously-supported cloud history restore/delete functions removed
 
   return (
-    <main className="crp-shell min-h-screen overflow-x-hidden bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_26%,#f8fafc_100%)] text-sm md:text-base">
+    <main className="crp-shell min-h-screen overflow-x-hidden text-sm md:text-base">
       <div aria-live="polite" aria-atomic="true" className="sr-only">
         {statusAnnouncement}
       </div>
 
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 pb-24 pt-12 sm:px-6 lg:pt-16">
         <ScrollReveal delayMs={40}>
-          <section className="overflow-hidden rounded-[36px] border border-slate-200 bg-[radial-gradient(circle_at_top_left,_rgba(99,102,241,0.16),_transparent_28%),linear-gradient(180deg,#ffffff_0%,#f7fbff_100%)] p-6 shadow-[0_28px_80px_-48px_rgba(15,23,42,0.32)] md:p-8 lg:p-10">
+          <section className="crp-panel relative overflow-hidden p-6 md:p-8 lg:p-10">
             <div className="grid gap-8 xl:grid-cols-[1.02fr_0.98fr] xl:items-start">
               <div>
                 <span className="crp-badge">Analysis Workspace</span>
-                <h1 className="mt-4 max-w-4xl text-4xl font-black tracking-tight text-slate-900 sm:text-5xl lg:text-6xl lg:leading-[1.02]">
+                <h1 className="mt-4 max-w-4xl text-4xl font-black tracking-tight text-slate-100 sm:text-5xl lg:text-6xl lg:leading-[1.02]">
                   Analyze the role gap before rewriting your resume.
                 </h1>
-                <p className="mt-5 max-w-2xl text-base leading-relaxed text-slate-600 md:text-lg">
+                <p className="mt-5 max-w-2xl text-base leading-relaxed text-slate-300 md:text-lg">
                   Upload your resume, paste the target job description, and get a focused read on missing skills, weak proof points, and the next edits worth making.
                 </p>
 
@@ -568,7 +568,7 @@ export default function AnalysisWorkspacePage() {
                   ].map((item) => (
                     <span
                       key={item}
-                      className="rounded-full border border-slate-200 bg-white/85 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-600"
+                      className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-300"
                     >
                       {item}
                     </span>
@@ -637,17 +637,17 @@ export default function AnalysisWorkspacePage() {
         </ScrollReveal>
 
         <ScrollReveal delayMs={90}>
-          <section className="rounded-[34px] border border-slate-200 bg-white p-4 shadow-[0_24px_60px_-42px_rgba(15,23,42,0.22)] md:p-6">
+          <section className="crp-panel p-4 md:p-6">
             <div className="grid gap-5 xl:grid-cols-[0.92fr_1.08fr] xl:items-start">
-              <div className="space-y-4 rounded-[30px] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-[0_18px_50px_-40px_rgba(15,23,42,0.18)] md:p-6">
+              <div className="space-y-4 rounded-[30px] border border-white/8 bg-white/3 p-5 md:p-6">
                 <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                   <div className="min-w-0">
                     <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Resume source</p>
                     <div className="mt-2 flex items-center gap-2">
                       {hasActiveResume ? (
-                        <div className="flex min-w-0 items-center gap-2 text-slate-900 font-medium">
-                          <div className="rounded-md bg-blue-50 p-1.5">
-                            <FileText className="h-4 w-4 text-blue-600" />
+                        <div className="flex min-w-0 items-center gap-2 text-slate-100 font-medium">
+                          <div className="rounded-md border border-white/10 bg-white/10 p-1.5">
+                            <FileText className="h-4 w-4 text-cyan-200" />
                           </div>
                           <span className="truncate max-w-[220px] sm:max-w-[440px]">
                             {usingUploadedResume
@@ -656,7 +656,7 @@ export default function AnalysisWorkspacePage() {
                           </span>
                         </div>
                       ) : (
-                        <p className="text-sm font-bold uppercase tracking-tight text-slate-500">No resume selected</p>
+                        <p className="text-sm font-bold uppercase tracking-tight text-slate-300">No resume selected</p>
                       )}
                     </div>
                   </div>
@@ -668,8 +668,8 @@ export default function AnalysisWorkspacePage() {
                       disabled={resumeUploading || analyzing}
                       className={`inline-flex items-center gap-2 rounded-xl py-2.5 text-sm font-semibold transition-all ${
                         hasActiveResume
-                          ? "border border-slate-200 bg-white px-4 text-blue-600 shadow-sm hover:border-slate-300 hover:text-blue-700"
-                          : "bg-blue-600 px-4 text-white shadow-md hover:bg-blue-700"
+                          ? "border border-white/10 bg-white/5 px-4 text-cyan-100 shadow-sm hover:border-white/20 hover:text-white"
+                          : "bg-cyan-600 px-4 text-white shadow-md hover:bg-cyan-500"
                       } disabled:opacity-50`}
                     >
                       {resumeUploading ? (
@@ -694,7 +694,7 @@ export default function AnalysisWorkspacePage() {
                           setGapStatus({});
                           setExpandedResources({});
                         }}
-                        className="text-xs font-semibold text-slate-500 transition-colors hover:text-slate-700"
+                        className="text-xs font-semibold text-slate-300 transition-colors hover:text-slate-100"
                       >
                         Use app draft
                       </button>
@@ -707,15 +707,15 @@ export default function AnalysisWorkspacePage() {
                           onClick={() => setShowSavedList((s) => !s)}
                           aria-haspopup="menu"
                           aria-expanded={showSavedList}
-                          className="ml-2 inline-flex items-center gap-2 rounded-md border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-800 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                          className="ml-2 inline-flex items-center gap-2 rounded-md border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-slate-200 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-300"
                         >
                           Saved resumes
-                          <ChevronDown className="h-4 w-4 text-slate-600" />
+                          <ChevronDown className="h-4 w-4 text-slate-300" />
                         </button>
 
                         {showSavedList && (
                           isMobileView ? (
-                            <div className="z-50 mt-2 w-full max-h-[60vh] overflow-auto rounded-lg border bg-white p-3 text-sm text-slate-800 shadow-lg">
+                            <div className="z-50 mt-2 w-full max-h-[60vh] overflow-auto rounded-lg border border-white/10 bg-slate-900 p-3 text-sm text-slate-200 shadow-lg">
                                 <div className="mb-3 flex items-center justify-between gap-3">
                                   <div className="flex items-center gap-2">
                                     <h4 className="text-sm font-semibold">Saved resumes</h4>
@@ -798,7 +798,7 @@ export default function AnalysisWorkspacePage() {
                                 </div>
                               </div>
                           ) : (
-                            <div className="absolute right-0 z-50 mt-2 w-96 max-h-[60vh] overflow-auto rounded-lg border bg-white p-3 text-sm text-slate-800 shadow-lg">
+                            <div className="absolute right-0 z-50 mt-2 w-96 max-h-[60vh] overflow-auto rounded-lg border border-white/10 bg-slate-900 p-3 text-sm text-slate-200 shadow-lg">
                               <div className="mb-3 flex items-center justify-between gap-3">
                                 <div className="flex items-center gap-2">
                                   <h4 className="text-sm font-semibold">Saved resumes</h4>
@@ -948,7 +948,7 @@ export default function AnalysisWorkspacePage() {
                 </div>
 
                 {resumeUploadError && (
-                  <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600" role="alert">
+                  <p className="rounded-xl border border-rose-400/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-200" role="alert">
                     {resumeUploadError}
                   </p>
                 )}
@@ -968,7 +968,7 @@ export default function AnalysisWorkspacePage() {
                 />
 
                 <div>
-                  <label htmlFor="job-description" className="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate-600">
+                  <label htmlFor="job-description" className="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate-300">
                     Job description
                   </label>
                   <textarea
@@ -1057,7 +1057,7 @@ export default function AnalysisWorkspacePage() {
         </ScrollReveal>
 
         {error && (
-          <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
+          <div className="rounded-2xl border border-rose-400/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">{error}</div>
         )}
 
         {result && (
@@ -1105,11 +1105,11 @@ export default function AnalysisWorkspacePage() {
                   ].map((metric, index) => (
                     <article
                       key={metric.label}
-                      className="score-metric-card rounded-[26px] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-[0_24px_60px_-46px_rgba(15,23,42,0.2)]"
+                      className="score-metric-card rounded-[26px] border border-white/10 bg-white/5 p-5 shadow-[0_24px_60px_-46px_rgba(15,23,42,0.52)]"
                       style={{ animationDelay: `${index * 80}ms` }}
                     >
-                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">{metric.label}</p>
-                      <p className="mt-3 text-4xl font-black tracking-tight text-slate-900">{metric.value}</p>
+                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-300">{metric.label}</p>
+                      <p className="mt-3 text-4xl font-black tracking-tight text-white">{metric.value}</p>
                     </article>
                   ))}
                 </div>
@@ -1117,11 +1117,11 @@ export default function AnalysisWorkspacePage() {
             </ScrollReveal>
             {optimizedHtml && (
               <ScrollReveal delayMs={340}>
-                <div ref={optimizedRef} className="mt-6 rounded-[24px] border border-indigo-100 bg-white p-4">
+                <div ref={optimizedRef} className="mt-6 rounded-[24px] border border-indigo-300/30 bg-indigo-400/10 p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-sm font-semibold text-indigo-700">Optimized resume preview</p>
-                      <p className="mt-1 text-xs text-slate-500">AI-suggested improvements based on the analysis.</p>
+                      <p className="text-sm font-semibold text-indigo-100">Optimized resume preview</p>
+                      <p className="mt-1 text-xs text-slate-300">AI-suggested improvements based on the analysis.</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <button type="button" onClick={applyOptimizedToBuilder} className="crp-btn-primary inline-flex items-center gap-2 px-4 py-2 text-sm">
@@ -1132,21 +1132,21 @@ export default function AnalysisWorkspacePage() {
                       </button>
                     </div>
                   </div>
-                  <div className="mt-4 prose max-w-none text-sm text-slate-700" dangerouslySetInnerHTML={{ __html: optimizedHtml }} />
+                  <div className="mt-4 prose max-w-none text-sm text-slate-200" dangerouslySetInnerHTML={{ __html: optimizedHtml }} />
                 </div>
               </ScrollReveal>
             )}
 
             <ScrollReveal delayMs={185}>
               <div className="grid gap-5 xl:grid-cols-[0.82fr_1.18fr] xl:items-start">
-                <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_24px_60px_-46px_rgba(15,23,42,0.22)] md:p-6">
+                <div className="rounded-[28px] border border-white/10 bg-white/5 p-5 shadow-[0_24px_60px_-46px_rgba(15,23,42,0.52)] md:p-6">
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Keyword coverage</p>
                   <div className="mt-4">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-600">Matched keywords</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-300">Matched keywords</p>
                     <div className="mt-2 flex flex-wrap gap-2">
                       {result.matchedKeywords?.length ? (
                         result.matchedKeywords.slice(0, 12).map((keyword) => (
-                          <span key={keyword} className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                          <span key={keyword} className="rounded-full border border-emerald-300/35 bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-200">
                             {keyword}
                           </span>
                         ))
@@ -1157,11 +1157,11 @@ export default function AnalysisWorkspacePage() {
                   </div>
 
                   <div className="mt-6">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-600">Missing keywords</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-300">Missing keywords</p>
                     <div className="mt-2 flex flex-wrap gap-2">
                       {result.missingKeywords?.length ? (
                         result.missingKeywords.slice(0, 12).map((keyword) => (
-                          <span key={keyword} className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
+                          <span key={keyword} className="rounded-full border border-amber-300/35 bg-amber-400/10 px-3 py-1 text-xs font-semibold text-amber-200">
                             {keyword}
                           </span>
                         ))
@@ -1172,13 +1172,13 @@ export default function AnalysisWorkspacePage() {
                   </div>
                 </div>
 
-                <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_24px_60px_-46px_rgba(15,23,42,0.22)] md:p-6">
+                <div className="rounded-[28px] border border-white/10 bg-white/5 p-5 shadow-[0_24px_60px_-46px_rgba(15,23,42,0.52)] md:p-6">
                   <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Issues and risk notes</p>
                       <h3 className="mt-2 text-2xl font-black tracking-tight text-slate-900">What is lowering fit right now</h3>
                     </div>
-                    <div className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
+                    <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-300">
                       {result.issues?.length ?? 0} issues surfaced
                     </div>
                   </div>
@@ -1186,12 +1186,12 @@ export default function AnalysisWorkspacePage() {
                   <div className="mt-4 space-y-3">
                     {result.issues?.length ? (
                       result.issues.map((issue) => (
-                        <div key={issue} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm leading-relaxed text-slate-700">
+                        <div key={issue} className="rounded-2xl border border-white/10 bg-slate-900/70 p-4 text-sm leading-relaxed text-slate-200">
                           {issue}
                         </div>
                       ))
                     ) : (
-                      <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
+                      <div className="rounded-2xl border border-white/10 bg-slate-900/70 p-4 text-sm text-slate-300">
                         No explicit issues were returned for this resume and job description pair.
                       </div>
                     )}
@@ -1207,7 +1207,7 @@ export default function AnalysisWorkspacePage() {
                     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Gap breakdown</p>
                     <h3 className="text-3xl font-black tracking-tight text-slate-900">The capability gaps worth closing next</h3>
                   </div>
-                  <div className="rounded-full border border-slate-200 bg-white px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
+                  <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-300">
                     {result.gaps?.length ?? 0} gaps detected
                   </div>
                 </div>
@@ -1222,11 +1222,11 @@ export default function AnalysisWorkspacePage() {
                     // Append index to the key to guarantee uniqueness in case
                     // the analysis returns duplicate gap IDs (defensive).
                     <ScrollReveal key={`${gap.id}-${index}`} delayMs={250 + index * 45}>
-                      <article className="rounded-[30px] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-[0_24px_60px_-46px_rgba(15,23,42,0.2)] md:p-6">
+                      <article className="rounded-[30px] border border-white/10 bg-white/5 p-5 shadow-[0_24px_60px_-46px_rgba(15,23,42,0.52)] md:p-6">
                         <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
                           <div className="min-w-0">
                             <div className="flex flex-wrap items-center gap-2">
-                              <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
+                              <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-indigo-400/20 text-indigo-200">
                                 <Icon className="h-4 w-4" />
                               </div>
                               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">{gap.category}</p>
@@ -1246,12 +1246,12 @@ export default function AnalysisWorkspacePage() {
                         </div>
 
                         {gap.practicalPlan?.length ? (
-                          <div className="mt-5 rounded-[24px] border border-indigo-100 bg-indigo-50/60 p-4">
-                            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-indigo-700">Practical weekly plan</p>
+                          <div className="mt-5 rounded-[24px] border border-indigo-300/30 bg-indigo-400/10 p-4">
+                            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-indigo-100">Practical weekly plan</p>
                             <ul className="mt-3 space-y-2">
                               {gap.practicalPlan.map((step) => (
-                                <li key={`${gap.id}-${step}`} className="flex items-start gap-2 text-sm text-slate-700">
-                                  <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-500" />
+                                <li key={`${gap.id}-${step}`} className="flex items-start gap-2 text-sm text-slate-200">
+                                  <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-300" />
                                   <span>{step}</span>
                                 </li>
                               ))}
@@ -1260,11 +1260,11 @@ export default function AnalysisWorkspacePage() {
                         ) : null}
 
                         {gap.learningResources?.length > 0 && (
-                          <div className="mt-5 border-t border-slate-100 pt-5">
+                          <div className="mt-5 border-t border-white/10 pt-5">
                             <button
                               type="button"
                               onClick={() => toggleResources(gap.id)}
-                              className="inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:text-indigo-700"
+                              className="inline-flex items-center gap-1 text-sm font-semibold text-indigo-200 hover:text-indigo-100"
                             >
                               Learning resources ({gap.learningResources.length})
                               {resourcesOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -1280,13 +1280,13 @@ export default function AnalysisWorkspacePage() {
                                       href={platformUrl(resource)}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className="group rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-indigo-200 hover:bg-indigo-50"
+                                      className="group rounded-2xl border border-white/10 bg-slate-900/70 p-4 transition hover:border-indigo-300/40 hover:bg-indigo-400/10"
                                     >
                                       <div className="flex items-center gap-2">
-                                        <ResourceIcon className="h-4 w-4 text-indigo-600" />
-                                        <p className="text-sm font-semibold text-slate-800 group-hover:text-indigo-700">{resource.title}</p>
+                                        <ResourceIcon className="h-4 w-4 text-indigo-200" />
+                                        <p className="text-sm font-semibold text-slate-100 group-hover:text-indigo-100">{resource.title}</p>
                                       </div>
-                                      <p className="mt-1 text-xs text-slate-500">{resource.platform}</p>
+                                      <p className="mt-1 text-xs text-slate-300">{resource.platform}</p>
                                     </a>
                                   );
                                 })}
@@ -1299,19 +1299,19 @@ export default function AnalysisWorkspacePage() {
                   );
                 })
               ) : (
-                <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-600">
+                <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300">
                   No explicit gaps were returned for this resume and job description pair.
                 </div>
               )}
             </div>
 
             <ScrollReveal delayMs={310}>
-              <div className="rounded-[28px] border border-indigo-100 bg-[linear-gradient(180deg,#eef2ff_0%,#f5f7ff_100%)] p-6 shadow-[0_20px_50px_-42px_rgba(15,23,42,0.2)] md:p-7">
+              <div className="rounded-[28px] border border-indigo-300/30 bg-indigo-400/10 p-6 shadow-[0_20px_50px_-42px_rgba(15,23,42,0.45)] md:p-7">
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                   <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-indigo-600">Next move</p>
-                    <h3 className="mt-2 text-2xl font-black tracking-tight text-slate-900">Take the strongest recommendations into the builder.</h3>
-                    <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-indigo-100">Next move</p>
+                    <h3 className="mt-2 text-2xl font-black tracking-tight text-white">Take the strongest recommendations into the builder.</h3>
+                    <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-300">
                       Use Resume Builder to apply the missing keywords, stronger proof points, and tighter positioning that this role needs.
                     </p>
                   </div>
@@ -1336,7 +1336,7 @@ export default function AnalysisWorkspacePage() {
                       )}
                     </button>
 
-                    <Link href="/create" className="crp-btn-secondary inline-flex min-h-[48px] items-center justify-center gap-2 px-6 py-3 text-sm text-indigo-700 hover:text-indigo-800">
+                    <Link href="/create" className="crp-btn-secondary inline-flex min-h-[48px] items-center justify-center gap-2 px-6 py-3 text-sm">
                       Apply in Resume Builder
                       <ArrowRight className="h-4 w-4" />
                     </Link>

@@ -52,7 +52,7 @@ function MonthYearSelect({
   }
 
   const selectClass =
-    "flex-1 border border-slate-200 rounded-lg px-2 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white disabled:bg-gray-50 disabled:text-gray-400";
+    "flex-1 rounded-xl border border-white/10 bg-slate-900/80 px-2 py-2.5 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-cyan-500 disabled:bg-slate-950 disabled:text-slate-500";
 
   return (
     <div className="flex flex-col gap-2 md:flex-row">
@@ -87,8 +87,8 @@ function ToolbarBtn({
       onMouseDown={(e) => { e.preventDefault(); onClick(e); }}
       className={`min-h-[44px] min-w-[44px] rounded-md p-2 transition-all duration-100 md:min-h-0 md:min-w-0 md:p-1.5 ${
         active
-          ? "bg-blue-600 text-white shadow-sm"
-          : "text-gray-500 hover:text-gray-900 hover:bg-gray-100"
+          ? "bg-cyan-500 text-slate-950 shadow-sm"
+          : "text-slate-300 hover:text-white hover:bg-white/5"
       }`}
     >
       {children}
@@ -97,7 +97,7 @@ function ToolbarBtn({
 }
 
 function Divider() {
-  return <div className="w-px h-5 bg-gray-200 mx-1 flex-shrink-0" />;
+  return <div className="mx-1 h-5 w-px flex-shrink-0 bg-white/10" />;
 }
 
 function DescriptionEditor({
@@ -223,9 +223,9 @@ function DescriptionEditor({
   }
 
   return (
-    <div className="border border-slate-200 rounded-xl overflow-hidden shadow-sm focus-within:shadow-md focus-within:border-blue-400 transition-all duration-200 bg-white">
+    <div className="overflow-hidden rounded-2xl border border-white/10 bg-slate-950/40 shadow-sm transition-all duration-200 focus-within:border-cyan-400/50 focus-within:shadow-[0_0_0_4px_rgba(103,232,249,0.12)]">
       {/* Toolbar */}
-      <div className="flex items-center gap-0.5 px-2.5 py-2 bg-slate-50 border-b border-slate-200 flex-wrap">
+      <div className="flex flex-wrap items-center gap-0.5 border-b border-white/10 bg-slate-900/80 px-2.5 py-2">
         {/* Text formatting */}
         <ToolbarBtn title="Bold (Ctrl+B)" active={!!editor?.isActive("bold")} onClick={() => editor?.chain().focus().toggleBold().run()}>
           <Bold size={14} />
@@ -268,7 +268,7 @@ function DescriptionEditor({
         </ToolbarBtn>
 
         {/* Character count - right aligned */}
-        <div className="ml-auto text-[10px] text-gray-400 font-mono tabular-nums pr-1">
+        <div className="ml-auto pr-1 font-mono text-[10px] tabular-nums text-slate-400">
           {charCount} chars
         </div>
       </div>
@@ -277,7 +277,7 @@ function DescriptionEditor({
       <EditorContent
         id={id}
         editor={editor}
-        className="tiptap-editor px-4 py-3 text-sm min-h-[140px] text-gray-800"
+        className="tiptap-editor min-h-[140px] px-4 py-3 text-sm text-slate-100"
       />
 
       <div className="flex flex-col items-start justify-between gap-2 px-3 pb-3 pt-1 md:flex-row md:items-center">
@@ -285,7 +285,7 @@ function DescriptionEditor({
           type="button"
           onClick={handleOptimizeClick}
           disabled={isOptimizing || !editor?.getText().trim()}
-          className="flex min-h-[44px] w-full items-center justify-center gap-1.5 rounded-lg bg-blue-600 px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-40 md:w-auto"
+          className="flex min-h-[44px] w-full items-center justify-center gap-1.5 rounded-xl border border-cyan-400/30 bg-cyan-500/10 px-4 py-1.5 text-xs font-medium text-cyan-100 transition-colors hover:bg-cyan-500/15 disabled:cursor-not-allowed disabled:opacity-40 md:w-auto"
         >
           {isOptimizing ? (
             <><span className="animate-spin inline-block">...</span> Optimizing...</>
@@ -293,7 +293,7 @@ function DescriptionEditor({
             <>Optimize {hasSelection ? "Selection" : "Content"}</>
           )}
         </button>
-        <span className="break-words text-[11px] text-gray-500">
+        <span className="break-words text-[11px] text-slate-400">
           {hasSelection ? "Selected text will be optimized only." : "Tip: select a line to optimize only that part."}
         </span>
       </div>
@@ -358,55 +358,57 @@ export default function ExperienceStep() {
   }
 
   return (
-    <div>
-      <h2 className="mb-1 text-[22px] font-bold text-slate-800 md:text-[30px]">Work Experience</h2>
-      <p className="mb-6 break-words text-sm text-slate-500 md:text-base">Add your roles. You can optimize the full description or just a selected line.</p>
+    <div className="space-y-6">
+      <div>
+        <h2 className="mb-1 text-[22px] font-bold text-slate-100 md:text-[30px]">Work Experience</h2>
+        <p className="mb-0 break-words text-sm text-slate-300 md:text-base">Add your roles. You can optimize the full description or just a selected line.</p>
+      </div>
 
       <div className="space-y-6">
         {resumeData.workExperience.map((w, idx) => {
           const isCurrent = w.endDate === "Present";
           return (
-            <div key={w.id} className="max-w-full overflow-hidden rounded-xl border border-slate-200">
-                <div className="flex items-center justify-between gap-2 border-b border-slate-200 bg-slate-50 px-4 py-3">
-                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Position {idx + 1}</span>
-                <button type="button" onClick={() => removeWorkExperience(w.id)} className="min-h-[44px] px-2 text-xs font-medium text-red-400 hover:text-red-600 md:min-h-0 md:px-0">Remove</button>
+            <div key={w.id} className="max-w-full overflow-hidden rounded-2xl border border-white/10 bg-white/3">
+              <div className="flex items-center justify-between gap-2 border-b border-white/10 bg-slate-950/40 px-4 py-3">
+                <span className="text-xs font-semibold text-slate-300 uppercase tracking-wide">Position {idx + 1}</span>
+                <button type="button" onClick={() => removeWorkExperience(w.id)} className="min-h-[44px] px-2 text-xs font-medium text-red-300 hover:text-red-200 md:min-h-0 md:px-0">Remove</button>
               </div>
 
               <div className="space-y-4 p-4 md:p-6">
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
-                    <label htmlFor={`job-title-${w.id}`} className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">Job Title <span className="text-red-500">*</span></label>
-                    <input id={`job-title-${w.id}`} value={w.title} onChange={(e) => updateWorkExperience(w.id, { title: e.target.value })} placeholder="e.g. Senior Software Engineer" className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    <label htmlFor={`job-title-${w.id}`} className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-300">Job Title <span className="text-red-400">*</span></label>
+                    <input id={`job-title-${w.id}`} value={w.title} onChange={(e) => updateWorkExperience(w.id, { title: e.target.value })} placeholder="e.g. Senior Software Engineer" className="crp-input" />
                   </div>
                   <div>
-                    <label htmlFor={`company-${w.id}`} className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">Company <span className="text-red-500">*</span></label>
-                    <input id={`company-${w.id}`} value={w.company} onChange={(e) => updateWorkExperience(w.id, { company: e.target.value })} placeholder="e.g. Acme Corp" className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    <label htmlFor={`company-${w.id}`} className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-300">Company <span className="text-red-400">*</span></label>
+                    <input id={`company-${w.id}`} value={w.company} onChange={(e) => updateWorkExperience(w.id, { company: e.target.value })} placeholder="e.g. Acme Corp" className="crp-input" />
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor={`location-${w.id}`} className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">Location</label>
-                  <input id={`location-${w.id}`} value={w.location || ""} onChange={(e) => updateWorkExperience(w.id, { location: e.target.value })} placeholder="e.g. New York, NY (or Remote)" className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  <label htmlFor={`location-${w.id}`} className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-300">Location</label>
+                  <input id={`location-${w.id}`} value={w.location || ""} onChange={(e) => updateWorkExperience(w.id, { location: e.target.value })} placeholder="e.g. New York, NY (or Remote)" className="crp-input" />
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
-                    <label htmlFor={`start-${w.id}-month`} className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">Start Date</label>
+                    <label htmlFor={`start-${w.id}-month`} className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-300">Start Date</label>
                     <MonthYearSelect idPrefix={`start-${w.id}`} value={w.startDate} onChange={(v) => updateWorkExperience(w.id, { startDate: v })} />
                   </div>
                   <div>
-                    <label htmlFor={`end-${w.id}-month`} className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">End Date</label>
+                    <label htmlFor={`end-${w.id}-month`} className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-300">End Date</label>
                     <MonthYearSelect idPrefix={`end-${w.id}`} value={isCurrent ? "" : w.endDate} onChange={(v) => updateWorkExperience(w.id, { endDate: v })} disabled={isCurrent} />
-                    <label className="inline-flex items-center gap-2 mt-2 cursor-pointer select-none">
-                      <input type="checkbox" checked={isCurrent} onChange={(e) => updateWorkExperience(w.id, { endDate: e.target.checked ? "Present" : "" })} className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-                      <span className="text-xs text-slate-600">Currently working here</span>
+                    <label className="mt-2 inline-flex cursor-pointer select-none items-center gap-2">
+                      <input type="checkbox" checked={isCurrent} onChange={(e) => updateWorkExperience(w.id, { endDate: e.target.checked ? "Present" : "" })} className="rounded border-slate-500 bg-slate-900 text-cyan-400 focus:ring-cyan-500" />
+                      <span className="text-xs text-slate-300">Currently working here</span>
                     </label>
                   </div>
                 </div>
 
                 {/* Description - rich text editor */}
                 <div>
-                  <label htmlFor={`description-${w.id}`} className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-600">Description</label>
+                  <label htmlFor={`description-${w.id}`} className="mb-1.5 block break-words text-xs font-semibold uppercase tracking-wide text-slate-300">Description</label>
                   <DescriptionEditor
                     id={`description-${w.id}`}
                     value={w.description}
@@ -424,7 +426,7 @@ export default function ExperienceStep() {
       <button
         type="button"
         onClick={addWorkExperience}
-        className="mt-4 min-h-[44px] w-full rounded-xl border-2 border-dashed border-slate-200 py-3 text-sm font-medium text-gray-500 transition-colors hover:border-blue-400 hover:text-blue-600"
+        className="mt-4 min-h-[44px] w-full rounded-xl border-2 border-dashed border-white/10 bg-white/3 py-3 text-sm font-medium text-slate-300 transition-colors hover:border-cyan-400/40 hover:text-cyan-100"
       >
         + Add Position
       </button>
@@ -433,14 +435,14 @@ export default function ExperienceStep() {
         <button
           type="button"
           onClick={prevStep}
-          className="min-h-[44px] w-full rounded-lg border border-slate-200 px-5 py-2.5 font-medium text-slate-600 transition-colors hover:bg-slate-50 md:w-auto"
+          className="crp-btn crp-btn-secondary min-h-[44px] w-full md:w-auto"
         >
           Back
         </button>
         <button
           type="button"
           onClick={nextStep}
-          className="min-h-[44px] w-full rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-2.5 font-medium text-white transition-colors hover:from-blue-700 hover:to-indigo-700 md:w-auto"
+          className="crp-btn crp-btn-primary min-h-[44px] w-full md:w-auto"
         >
           Next: Education
         </button>

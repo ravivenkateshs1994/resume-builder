@@ -7,7 +7,7 @@ export function SiteFooter() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-slate-200 bg-white">
+    <footer className="border-t border-white/10 bg-slate-950/90">
       <div className="mx-auto max-w-7xl px-4 py-12 md:px-6 lg:py-16">
         <div className="xl:grid xl:grid-cols-3 xl:gap-8">
           {/* Brand Section */}
@@ -24,7 +24,7 @@ export function SiteFooter() {
               </div>
               <span className="sr-only">Career Readiness</span>
             </Link>
-            <p className="max-w-xs text-sm leading-relaxed text-slate-500">
+            <p className="max-w-xs text-sm leading-relaxed text-slate-300">
               Your career execution workspace for role-targeted resumes, skill-gap intelligence, and interview readiness.
             </p>
             <p className="text-xs font-medium uppercase tracking-[0.12em] text-slate-400">
@@ -35,20 +35,20 @@ export function SiteFooter() {
           <div className="mt-12 xl:col-span-2 xl:mt-0">
             <div className="grid grid-cols-2 gap-8 md:grid-cols-3">
               <div>
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Platform</h3>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200">Platform</h3>
                 <ul className="mt-4 space-y-3">
                   <li>
-                    <Link href="/create" className="text-sm text-slate-500 hover:text-indigo-600 transition-colors inline-flex items-center gap-1.5">
+                    <Link href="/create" className="text-sm text-slate-300 hover:text-cyan-200 transition-colors inline-flex items-center gap-1.5">
                       Resume Builder
                     </Link>
                   </li>
                   <li>
-                    <Link href="/gap-analysis" className="text-sm text-slate-500 hover:text-indigo-600 transition-colors">
+                    <Link href="/gap-analysis" className="text-sm text-slate-300 hover:text-cyan-200 transition-colors">
                       Gap Analysis
                     </Link>
                   </li>
                   <li>
-                    <Link href="/dashboard" className="text-sm text-slate-500 hover:text-indigo-600 transition-colors">
+                    <Link href="/dashboard" className="text-sm text-slate-300 hover:text-cyan-200 transition-colors">
                       Career Dashboard
                     </Link>
                   </li>
@@ -56,24 +56,24 @@ export function SiteFooter() {
               </div>
 
               <div>
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Use Cases</h3>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200">Use Cases</h3>
                 <ul className="mt-4 space-y-3">
-                  <li className="text-sm text-slate-500">Students and Freshers</li>
-                  <li className="text-sm text-slate-500">Career Switchers</li>
-                  <li className="text-sm text-slate-500">Experienced Professionals</li>
+                  <li className="text-sm text-slate-300">Students and Freshers</li>
+                  <li className="text-sm text-slate-300">Career Switchers</li>
+                  <li className="text-sm text-slate-300">Experienced Professionals</li>
                 </ul>
               </div>
 
               <div>
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Legal</h3>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200">Legal</h3>
                 <ul className="mt-4 space-y-3">
                   <li>
-                    <Link href="/privacy" className="text-sm text-slate-500 hover:text-indigo-600 transition-colors">
+                    <Link href="/privacy" className="text-sm text-slate-300 hover:text-cyan-200 transition-colors">
                       Privacy Policy
                     </Link>
                   </li>
                   <li>
-                    <Link href="/terms" className="text-sm text-slate-500 hover:text-indigo-600 transition-colors">
+                    <Link href="/terms" className="text-sm text-slate-300 hover:text-cyan-200 transition-colors">
                       Terms of Service
                     </Link>
                   </li>
@@ -84,13 +84,13 @@ export function SiteFooter() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 border-t border-slate-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-xs text-slate-600">
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 md:flex-row">
+          <p className="text-xs text-slate-400">
             &copy; {currentYear} Career Readiness Platform. Built for high-intent job seekers.
           </p>
           <div className="flex items-center gap-6">
-            <span className="flex items-center gap-1.5 text-xs text-slate-600">
-              <span className="inline-block w-2 h-2 rounded-full bg-green-500" />
+            <span className="flex items-center gap-1.5 text-xs text-slate-400">
+              <span className="inline-block h-2 w-2 rounded-full bg-green-500" />
               Systems Operational
             </span>
           </div>

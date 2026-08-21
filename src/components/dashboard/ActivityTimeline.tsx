@@ -24,7 +24,6 @@ export default function ActivityTimeline({ items }: { items: any[] }) {
 
   return (
     <div className="relative overflow-hidden rounded-[26px] border border-white/10 bg-slate-950 p-4 text-white shadow-[0_26px_70px_-48px_rgba(15,23,42,0.75)]">
-      <div aria-hidden="true" className="dashboard-hero-deco pointer-events-none absolute inset-0 opacity-60" />
       <div className="relative z-10">
         <div className="mb-4 flex items-center justify-between gap-3">
           <h4 className="text-sm font-bold tracking-tight text-white">Recent activity</h4>

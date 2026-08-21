@@ -18,13 +18,10 @@ export default function HeroCard({ userName }: Props) {
   const widgets = exp.widgets.slice(0, 3);
 
   return (
-    <div className="relative overflow-hidden rounded-[34px] border border-white/10 bg-slate-950 p-4 text-white shadow-[0_36px_90px_-52px_rgba(15,23,42,0.82)] sm:p-5">
-      <div aria-hidden="true" className="dashboard-hero-deco pointer-events-none absolute inset-0 opacity-90" />
-      <div aria-hidden="true" className="dashboard-hero-scan pointer-events-none absolute inset-0" />
-
+    <div className="crp-card crp-card--soft relative overflow-hidden p-4 text-white sm:p-5">
       <div className="relative z-10 grid gap-6 lg:grid-cols-[1.02fr_0.98fr] lg:items-center">
         <div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-cyan-100">
+          <div className="crp-badge inline-flex items-center gap-2 border-cyan-400/20 bg-cyan-400/10 text-cyan-100">
             <Sparkles className="h-3.5 w-3.5" />
             Dashboard cockpit
           </div>

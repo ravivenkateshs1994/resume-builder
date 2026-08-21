@@ -19,24 +19,11 @@ export default function StatCards({ stats }: { stats: Stat[] }) {
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
       {show.map((s, index) => (
-        <div
-          key={s.label}
-          className="relative overflow-hidden rounded-[26px] border border-white/10 bg-slate-950 p-4 text-white shadow-[0_26px_70px_-48px_rgba(15,23,42,0.75)]"
-        >
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 opacity-40"
-            style={{
-              background:
-                index === 0
-                  ? "radial-gradient(circle at top right, rgba(14,165,233,0.22), transparent 55%)"
-                  : "radial-gradient(circle at top right, rgba(99,102,241,0.22), transparent 55%)",
-            }}
-          />
-          <div className="relative z-10 flex items-start justify-between gap-4">
+        <div key={s.label} className="crp-dashboard-tile">
+          <div className="crp-metric-row">
             <div className="min-w-0">
-              <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400 truncate">{s.label}</div>
-              <div className="mt-2 text-2xl font-extrabold leading-tight text-white truncate">{s.value}</div>
+              <div className="crp-metric-label truncate">{s.label}</div>
+              <div className="crp-metric-value mt-2 truncate">{s.value}</div>
             </div>
             <div className="flex flex-col items-end gap-2">
               <div className="flex h-9 w-9 items-center justify-center rounded-2xl border border-white/10 bg-white/5">
@@ -45,6 +32,12 @@ export default function StatCards({ stats }: { stats: Stat[] }) {
               {s.hint ? <div className="text-xs text-slate-400">{s.hint}</div> : null}
             </div>
           </div>
+          {s.trend ? (
+            <div className="crp-metric-trend mt-3">
+              <span>{s.trend.direction === "up" ? "▲" : "▼"}</span>
+              <span>{typeof s.trend.value === "number" ? `${s.trend.value}%` : s.trend.value}</span>
+            </div>
+          ) : null}
         </div>
       ))}
     </div>

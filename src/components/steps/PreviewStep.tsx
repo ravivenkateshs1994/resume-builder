@@ -189,15 +189,15 @@ export default function PreviewStep() {
   return (
     <div className="flex min-h-0 max-w-full flex-col gap-6 overflow-x-hidden">
       <div>
-        <h2 className="mb-1 text-[22px] font-bold text-slate-800 md:text-[30px]">Preview & Export</h2>
-        <p className="mb-6 break-words text-sm text-gray-500 md:text-base">
+        <h2 className="mb-1 text-[22px] font-bold text-slate-100 md:text-[30px]">Preview & Export</h2>
+        <p className="mb-0 break-words text-sm text-slate-300 md:text-base">
           Choose your template and accent color, then export your resume.
         </p>
       </div>
 
       {/* Template + Color selection */}
-      <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">
-        <p className="mb-3 text-sm font-semibold text-slate-700">Template</p>
+      <div className="rounded-2xl border border-white/10 bg-white/3 p-5">
+        <p className="mb-3 text-sm font-semibold text-slate-200">Template</p>
         <div className="flex flex-wrap gap-2">
           {TEMPLATE_CATALOG.map((t) => (
             <button
@@ -205,10 +205,10 @@ export default function PreviewStep() {
               type="button"
               onClick={() => setSelectedTemplate(t.id)}
               className={[
-                "rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors",
+                "rounded-xl border px-3 py-1.5 text-sm font-medium transition-colors",
                 selectedTemplate === t.id
-                  ? "border-indigo-500 bg-indigo-600 text-white shadow-sm"
-                  : "border-slate-200 bg-white text-slate-700 hover:border-indigo-300 hover:bg-indigo-50",
+                  ? "border-cyan-400/50 bg-cyan-500/15 text-cyan-100 shadow-sm"
+                  : "border-white/10 bg-slate-900/60 text-slate-300 hover:border-cyan-400/30 hover:bg-cyan-500/8",
               ].join(" ")}
             >
               {t.name}
@@ -216,21 +216,21 @@ export default function PreviewStep() {
           ))}
         </div>
 
-        <div className="mt-5 border-t border-slate-200 pt-4">
-          <p className="mb-2.5 text-sm font-semibold text-slate-700">Accent Color</p>
+        <div className="mt-5 border-t border-white/10 pt-4">
+          <p className="mb-2.5 text-sm font-semibold text-slate-200">Accent Color</p>
           <AccentColorPicker templateId={selectedTemplate} />
         </div>
       </div>
 
       {/* Resume Preview */}
-      <div className="max-w-full overflow-hidden rounded-xl border border-slate-200 shadow-sm">
-        <div className="flex items-center justify-between border-b border-gray-200 bg-gray-100 px-4 py-2 text-xs text-gray-500">
+      <div className="max-w-full overflow-hidden rounded-2xl border border-white/10 shadow-sm">
+        <div className="flex items-center justify-between border-b border-white/10 bg-slate-950/50 px-4 py-2 text-xs text-slate-300">
           <span>Resume Preview</span>
-          <span className="capitalize text-gray-400">{selectedTemplate} template</span>
+          <span className="capitalize text-slate-400">{selectedTemplate} template</span>
         </div>
         <div
           ref={previewRef}
-          className="max-h-[700px] overflow-y-auto overflow-x-hidden bg-white"
+          className="crp-keep-light max-h-[700px] overflow-y-auto overflow-x-hidden bg-white"
           style={{ zoom: 0.75 }}
         >
           <ResumeRenderer data={resumeData} templateId={selectedTemplate} accentColor={templateAccentColor} />

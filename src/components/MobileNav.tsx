@@ -21,12 +21,18 @@ export default function MobileNav() {
   const { isLoggedIn, userEmail, userFullName, signOut } = useSupabaseAuth();
   const pathname = usePathname() ?? "";
   const overlayRef = useRef<HTMLDivElement | null>(null);
+  const lastFocusedRef = useRef<HTMLElement | null>(null);
+  const menuButtonRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     if (!open) return;
+
+    if (!lastFocusedRef.current) {
+      lastFocusedRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    }
 
     const node = overlayRef.current;
     if (node) {
@@ -67,9 +73,18 @@ export default function MobileNav() {
 
   useEffect(() => { setOpen(false); }, [pathname]);
 
+  const closeMenu = () => {
+    setOpen(false);
+    requestAnimationFrame(() => {
+      lastFocusedRef.current?.focus();
+      if (menuButtonRef.current) menuButtonRef.current.focus();
+    });
+  };
+
   const overlay = (
     <div
       ref={overlayRef}
+      id="mobile-navigation-panel"
       style={{ backgroundColor: "#ffffff", position: "fixed", inset: 0, zIndex: 99999 }}
       className={`flex flex-col md:hidden transition-opacity duration-300 ${
         open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
@@ -77,6 +92,7 @@ export default function MobileNav() {
       aria-hidden={!open}
       role="dialog"
       aria-modal={open}
+      aria-label="Site navigation"
     >
       {/* Top bar */}
       <div className="flex h-16 shrink-0 items-center justify-between border-b border-slate-100 px-4 md:px-6">
@@ -97,8 +113,8 @@ export default function MobileNav() {
           ref={(el) => el?.focus()}
           type="button"
           aria-label="Close menu"
-          onClick={() => setOpen(false)}
-          className="flex h-10 w-10 items-center justify-center rounded-md border border-slate-100"
+          onClick={closeMenu}
+          className="flex h-10 w-10 items-center justify-center rounded-md border border-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
         >
           <svg className="h-4 w-4 text-slate-700" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -114,8 +130,8 @@ export default function MobileNav() {
             <Link
               key={link.href}
               href={link.href}
-              onClick={() => setOpen(false)}
-              className={`rounded-xl px-5 py-4 text-base font-semibold tracking-wide transition-colors ${
+              onClick={closeMenu}
+              className={`rounded-xl px-5 py-4 text-base font-semibold tracking-wide transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 ${
                 active
                   ? "bg-indigo-600 text-white"
                   : "text-slate-800 hover:bg-slate-100"
@@ -134,18 +150,18 @@ export default function MobileNav() {
             <div className="mb-3 truncate text-sm font-medium text-slate-900">{userFullName ?? userEmail ?? "Account"}</div>
             <Link
               href="/dashboard"
-              onClick={() => setOpen(false)}
-              className="block w-full rounded-xl bg-indigo-600 px-4 py-3 text-center font-semibold text-white"
+              onClick={closeMenu}
+              className="block w-full rounded-xl bg-indigo-600 px-4 py-3 text-center font-semibold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
             >
               My Dashboard
             </Link>
             <button
               type="button"
               onClick={() => {
-                setOpen(false);
+                closeMenu();
                 void signOut();
               }}
-              className="mt-2 block w-full rounded-xl border border-slate-200 px-4 py-3 text-center font-medium text-slate-700"
+              className="mt-2 block w-full rounded-xl border border-slate-200 px-4 py-3 text-center font-medium text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
             >
               Logout
             </button>
@@ -154,8 +170,8 @@ export default function MobileNav() {
           <div className="mt-4 border-t border-slate-100 pt-4">
             <Link
               href="/login"
-              onClick={() => setOpen(false)}
-              className="block w-full rounded-xl bg-indigo-600 px-4 py-3 text-center font-semibold text-white"
+              onClick={closeMenu}
+              className="block w-full rounded-xl bg-indigo-600 px-4 py-3 text-center font-semibold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
             >
               Login
             </Link>
@@ -171,11 +187,20 @@ export default function MobileNav() {
     <>
       {/* Hamburger button */}
       <button
+        ref={menuButtonRef}
         type="button"
         aria-label={open ? "Close menu" : "Open menu"}
         aria-expanded={open}
-        onClick={() => setOpen((v) => !v)}
-        className="relative flex h-10 w-10 items-center justify-center md:hidden"
+        aria-controls="mobile-navigation-panel"
+        onClick={() => {
+          if (open) {
+            closeMenu();
+            return;
+          }
+          lastFocusedRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+          setOpen(true);
+        }}
+        className="relative flex h-10 w-10 items-center justify-center rounded-md md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
         style={{ zIndex: 100000 }}
       >
         <Menu className="h-5 w-5 text-slate-800" aria-hidden="true" />

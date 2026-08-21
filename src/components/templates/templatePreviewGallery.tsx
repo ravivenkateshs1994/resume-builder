@@ -31,7 +31,7 @@ const TemplatePreviewCardInner = ({
       : getDefaultTemplateAccent(template.id);
 
   return (
-    <div className="max-w-full overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-2 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.32)]">
+    <div className="crp-keep-light max-w-full overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-2 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.32)]">
       <TemplateThumbnail
         templateId={template.id as TemplateId}
         accentColor={accentColor}

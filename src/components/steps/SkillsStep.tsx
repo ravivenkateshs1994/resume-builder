@@ -99,20 +99,22 @@ export default function SkillsStep() {
   }
 
   return (
-    <div>
-      <h2 className="mb-1 text-[22px] font-bold text-slate-800 md:text-[30px]">Skills & Summary</h2>
-      <p className="mb-6 break-words text-sm text-slate-500 md:text-base">
-        Add your skills and let AI write your professional summary.
-      </p>
+    <div className="space-y-6">
+      <div>
+        <h2 className="mb-1 text-[22px] font-bold text-slate-100 md:text-[30px]">Skills & Summary</h2>
+        <p className="mb-0 break-words text-sm text-slate-300 md:text-base">
+          Add your skills and let AI write your professional summary.
+        </p>
+      </div>
 
       {/* Skills */}
-      <div className="mb-6">
+      <div className="mb-6 rounded-2xl border border-white/10 bg-white/3 p-4 md:p-5">
         <div className="mb-2 flex flex-col items-start justify-between gap-2 md:flex-row md:items-center">
-          <label htmlFor="skill-input" className="block text-sm font-medium text-slate-700">Skills</label>
+          <label htmlFor="skill-input" className="block text-sm font-medium text-slate-200">Skills</label>
           <button
             type="button"
             onClick={suggestSkills}
-            className="flex min-h-[44px] w-full items-center justify-center gap-1.5 rounded-lg bg-blue-600 px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-blue-700 md:w-auto"
+            className="flex min-h-[44px] w-full items-center justify-center gap-1.5 rounded-xl border border-cyan-400/30 bg-cyan-500/10 px-4 py-1.5 text-xs font-medium text-cyan-100 transition-colors hover:bg-cyan-500/15 md:w-auto"
           >
             Suggest skills for role
           </button>
@@ -124,20 +126,20 @@ export default function SkillsStep() {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && addSkill()}
             placeholder="Type a skill and press Enter"
-            className="w-full flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="crp-input w-full flex-1"
           />
           <button
             type="button"
             onClick={() => addSkill()}
-            className="min-h-[44px] w-full rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-4 text-sm font-medium text-white transition-colors hover:from-blue-700 hover:to-indigo-700 md:w-auto"
+            className="crp-btn crp-btn-primary min-h-[44px] w-full md:w-auto"
           >
             Add
           </button>
         </div>
 
         {skillSuggestions.length > 0 && (
-          <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-xl">
-            <p className="text-[11px] font-semibold text-blue-600 uppercase tracking-wide mb-2">
+          <div className="mb-3 rounded-xl border border-cyan-400/20 bg-cyan-500/8 p-3">
+            <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-cyan-200">
               Suggested - click to add
             </p>
             <div className="flex flex-wrap gap-2">
@@ -146,7 +148,7 @@ export default function SkillsStep() {
                   key={s}
                   type="button"
                   onClick={() => addSuggestedSkill(s)}
-                  className="inline-flex min-h-[44px] items-center gap-1 rounded-full border border-blue-300 bg-white px-3 py-1 text-xs font-medium text-blue-700 transition-colors hover:bg-blue-100 md:min-h-0"
+                  className="inline-flex min-h-[44px] items-center gap-1 rounded-full border border-cyan-400/30 bg-slate-900/80 px-3 py-1 text-xs font-medium text-cyan-100 transition-colors hover:bg-cyan-400/10 md:min-h-0"
                 >
                   + {s}
                 </button>
@@ -159,13 +161,13 @@ export default function SkillsStep() {
           {resumeData.skills.map((skill) => (
             <span
               key={skill}
-              className="inline-flex items-center gap-1 bg-blue-50 text-blue-700 border border-blue-200 rounded-full px-3 py-1 text-sm"
+              className="inline-flex items-center gap-1 rounded-full border border-cyan-400/20 bg-cyan-500/8 px-3 py-1 text-sm text-cyan-100"
             >
               {skill}
               <button
                 type="button"
                 onClick={() => removeSkill(skill)}
-                className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center leading-none text-blue-400 hover:text-blue-600 md:min-h-0 md:min-w-0"
+                className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center leading-none text-cyan-200 hover:text-cyan-100 md:min-h-0 md:min-w-0"
               >
                 x
               </button>
@@ -173,19 +175,19 @@ export default function SkillsStep() {
           ))}
         </div>
         {resumeData.skills.length === 0 && !skillSuggestions.length && (
-          <p className="text-slate-400 text-sm mt-2">No skills added yet.</p>
+          <p className="mt-2 text-sm text-slate-400">No skills added yet.</p>
         )}
       </div>
 
       {/* Professional Summary */}
-        <div>
+        <div className="rounded-2xl border border-white/10 bg-white/3 p-4 md:p-5">
         <div className="mb-2 flex flex-col items-start justify-between gap-2 md:flex-row md:items-center">
-          <label htmlFor="professional-summary" className="block text-sm font-medium text-slate-700">Professional Summary</label>
+          <label htmlFor="professional-summary" className="block text-sm font-medium text-slate-200">Professional Summary</label>
           <button
             type="button"
             onClick={generateSummary}
             disabled={generatingSummary}
-            className="flex min-h-[44px] w-full items-center justify-center gap-1.5 rounded-lg bg-blue-600 px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50 md:w-auto"
+            className="flex min-h-[44px] w-full items-center justify-center gap-1.5 rounded-xl border border-cyan-400/30 bg-cyan-500/10 px-4 py-1.5 text-xs font-medium text-cyan-100 transition-colors hover:bg-cyan-500/15 disabled:opacity-50 md:w-auto"
           >
             {generatingSummary ? (
               <><span className="animate-spin">...</span> Generating...</>
@@ -200,19 +202,19 @@ export default function SkillsStep() {
           onChange={(e) => setSummary(e.target.value)}
           rows={5}
           placeholder="Write your professional summary or click 'Generate with AI'..."
-          className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          className="crp-input min-h-[140px] resize-none"
         />
         {summaryError && (
-          <p role="alert" aria-live="assertive" className="text-red-500 text-xs mt-1.5">{summaryError}</p>
+          <p role="alert" aria-live="assertive" className="mt-1.5 text-xs text-red-400">{summaryError}</p>
         )}
-        <p className="text-xs text-slate-400 mt-1">{resumeData.summary.length} characters</p>
+        <p className="mt-1 text-xs text-slate-400">{resumeData.summary.length} characters</p>
       </div>
 
       <div className="mt-8 flex flex-col gap-3 md:flex-row md:justify-between">
         <button
           type="button"
           onClick={prevStep}
-          className="min-h-[44px] w-full rounded-lg border border-slate-200 px-5 py-2.5 font-medium text-slate-600 transition-colors hover:bg-slate-50 md:w-auto"
+          className="crp-btn crp-btn-secondary min-h-[44px] w-full md:w-auto"
         >
           Back
         </button>

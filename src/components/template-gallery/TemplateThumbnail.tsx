@@ -39,7 +39,7 @@ function StaticThumbnail({
   onError: () => void;
 }) {
   return (
-    <div className={`relative w-full bg-white ${className}`} style={{ aspectRatio: "210 / 297" }}>
+    <div className={`crp-keep-light relative w-full bg-white ${className}`} style={{ aspectRatio: "210 / 297" }}>
       <Image
         src={src}
         alt={`${templateId} template preview`}
@@ -58,7 +58,7 @@ function StaticThumbnail({
 function ThumbnailPlaceholder({ className }: { className: string }) {
   return (
     <div
-      className={`relative flex w-full items-center justify-center bg-slate-100 ${className}`}
+      className={`crp-keep-light relative flex w-full items-center justify-center bg-slate-100 ${className}`}
       style={{ aspectRatio: "210 / 297" }}
     >
       <div className="flex flex-col items-center gap-2 text-slate-400">

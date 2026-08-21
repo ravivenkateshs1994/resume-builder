@@ -21,12 +21,12 @@ export function AuthGateCard({
   className = "",
 }: AuthGateCardProps) {
   return (
-    <div className={`w-full max-w-md rounded-[28px] border border-slate-200 bg-white p-8 text-center shadow-lg ${className}`.trim()}>
-      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-indigo-50">
-        <Lock className="h-7 w-7 text-indigo-600" />
+    <div className={`w-full max-w-md rounded-[28px] border border-white/10 bg-slate-950/80 p-8 text-center text-slate-100 shadow-lg backdrop-blur ${className}`.trim()}>
+      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-white/10 bg-white/10">
+        <Lock className="h-7 w-7 text-cyan-200" />
       </div>
-      <h1 className="text-2xl font-black tracking-tight text-slate-900">{title}</h1>
-      <p className="mt-3 text-sm leading-relaxed text-slate-600">{description}</p>
+      <h1 className="text-2xl font-black tracking-tight text-white">{title}</h1>
+      <p className="mt-3 text-sm leading-relaxed text-slate-300">{description}</p>
       <div className="mt-6 flex flex-col gap-3">
         <Link href={primaryHref} className="crp-btn-primary inline-flex w-full items-center justify-center gap-2 px-6 py-3 text-sm">
           {primaryLabel}

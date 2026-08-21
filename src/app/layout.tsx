@@ -126,7 +126,7 @@ export default function RootLayout({
         <link rel="shortcut icon" href="/career-readiness-favicon.png" />
         <link rel="apple-touch-icon" href="/career-readiness-desktop-logo.png" sizes="180x180" />
       </head>
-      <body className={`${jakarta.variable} ${playfair.variable} relative isolate overflow-x-hidden bg-slate-50 text-slate-900 antialiased`}>
+      <body className={`${jakarta.variable} ${playfair.variable} relative isolate overflow-x-hidden bg-[#06141d] text-slate-100 antialiased`}>
         <a href="#content" className="skip-link">
           Skip to main content
         </a>
